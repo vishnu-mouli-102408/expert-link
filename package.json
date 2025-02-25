@@ -1,43 +1,63 @@
 {
-	"name": "expert-link",
-	"version": "0.1.0",
-	"private": true,
-	"scripts": {
-		"dev": "next dev",
-		"build": "next build",
-		"start": "next start",
-		"lint": "next lint"
-	},
-	"dependencies": {
-		"@neondatabase/serverless": "^0.10.4",
-		"@prisma/adapter-neon": "^6.4.1",
-		"@prisma/client": "^6.4.1",
-		"@tailwindcss/postcss": "^4.0.0",
-		"@tanstack/react-query": "^5.51.23",
-		"clsx": "^2.1.1",
-		"hono": "^4.7.0",
-		"jstack": "^1.0.6",
-		"next": "^15.1.6",
-		"prisma": "^6.4.1",
-		"react": "^19.0.0",
-		"react-dom": "^19.0.0",
-		"superjson": "^2.2.1",
-		"tailwind-merge": "^2.5.2",
-		"wrangler": "^3.72.0",
-		"ws": "^8.18.1",
-		"zod": "^3.24.1"
-	},
-	"devDependencies": {
-		"@cloudflare/workers-types": "^4.20240815.0",
-		"@types/node": "^22.10.6",
-		"@types/react": "^19.0.7",
-		"@types/react-dom": "^19.0.3",
-		"@types/ws": "^8.5.14",
-		"dotenv": "^16.4.5",
-		"eslint": "^9.18.0",
-		"eslint-config-next": "^15.1.4",
-		"postcss": "^8",
-		"tailwindcss": "^4.0.0",
-		"typescript": "^5"
-	}
+  "name": "expert-link",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint src --ext ts,tsx,js,jsx --report-unused-disable-directives --max-warnings 0",
+    "lint:fix": "eslint src --ext js,jsx,ts,tsx --fix",
+    "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx,css,html,json}'",
+    "format:check": "prettier --check .",
+    "prepare": "husky"
+  },
+  "dependencies": {
+    "@ianvs/prettier-plugin-sort-imports": "^4.4.1",
+    "@neondatabase/serverless": "^0.10.4",
+    "@prisma/adapter-neon": "^6.4.1",
+    "@prisma/client": "^6.4.1",
+    "@tailwindcss/postcss": "^4.0.0",
+    "@tanstack/react-query": "^5.51.23",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "hono": "^4.7.0",
+    "husky": "^9.1.7",
+    "jstack": "^1.0.6",
+    "lucide-react": "^0.476.0",
+    "next": "^15.1.6",
+    "prettier-plugin-tailwindcss": "^0.6.11",
+    "prisma": "^6.4.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "superjson": "^2.2.1",
+    "tailwind-merge": "^2.6.0",
+    "tailwindcss-animate": "^1.0.7",
+    "wrangler": "^3.72.0",
+    "ws": "^8.18.1",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240815.0",
+    "@types/node": "^22.10.6",
+    "@types/react": "^19.0.7",
+    "@types/react-dom": "^19.0.3",
+    "@types/ws": "^8.5.14",
+    "dotenv": "^16.4.5",
+    "eslint": "^9.18.0",
+    "eslint-config-next": "^15.1.4",
+    "postcss": "^8",
+    "prettier": "^3.5.2",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "pre-push": "npm run lint && npm run format"
+    }
+  },
+  "engines": {
+    "node": ">18.8.x"
+  }
 }
