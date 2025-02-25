@@ -24,6 +24,7 @@
     "hono": "^4.7.0",
     "husky": "^9.1.7",
     "jstack": "^1.0.6",
+    "lint-staged": "^15.4.3",
     "lucide-react": "^0.476.0",
     "next": "^15.1.6",
     "prettier-plugin-tailwindcss": "^0.6.11",
@@ -56,6 +57,14 @@
       "pre-commit": "lint-staged",
       "pre-push": "npm run lint && npm run format"
     }
+  },
+  "lint-staged": {
+    "src/**/*.{ts,tsx,js,jsx}": [
+      "npm run lint:fix",
+      "npm run lint",
+      "npm run format",
+      "npm run format:check"
+    ]
   },
   "engines": {
     "node": ">18.8.x"

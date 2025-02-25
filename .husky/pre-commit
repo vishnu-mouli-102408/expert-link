@@ -1,0 +1,11 @@
+
+
+echo "Running pre-commit hook... 🍺"
+
+# Run lint-staged (which will run ESLint and Prettier on staged files)
+npx lint-staged
+if [ $? -ne 0 ]; then
+  echo "ESLint or Prettier checks failed. ❌ "
+  exit 1
+fi
+echo "ESLint & Prettier check completed successfully. ✅"
