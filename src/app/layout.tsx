@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Open_Sans, Poppins, Roboto } from "next/font/google";
 
-import { Providers } from "./components/providers";
+import { Providers } from "../components/providers";
 
 import "./globals.css";
 
@@ -9,7 +9,7 @@ import { Suspense } from "react";
 
 import { cn } from "@/lib/utils";
 
-import { LoadingSpinner } from "./components/Spinner";
+import { LoadingSpinner } from "../components/Spinner";
 
 export const metadata: Metadata = {
   title: "Expert Link",

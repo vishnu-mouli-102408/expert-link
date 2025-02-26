@@ -11,9 +11,15 @@ const compat = new FlatCompat({
   allConfig: js.configs.all,
 });
 
-export default [
+const eslintConfig = [
   ...compat.extends("next/core-web-vitals", "next/typescript"),
   {
+    files: ["**/*.ts", "**/*.tsx"],
+    settings: {
+      react: {
+        version: "detect",
+      },
+    },
     rules: {
       "no-console": [
         "error",
@@ -41,8 +47,13 @@ export default [
       "prefer-arrow-callback": ["error"],
       "prefer-template": ["error"],
       "react/no-unescaped-entities": "off",
-      semi: ["error"],
+      semi: ["error", "always"],
+      "react/react-in-jsx-scope": "off",
+      "react/jsx-uses-react": "off",
+      "no-trailing-spaces": "error",
       quotes: ["error", "double"],
     },
   },
 ];
+
+export default eslintConfig;

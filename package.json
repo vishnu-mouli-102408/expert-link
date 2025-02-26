@@ -1,15 +1,18 @@
 {
-  "name": "expert-link",
+  "name": "@vishnumouli/expert-link",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "clean": "rm -rf .next && rm -rf node_modules",
+    "ins:clean": "npm run clean && npm install && npx prisma generate",
+    "dev:clean": "npm run ins:clean && npm run dev",
     "lint": "eslint src --ext ts,tsx,js,jsx --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "eslint src --ext js,jsx,ts,tsx --fix",
-    "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx,css,html,json}'",
-    "format:check": "prettier --check 'src/**/*.{js,jsx,ts,tsx,css,html,json}'",
+    "format": "prettier --write \"**/*.{ts,tsx,mjs,js,jsx,md,mdx,css,yaml,yml,html,json}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,mjs,js,jsx,md,mdx,css,yaml,yml,html,json}\"",
     "prepare": "husky"
   },
   "dependencies": {
