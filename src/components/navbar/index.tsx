@@ -190,11 +190,11 @@ const Navbar = () => {
                     <HoverButton className="rounded-lg">Dashboard</HoverButton>
                   </Link>
                 ) : (
-                  <div className="flex flex-col gap-4">
+                  <div className="flex flex-col md:flex-row gap-4">
                     <Link href="/signin" className="w-full">
                       <HoverButton
                         onClick={() => setOpen(false)}
-                        className="rounded-lg block md:hidden w-full"
+                        className="rounded-lg block lg:hidden w-full"
                       >
                         Login
                       </HoverButton>
@@ -202,7 +202,7 @@ const Navbar = () => {
                     <Link href="/signup" className="w-full">
                       <HoverButton
                         onClick={() => setOpen(false)}
-                        className="rounded-lg block md:hidden w-full"
+                        className="rounded-lg block lg:hidden w-full"
                       >
                         Sign Up
                       </HoverButton>
