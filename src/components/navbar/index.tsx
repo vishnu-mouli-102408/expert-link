@@ -61,12 +61,12 @@ const Navbar = () => {
           minWidth: "800px",
         }}
         className={cn(
-          "hidden lg:flex bg-transparent self-start items-center justify-between py-4 rounded-2xl relative z-[50] mx-auto w-full backdrop-blur-[10px]",
+          "hidden lg:flex bg-transparent self-start items-center justify-between py-4 rounded-xl relative z-[50] mx-auto w-full backdrop-blur-[10px]",
           visible &&
             "bg-background/60 py-2 border border-t-foreground/20 border-b-foreground/10 border-x-foreground/15 w-full"
         )}
       >
-        <MaxWidthWrapper className="flex items-center justify-between lg:px-4">
+        <MaxWidthWrapper className="flex items-center justify-between lg:px-3">
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}

@@ -25,6 +25,7 @@
     "@tanstack/react-query": "^5.51.23",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "framer-motion": "^12.4.7",
     "hono": "^4.7.0",
     "husky": "^9.1.7",
     "jstack": "^1.0.6",

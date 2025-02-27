@@ -123,3 +123,20 @@ body {
 ::-webkit-scrollbar-track {
   background-color: var(--background);
 }
+.animate-gradient {
+  animation: gradient var(--animation-duration, 8s) linear infinite;
+}
+
+@theme {
+  @keyframes gradient {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+}
