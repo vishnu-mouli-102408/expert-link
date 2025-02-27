@@ -9,7 +9,7 @@ import { Suspense } from "react";
 
 import { cn } from "@/lib/utils";
 
-import { LoadingSpinner } from "../components/Spinner";
+import { LoadingSpinner } from "../components/spinner";
 
 export const metadata: Metadata = {
   title: "Expert Link",
@@ -54,7 +54,7 @@ export default function RootLayout({
         poppins.variable,
         openSans.variable,
         roboto.variable,
-        "antialiased dark"
+        "min-h-screen overflow-x-hidden antialiased dark"
       )}
     >
       <head>
