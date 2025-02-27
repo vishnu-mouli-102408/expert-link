@@ -1,7 +1,9 @@
+import { AuroraHero } from "@/components/aurora-hero";
+
 const Page = () => {
   return (
     <div>
-      <h1>Hello</h1>
+      <AuroraHero />
     </div>
   );
 };

@@ -7,7 +7,7 @@ interface Props {
   children: React.ReactNode;
 }
 
-const Wrapper = ({ className, children }: Props) => {
+const MaxWidthWrapper = ({ className, children }: Props) => {
   return (
     <section
       className={cn(
@@ -20,4 +20,4 @@ const Wrapper = ({ className, children }: Props) => {
   );
 };
 
-export default Wrapper;
+export default MaxWidthWrapper;
