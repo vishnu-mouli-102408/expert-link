@@ -43,10 +43,10 @@ const AnimationContainer = ({
         x: 0,
         scale: 1,
       }}
-      viewport={{ amount: 0.5 }}
+      viewport={{ once: true }}
       transition={{
-        duration: 0.3,
-        delay: delay * 0.3,
+        duration: 0.2,
+        delay: delay * 0.2,
         ease: "easeInOut",
       }}
     >

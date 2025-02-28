@@ -95,7 +95,7 @@ const Footer = () => {
                       >
                         <Link
                           href={item?.link}
-                          className={`flex transition-all duration-500 ease-in-out hover:scale-[1.1] ${index === 0 ? "font-semibold text-base text-white hover:text-[#d9e0e5]" : "text-[14px] text-[#d3c3c3] hover:text-[#7F8487]"}  flex-col gap-2`}
+                          className={`flex  hover:scale-[1.1] ${index === 0 ? "font-semibold text-base text-white hover:text-[#d9e0e5]" : "text-[14px] text-[#d3c3c3] hover:text-[#7F8487]"}  flex-col gap-2`}
                         >
                           {item?.name}
                         </Link>

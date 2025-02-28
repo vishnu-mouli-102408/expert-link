@@ -5,6 +5,8 @@ import Icons from "./global/icons";
 import MaxWidthWrapper from "./global/max-width-wrapper";
 import LogoTicker from "./logo-ticker";
 import Navbar from "./navbar";
+import Pricing from "./pricing";
+import SectionBadge from "./ui/section-badge";
 
 export {
   AnimationContainer,
@@ -14,4 +16,6 @@ export {
   LogoTicker,
   MaxWidthWrapper,
   Navbar,
+  Pricing,
+  SectionBadge,
 };
