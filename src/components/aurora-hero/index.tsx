@@ -35,11 +35,11 @@ export const AuroraHero = () => {
       style={{
         backgroundImage,
       }}
-      className="relative grid min-h-screen  overflow-hidden bg-gray-950 px-4 py-24 text-gray-200"
+      className="relative grid min-h-screen  overflow-hidden bg-gray-950 px-4 md:py-24 py-14 text-gray-200"
     >
       <GridBeam className="place-content-center">
         <div className="relative z-10 flex flex-col items-center">
-          <AnimationContainer className="mb-2" delay={0.0}>
+          <AnimationContainer className="mb-6 md:mb-3" delay={0.0}>
             <div className="pl-2 pr-1 py-1 rounded-full border border-foreground/10 hover:border-foreground/15 backdrop-blur-lg cursor-pointer flex items-center gap-2.5 select-none w-max mx-auto">
               <div className="w-3.5 h-3.5 rounded-full bg-primary/40 flex items-center justify-center relative">
                 <div className="w-2.5 h-2.5 rounded-full bg-primary/60 flex items-center justify-center animate-ping">
@@ -71,7 +71,7 @@ export const AuroraHero = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: "easeInOut" }}
             viewport={{ amount: 0.5 }}
-            className="my-6 max-w-xl text-center text-base leading-relaxed md:text-lg md:leading-relaxed"
+            className="my-10 md:my-6 max-w-xl text-center text-base leading-relaxed md:text-lg md:leading-relaxed"
           >
             Skip the hassle of endless searching—find the right expert, schedule
             a call, and get personalized, real-time solutions through seamless

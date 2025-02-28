@@ -1,10 +1,11 @@
-import { AuroraHero } from "@/components/aurora-hero";
+import { AuroraHero, LogoTicker } from "@/components";
 
 const Page = () => {
   return (
-    <div>
+    <>
       <AuroraHero />
-    </div>
+      <LogoTicker />
+    </>
   );
 };
 
