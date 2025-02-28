@@ -1,4 +1,5 @@
 import { AuroraHero } from "./aurora-hero";
+import CTA from "./cta";
 import FAQ from "./faqs/faq";
 import Footer from "./footer";
 import AnimationContainer from "./global/animation-container";
@@ -12,6 +13,7 @@ import SectionBadge from "./ui/section-badge";
 export {
   AnimationContainer,
   AuroraHero,
+  CTA,
   FAQ,
   Footer,
   Icons,

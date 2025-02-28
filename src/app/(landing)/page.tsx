@@ -1,4 +1,4 @@
-import { AuroraHero, FAQ, LogoTicker, Pricing } from "@/components";
+import { AuroraHero, CTA, FAQ, LogoTicker, Pricing } from "@/components";
 
 const Page = () => {
   return (
@@ -7,6 +7,7 @@ const Page = () => {
       <LogoTicker />
       <Pricing />
       <FAQ />
+      <CTA />
     </>
   );
 };
