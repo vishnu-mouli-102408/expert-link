@@ -1,12 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
-import React, {
-  ComponentPropsWithoutRef,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -36,7 +31,7 @@ function MousePosition(): MousePosition {
   return mousePosition;
 }
 
-interface ParticlesProps extends ComponentPropsWithoutRef<"div"> {
+interface ParticlesProps {
   className?: string;
   quantity?: number;
   staticity?: number;
@@ -78,7 +73,7 @@ type Circle = {
   magnetism: number;
 };
 
-export const Particles: React.FC<ParticlesProps> = ({
+const Particles: React.FC<ParticlesProps> = ({
   className = "",
   quantity = 100,
   staticity = 50,
@@ -88,7 +83,6 @@ export const Particles: React.FC<ParticlesProps> = ({
   color = "#ffffff",
   vx = 0,
   vy = 0,
-  ...props
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const canvasContainerRef = useRef<HTMLDivElement>(null);
@@ -99,12 +93,7 @@ export const Particles: React.FC<ParticlesProps> = ({
   const canvasSize = useRef<{ w: number; h: number }>({ w: 0, h: 0 });
   const dpr = typeof window !== "undefined" ? window.devicePixelRatio : 1;
   const rafID = useRef<number | null>(null);
-  const resizeTimeout = useRef<NodeJS.Timeout>(null);
-
-  const initCanvas = () => {
-    resizeCanvas();
-    drawParticles();
-  };
+  const resizeTimeout = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (canvasRef.current) {
@@ -141,7 +130,12 @@ export const Particles: React.FC<ParticlesProps> = ({
 
   useEffect(() => {
     initCanvas();
-  }, [initCanvas, refresh]);
+  }, [refresh]);
+
+  const initCanvas = () => {
+    resizeCanvas();
+    drawParticles();
+  };
 
   const onMouseMove = () => {
     if (canvasRef.current) {
@@ -307,9 +301,10 @@ export const Particles: React.FC<ParticlesProps> = ({
       className={cn("pointer-events-none", className)}
       ref={canvasContainerRef}
       aria-hidden="true"
-      {...props}
     >
       <canvas ref={canvasRef} className="size-full" />
     </div>
   );
 };
+
+export default Particles;

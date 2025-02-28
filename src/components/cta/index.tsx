@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 
 import AnimationContainer from "../global/animation-container";
 import MaxWidthWrapper from "../global/max-width-wrapper";
-import { Particles } from "../magicui/particles";
+import Particles from "../magicui/particles";
 import { HoverButton } from "../ui/hover-button";
 
 const CTA = () => {

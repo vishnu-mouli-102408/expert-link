@@ -79,9 +79,9 @@ const Pricing = () => {
             >
               <div
                 className={cn(
-                  "relative rounded-3xl backdrop-blur-3xl p-8 flex flex-col overflow-hidden",
+                  "relative rounded-3xl hover:scale-[1.02] transiti duration-500 ease-in-out backdrop-blur-3xl p-8 flex cursor-pointer flex-col overflow-hidden",
                   plan.popular &&
-                    "bg-[#C5B9F60D] shadow-[inset_0px_0px_55.5px_0px_#C5B9F626] relative border border-[#C5B9F666]",
+                    "bg-[#C5B9F60D]  shadow-[inset_0px_0px_55.5px_0px_#C5B9F626] relative border border-[#C5B9F666]",
                   !plan.popular &&
                     "bg-[#FFFFFF03] border backdrop-blur-[34px] border-[#C5B9F633] shadow-[inset_0px_0px_55.5px_0px_#C5B9F626]"
                 )}
