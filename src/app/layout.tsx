@@ -5,11 +5,11 @@ import { Providers } from "../components/providers";
 
 import "./globals.css";
 
-import { Suspense } from "react";
+import { ClerkLoaded, ClerkLoading, ClerkProvider } from "@clerk/nextjs";
+import { dark } from "@clerk/themes";
 
 import { cn } from "@/lib/utils";
-
-import { LoadingSpinner } from "../components/spinner";
+import { LoadingSpinner } from "@/components/spinner";
 
 export const metadata: Metadata = {
   title: "Expert Link",
@@ -89,11 +89,28 @@ export default function RootLayout({
           "antialiased dark"
         )}
       >
-        <Suspense fallback={<LoadingSpinner mainClassName="h-screen" />}>
-          <main className="flex flex-col flex-1 relative">
-            <Providers>{children}</Providers>
-          </main>
-        </Suspense>
+        <ClerkProvider
+          appearance={{
+            baseTheme: dark,
+            elements: {
+              footer: {
+                display: "none",
+              },
+            },
+            layout: {
+              unsafe_disableDevelopmentModeWarnings: true,
+            },
+          }}
+        >
+          <ClerkLoading>
+            <LoadingSpinner mainClassName="h-screen" />
+          </ClerkLoading>
+          <ClerkLoaded>
+            <main className="flex flex-col flex-1 relative">
+              <Providers>{children}</Providers>
+            </main>
+          </ClerkLoaded>
+        </ClerkProvider>
       </body>
     </html>
   );

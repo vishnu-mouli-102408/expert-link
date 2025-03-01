@@ -40,16 +40,47 @@ enum CallType {
   VIDEO
 }
 
+enum Plan {
+  FREE
+  PRO
+  ENTERPRISE
+}
+
+
+
 model User {
   id             String    @id @default(uuid())
+  externalId String? @unique
   fullName       String
   email          String    @unique
-  passwordHash   String
   phone          String?   @unique
   role           Role      @default(USER)
+  
   profilePicture String?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
   gender         String?
   bio            String?
+
+  @@index([email])
+
+}
+
+model Expert {
+  id          String   @id @default(uuid()) 
+  externalId String? @unique
+  email       String   @unique
+  phone       String?  @unique
+  fullName	String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  
+  bio         String?
+  gender         String?
+  profilePicture String?
+  expertise   String
+  hourlyRate  Float
+
+  @@index([email])
 }

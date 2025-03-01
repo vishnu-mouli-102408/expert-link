@@ -4,6 +4,7 @@ import { useRef, useState, type RefObject } from "react";
 import Link from "next/link";
 import { NAV_LINKS } from "@/constants";
 import { useClickOutside } from "@/hooks";
+import { useClerk, UserButton, useUser } from "@clerk/nextjs";
 import {
   AnimatePresence,
   motion,
@@ -24,6 +25,13 @@ const Navbar = () => {
   const ref = useRef<HTMLDivElement | null>(null);
   const [open, setOpen] = useState(false);
   const [visible, setVisible] = useState<boolean>(false);
+  const [isSigningOut, setIsSigningOut] = useState(false);
+
+  const { user, isSignedIn } = useUser();
+
+  console.info("User:", user, isSignedIn);
+
+  const { signOut } = useClerk();
 
   const mobileMenuRef = useClickOutside(() => {
     setTimeout(() => {
@@ -43,6 +51,17 @@ const Navbar = () => {
       setVisible(false);
     }
   });
+
+  const handleSignOut = async () => {
+    setIsSigningOut(true);
+    try {
+      await signOut({ redirectUrl: "/" });
+    } catch (error) {
+      console.error("Error signing out:", error);
+    } finally {
+      setIsSigningOut(false);
+    }
+  };
 
   return (
     <header className="fixed w-full top-0 inset-x-0 z-50">
@@ -109,16 +128,32 @@ const Navbar = () => {
 
           <AnimationContainer animation="fadeLeft" delay={0.1}>
             <div className="flex items-center gap-x-4">
-              {false ? (
-                <Link href="#" className="w-full flex justify-center">
-                  <HoverButton className="rounded-lg py-2 shadow-[0_1px_1px_rgba(0,0,0,0.05), 0_4px_6px_rgba(34,42,53,0.04),0_24px_68px_rgba(47,48,55,0.05),0_2px_3px_rgba(0,0,0,0.04)]">
-                    Dashboard
-                  </HoverButton>
-                </Link>
+              {isSignedIn ? (
+                <div className="flex flex-row gap-4">
+                  <Link href="#" className="w-full flex justify-center">
+                    <HoverButton className="rounded-lg py-2 shadow-[0_1px_1px_rgba(0,0,0,0.05), 0_4px_6px_rgba(34,42,53,0.04),0_24px_68px_rgba(47,48,55,0.05),0_2px_3px_rgba(0,0,0,0.04)]">
+                      Explore
+                    </HoverButton>
+                  </Link>
+                  <UserButton
+                    appearance={{
+                      elements: {
+                        footer: {
+                          display: "none",
+                        },
+                      },
+                      layout: {
+                        unsafe_disableDevelopmentModeWarnings: true,
+                      },
+                    }}
+                    userProfileMode="navigation"
+                    userProfileUrl="/profile"
+                  />
+                </div>
               ) : (
-                <Link href="#" className="w-full flex justify-center">
+                <Link href="/sign-in" className="w-full flex justify-center">
                   <HoverButton className="rounded-lg py-2 shadow-[0_1px_1px_rgba(0,0,0,0.05), 0_4px_6px_rgba(34,42,53,0.04),0_24px_68px_rgba(47,48,55,0.05),0_2px_3px_rgba(0,0,0,0.04)]">
-                    Get Started
+                    User Login
                   </HoverButton>
                 </Link>
               )}
@@ -185,21 +220,33 @@ const Navbar = () => {
                 delay={0.5}
                 className="w-full"
               >
-                {false ? (
-                  <Link href="#" className="w-full flex justify-center">
-                    <HoverButton className="rounded-lg">Dashboard</HoverButton>
-                  </Link>
+                {isSignedIn ? (
+                  <div className="flex flex-col md:flex-row gap-4">
+                    <Link href="/sign-in" className="w-full">
+                      <HoverButton className="rounded-lg block lg:hidden w-full">
+                        Explore
+                      </HoverButton>
+                    </Link>
+                    <Link href="/sign-up" className="w-full">
+                      <HoverButton
+                        onClick={handleSignOut}
+                        className="rounded-lg block lg:hidden w-full"
+                      >
+                        {isSigningOut ? "Signing Out..." : "Sign Out"}
+                      </HoverButton>
+                    </Link>
+                  </div>
                 ) : (
                   <div className="flex flex-col md:flex-row gap-4">
-                    <Link href="/signin" className="w-full">
+                    <Link href="/sign-in" className="w-full">
                       <HoverButton
                         onClick={() => setOpen(false)}
                         className="rounded-lg block lg:hidden w-full"
                       >
-                        Login
+                        User Login
                       </HoverButton>
                     </Link>
-                    <Link href="/signup" className="w-full">
+                    <Link href="/sign-up" className="w-full">
                       <HoverButton
                         onClick={() => setOpen(false)}
                         className="rounded-lg block lg:hidden w-full"
