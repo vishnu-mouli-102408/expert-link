@@ -22,14 +22,14 @@ const CTA = () => {
               ease={80}
               quantity={80}
               color="#d4d4d4"
-              className="hidden lg:block absolute inset-0 z-0"
+              className="hidden md:block absolute inset-0 z-0"
             />
             <Particles
               refresh
               ease={80}
               quantity={35}
               color="#d4d4d4"
-              className="block lg:hidden absolute inset-0 z-0"
+              className="block md:hidden absolute inset-0 z-0"
             />
 
             <motion.div

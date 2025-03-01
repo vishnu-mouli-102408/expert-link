@@ -48,7 +48,7 @@ export const AuroraHero = () => {
                 <div className="w-1.5 h-1.5 rounded-full bg-primary flex items-center justify-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></div>
               </div>
               <span className="inline-flex items-center justify-center gap-2 animate-text-gradient animate-background-shine bg-gradient-to-r from-[#b2a8fd] via-[#8678f9] to-[#c7d2fe] bg-[200%_auto] bg-clip-text text-sm text-transparent">
-                Talk to Experts, Instantly!
+                Expert Knowledge on Demand
                 <span className="text-xs text-secondary-foreground px-1.5 py-0.5 rounded-full bg-gradient-to-b from-foreground/20 to-foreground/10 flex items-center justify-center">
                   What&apos;s new
                   <ArrowRightIcon className="w-3.5 h-3.5 ml-1 text-foreground/50" />

@@ -1,10 +1,18 @@
-import { AuroraHero, CTA, FAQ, LogoTicker, Pricing } from "@/components";
+import {
+  AuroraHero,
+  CTA,
+  FAQ,
+  FeaturesSection,
+  LogoTicker,
+  Pricing,
+} from "@/components";
 
 const Page = () => {
   return (
     <>
       <AuroraHero />
       <LogoTicker />
+      <FeaturesSection />
       <Pricing />
       <FAQ />
       <CTA />

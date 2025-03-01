@@ -1,6 +1,7 @@
 import { AuroraHero } from "./aurora-hero";
 import CTA from "./cta";
 import FAQ from "./faqs/faq";
+import FeaturesSection from "./features";
 import Footer from "./footer";
 import AnimationContainer from "./global/animation-container";
 import Icons from "./global/icons";
@@ -15,6 +16,7 @@ export {
   AuroraHero,
   CTA,
   FAQ,
+  FeaturesSection,
   Footer,
   Icons,
   LogoTicker,
