@@ -10,6 +10,9 @@ declare global {
 
 // Configure Neon to use WebSockets
 neonConfig.webSocketConstructor = ws;
+neonConfig.poolQueryViaFetch = true;
+
+console.info("DATABASE_URL", process.env.DATABASE_URL);
 
 let prisma: PrismaClient;
 if (process.env.NODE_ENV === "production") {
@@ -17,11 +20,14 @@ if (process.env.NODE_ENV === "production") {
   const adapter = new PrismaNeon(pool);
   prisma = new PrismaClient({ adapter });
 } else {
+  console.info("DEV MODE");
   if (!global.cachedPrisma) {
     const pool = new Pool({
       connectionString: process.env.DATABASE_URL,
+      ssl: true,
       max: 10,
       idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 10000,
     });
     const adapter = new PrismaNeon(pool);
     global.cachedPrisma = new PrismaClient({ adapter });

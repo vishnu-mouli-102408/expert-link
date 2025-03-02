@@ -25,14 +25,18 @@ export async function createUser(userPayload: {
   externalId: string;
 }) {
   try {
-    await db.user.create({
+    const user = await db.user.create({
       data: {
         email: userPayload.email,
         externalId: userPayload.externalId,
       },
     });
+    console.info("DB USER", user);
+
     return { message: "User created", success: true };
   } catch (error) {
+    console.info("USER ERROR", error);
+
     return {
       message: "Internal Server Error",
       success: false,
@@ -43,13 +47,15 @@ export async function createUser(userPayload: {
 
 export async function deleteUser(id: string) {
   try {
-    await db.user.delete({
+    const user = await db.user.delete({
       where: {
-        id,
+        externalId: id,
       },
     });
+    console.info("DB DELETE USER", user);
     return { message: "User deleted", success: true };
   } catch (error) {
+    console.info("DELETE USER ERROR", error);
     return {
       message: "Internal Server Error",
       success: false,
