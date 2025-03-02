@@ -23,7 +23,7 @@ interface LoadingSpinnerProps extends VariantProps<typeof spinnerVariants> {
   mainClassName?: string;
 }
 
-export const LoadingSpinner = ({
+const LoadingSpinner = ({
   size,
   className,
   mainClassName,
@@ -36,3 +36,5 @@ export const LoadingSpinner = ({
     </div>
   );
 };
+
+export { LoadingSpinner };
