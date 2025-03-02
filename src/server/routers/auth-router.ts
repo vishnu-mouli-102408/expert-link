@@ -22,10 +22,7 @@ export const authRouter = j.router({
           db.user.create({
             data: {
               email,
-              fullName,
               externalId,
-              phone: phone || null,
-              role,
             },
           }),
           clerkClient().then((userClient) =>

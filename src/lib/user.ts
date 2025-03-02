@@ -1,5 +1,6 @@
 "use server";
 
+import { db } from "@/db";
 import { clerkClient } from "@clerk/nextjs/server";
 
 import type { Roles } from "@/types/global";
@@ -12,25 +13,6 @@ export async function setRole(id: string, role: Roles) {
       publicMetadata: { role, onboardingComplete: true },
     });
 
-    // if (res?.publicMetadata) {
-    //   const createdUser = await db.user.create({
-    //     data: {
-    //       email: res?.emailAddresses?.[0]?.emailAddress || "",
-    //       fullName: res?.fullName || "",
-    //       externalId: res?.id,
-    //       phone: res?.phoneNumbers?.[0]?.phoneNumber || null,
-    //       role: (role?.toUpperCase() as "USER" | "EXPERT") || "USER",
-    //     },
-    //   });
-    //   console.info("CREATED USER", createdUser);
-
-    //   if (createdUser) {
-    //     return { message: "User created", success: true };
-    //   }
-    // } else {
-    //   return { message: "Internal Server Error", success: false };
-    // }
-
     return { message: res.publicMetadata, success: true };
   } catch (err) {
     console.info("ERROR", err);
@@ -38,18 +20,40 @@ export async function setRole(id: string, role: Roles) {
   }
 }
 
-export async function removeRole(formData: FormData) {
-  const client = await clerkClient();
-
+export async function createUser(userPayload: {
+  email: string;
+  externalId: string;
+}) {
   try {
-    const res = await client.users.updateUserMetadata(
-      formData.get("id") as string,
-      {
-        publicMetadata: { role: null },
-      }
-    );
-    return { message: res.publicMetadata };
-  } catch (err) {
-    return { message: err };
+    await db.user.create({
+      data: {
+        email: userPayload.email,
+        externalId: userPayload.externalId,
+      },
+    });
+    return { message: "User created", success: true };
+  } catch (error) {
+    return {
+      message: "Internal Server Error",
+      success: false,
+      error: "User not created. Please try again later.",
+    };
+  }
+}
+
+export async function deleteUser(id: string) {
+  try {
+    await db.user.delete({
+      where: {
+        id,
+      },
+    });
+    return { message: "User deleted", success: true };
+  } catch (error) {
+    return {
+      message: "Internal Server Error",
+      success: false,
+      error: "User not deleted. Please try again later.",
+    };
   }
 }

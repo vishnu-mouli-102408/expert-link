@@ -1,6 +1,9 @@
 import { headers } from "next/headers";
+import { NextResponse } from "next/server";
 import { WebhookEvent } from "@clerk/nextjs/server";
 import { Webhook } from "svix";
+
+import { createUser, deleteUser } from "@/lib/user";
 
 export async function POST(req: Request) {
   const SIGNING_SECRET = process.env.SIGNING_SECRET;
@@ -51,6 +54,31 @@ export async function POST(req: Request) {
   // For this guide, log payload to console
   const { id } = evt.data;
   const eventType = evt.type;
+
+  if (eventType === "user.created") {
+    const { id, email_addresses } = evt.data;
+
+    const user = await createUser({
+      email: email_addresses?.[0]?.email_address || "",
+      externalId: id,
+    });
+
+    if (user?.success) {
+      console.info("User created successfully");
+      return NextResponse.json({ message: "User created", success: true });
+    }
+  }
+
+  if (eventType === "user.deleted") {
+    const { id } = evt.data;
+    if (!id) return new Response("Error: Missing user ID", { status: 400 });
+    const user = await deleteUser(id);
+    if (user?.success) {
+      console.info("User deleted successfully");
+      return NextResponse.json({ message: "User deleted", success: true });
+    }
+  }
+
   console.info(`Received webhook with ID ${id} and event type of ${eventType}`);
   console.info("Webhook payload:", body);
 
