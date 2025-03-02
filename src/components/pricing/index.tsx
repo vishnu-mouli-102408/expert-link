@@ -15,7 +15,10 @@ const Pricing = () => {
   const [isYearly, setIsYearly] = useState<boolean>(false);
 
   return (
-    <section className="bg-gradient-to-r from-[#00002a] to-[#000022]">
+    <section
+      id="pricing"
+      className="bg-gradient-to-r from-[#00002a] to-[#000022]"
+    >
       <MaxWidthWrapper className="py-20 lg:py-32 ">
         <div className="flex flex-col items-center text-center gap-4">
           <AnimationContainer animation="fadeUp" delay={0.2}>

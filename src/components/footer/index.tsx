@@ -21,7 +21,10 @@ const words = [
 
 const Footer = () => {
   return (
-    <footer className="relative flex w-full py-6 md:py-10 flex-col items-center justify-center overflow-clip border-t border-border bg-[radial-gradient(35%_128px_at_50%_0%,theme(backgroundColor.white/8%),transparent)] px-2 md:px-16">
+    <footer
+      id="footer"
+      className="relative flex w-full py-6 md:py-10 flex-col items-center justify-center overflow-clip border-t border-border bg-[radial-gradient(35%_128px_at_50%_0%,theme(backgroundColor.white/8%),transparent)] px-2 md:px-16"
+    >
       <div className="absolute top-0 z-[-2] h-full w-screen bg-neutral-950 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.3),rgba(255,255,255,0))]"></div>
       <MaxWidthWrapper className="lg:px-14">
         <div className="absolute left-1/2 right-1/2 top-0 h-1 w-8 -translate-x-1/2 -translate-y-1/2 rounded-full bg-foreground"></div>

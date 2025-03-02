@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useUser } from "@clerk/nextjs";
 import { motion } from "framer-motion";
 
 import AnimationContainer from "../global/animation-container";
@@ -9,6 +10,7 @@ import Particles from "../magicui/particles";
 import { HoverButton } from "../ui/hover-button";
 
 const CTA = () => {
+  const { user } = useUser();
   return (
     <div className="relative flex flex-col items-center bg-gradient-to-r from-[#00000070] to-[#000000] justify-center w-full py-20">
       <MaxWidthWrapper>
@@ -71,7 +73,10 @@ const CTA = () => {
               </span>
             </motion.p>
 
-            <Link href="#" className="mt-8">
+            <Link
+              href={user?.publicMetadata?.role === "user" ? "/user" : "/expert"}
+              className="mt-8"
+            >
               <HoverButton className="rounded-lg">
                 Let&apos;s get started
               </HoverButton>

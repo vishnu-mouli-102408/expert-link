@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Link from "next/link";
+import { useUser } from "@clerk/nextjs";
 import { motion, useAnimation, useInView } from "framer-motion";
 import {
   Award,
@@ -151,6 +153,8 @@ const FeaturesSection = () => {
   const isHeroInView = useInView(heroRef, { once: true });
   const heroControls = useAnimation();
 
+  const { user } = useUser();
+
   useEffect(() => {
     if (isHeroInView) {
       heroControls.start("visible");
@@ -168,7 +172,10 @@ const FeaturesSection = () => {
   }, [isConnectInView, connectControls]);
 
   return (
-    <div className="min-h-screen overflow-hidden bg-gray-900 relative">
+    <div
+      id="features"
+      className="min-h-screen overflow-hidden bg-gray-900 relative"
+    >
       {/* Darker radial background gradients */}
       <div className="absolute inset-0 bg-gradient-radial from-gray-700 to-gray-950 opacity-80"></div>
       <div className="absolute top-1/4 left-1/4 w-1/2 h-1/2 bg-gradient-radial from-[#9b87f5]/10 to-transparent blur-3xl"></div>
@@ -215,17 +222,25 @@ const FeaturesSection = () => {
               high-quality video calls, audio sessions, and instant messaging.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <ButtonCta
-                label="Find an Expert"
-                className="w-fit cursor-pointer hover:scale-[1.05] font-bold py-3 px-8 rounded-xl shadow-lg shadow-[#9b87f5]/30 text-sm"
-              />
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.98 }}
-                className="bg-[#FFFFFF0D] hover:bg-[#FFFFFF1A] hover-shadow-[box-shadow:inset_0px_0px_30px_0px_#FFFFFF4D] text-white hover:border-[#FFFFFF26] font-medium cursor-pointer py-3 px-8 rounded-xl border border-gray-700 shadow-sm"
+              <Link
+                href={
+                  user?.publicMetadata?.role === "user" ? "/user" : "/expert"
+                }
               >
-                How It Works
-              </motion.button>
+                <ButtonCta
+                  label="Find an Expert"
+                  className="w-fit cursor-pointer hover:scale-[1.05] font-bold py-3 px-8 rounded-xl shadow-lg shadow-[#9b87f5]/30 text-sm"
+                />
+              </Link>
+              <Link href={"#faq"}>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="bg-[#FFFFFF0D] hover:bg-[#FFFFFF1A] hover-shadow-[box-shadow:inset_0px_0px_30px_0px_#FFFFFF4D] text-white hover:border-[#FFFFFF26] font-medium cursor-pointer py-3 px-8 rounded-xl border border-gray-700 shadow-sm"
+                >
+                  How It Works
+                </motion.button>
+              </Link>
             </div>
           </motion.div>
         </div>
@@ -281,7 +296,10 @@ const FeaturesSection = () => {
       </section>
 
       {/* Connection Showcase Section */}
-      <section className="container mx-auto px-6 py-16 relative z-10">
+      <section
+        id="connect"
+        className="container mx-auto px-6 py-16 relative z-10"
+      >
         <div
           ref={connectRef}
           className="max-w-7xl mx-auto bg-gradient-dark  rounded-3xl p-12 backdrop-blur-[34px] shadow-[inset_0px_0px_55.5px_0px_#C5B9F626,inset_0px_0px_14px_0px_#FFFFFF33] relative overflow-hidden border border-[#C5B9F666]"
@@ -462,10 +480,14 @@ const FeaturesSection = () => {
             to solve problems and drive growth.
           </p>
 
-          <ButtonCta
-            label="Get Started Today"
-            className="w-fit cursor-pointer hover:scale-[1.05] font-bold py-4 px-10 rounded-xl shadow-lg shadow-[#9b87f5]/30 text-lg"
-          />
+          <Link
+            href={user?.publicMetadata?.role === "user" ? "/user" : "/expert"}
+          >
+            <ButtonCta
+              label="Get Started Today"
+              className="w-fit cursor-pointer hover:scale-[1.05] font-bold py-4 px-10 rounded-xl shadow-lg shadow-[#9b87f5]/30 text-lg"
+            />
+          </Link>
         </motion.div>
       </section>
     </div>

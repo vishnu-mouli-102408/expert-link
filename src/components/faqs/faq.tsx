@@ -13,7 +13,10 @@ import SectionBadge from "../ui/section-badge";
 
 const FAQ = () => {
   return (
-    <section className="bg-gradient-to-r from-gray-900 to-slate-900 via-stone-950">
+    <section
+      id="faq"
+      className="bg-gradient-to-r from-gray-900 to-slate-900 via-stone-950"
+    >
       <MaxWidthWrapper className="py-20 lg:py-32">
         <div className="flex flex-col items-center text-center gap-4">
           <AnimationContainer animation="fadeUp" delay={0.2}>

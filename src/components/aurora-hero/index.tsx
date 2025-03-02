@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
+import Link from "next/link";
+import { useUser } from "@clerk/nextjs";
 import { ArrowRight, ArrowRightIcon } from "lucide-react";
 import {
   animate,
@@ -16,6 +18,8 @@ const COLORS_TOP = ["#13FFAA", "#1E67C6", "#CE84CF", "#DD335C"];
 
 export const AuroraHero = () => {
   const color = useMotionValue(COLORS_TOP[0]);
+
+  const { user } = useUser();
 
   useEffect(() => {
     animate(color, COLORS_TOP, {
@@ -77,22 +81,26 @@ export const AuroraHero = () => {
             a call, and get personalized, real-time solutions through seamless
             consultations.
           </motion.p>
-          <motion.button
-            style={{
-              border,
-              boxShadow,
-            }}
-            whileHover={{
-              scale: 1.015,
-            }}
-            whileTap={{
-              scale: 0.985,
-            }}
-            className="group cursor-pointer relative flex w-fit items-center gap-1.5 rounded-full bg-gray-950/10 px-4 py-2 text-gray-50 transition-colors hover:bg-gray-950/50"
+          <Link
+            href={user?.publicMetadata?.role === "user" ? "/user" : "/expert"}
           >
-            Get Started
-            <ArrowRight className="transition-transform group-hover:-rotate-45 group-active:-rotate-12" />
-          </motion.button>
+            <motion.button
+              style={{
+                border,
+                boxShadow,
+              }}
+              whileHover={{
+                scale: 1.015,
+              }}
+              whileTap={{
+                scale: 0.985,
+              }}
+              className="group cursor-pointer relative flex w-fit items-center gap-1.5 rounded-full bg-gray-950/10 px-4 py-2 text-gray-50 transition-colors hover:bg-gray-950/50"
+            >
+              Get Started
+              <ArrowRight className="transition-transform group-hover:-rotate-45 group-active:-rotate-12" />
+            </motion.button>
+          </Link>
         </div>
       </GridBeam>
     </motion.section>
