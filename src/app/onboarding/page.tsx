@@ -42,10 +42,10 @@ export default function OnboardingComponent() {
           position: "bottom-center",
           closeButton: true,
         });
-        if (selectedRole === "USER") {
+        if (user?.publicMetadata?.role === "USER") {
           router.push("/user");
         }
-        if (selectedRole === "EXPERT") {
+        if (user?.publicMetadata?.role === "EXPERT") {
           router.push("/expert");
         }
       } else {

@@ -17,7 +17,6 @@ export const authRouter = j.router({
     )
     .post(async ({ c, ctx, input }) => {
       const { email, externalId, fullName, phone, role } = input;
-
       try {
         const [createdUser, updateUserRole] = await Promise.all([
           db.user.create({

@@ -4,8 +4,12 @@ import { HTTPException } from "hono/http-exception";
 import { jstack } from "jstack";
 
 interface Env {
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-  Bindings: {};
+  Bindings: {
+    DATABASE_URL: string;
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: string;
+    CLERK_SECRET_KEY: string;
+    VERCEL_URL: string;
+  };
 }
 
 export const j = jstack.init<Env>();
