@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "deploy": "wrangler deploy --minify",
+    "postinstall": "npx prisma generate",
     "hono": "wrangler dev",
     "dev": "next dev",
     "build": "next build",
