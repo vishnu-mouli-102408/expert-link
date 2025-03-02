@@ -6,7 +6,6 @@ function Page() {
       <SignUp
         fallbackRedirectUrl={"/onboarding"}
         forceRedirectUrl={"/onboarding"}
-        afterSignOutUrl={"/"}
       />
     </div>
   );
