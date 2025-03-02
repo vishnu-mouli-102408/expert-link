@@ -9,8 +9,9 @@ import { ClerkLoaded, ClerkLoading, ClerkProvider } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 
 import { cn } from "@/lib/utils";
-import { Toaster } from "@/components/ui/sonner";
-import { LoadingSpinner } from "@/components/spinner";
+
+import { LoadingSpinner } from "../components/spinner";
+import { Toaster } from "../components/ui/sonner";
 
 export const metadata: Metadata = {
   title: "Expert Link",
