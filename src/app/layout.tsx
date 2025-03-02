@@ -9,7 +9,7 @@ import { ClerkLoaded, ClerkLoading, ClerkProvider } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 
 import { cn } from "@/lib/utils";
-import { LoadingSpinner } from "@/components/spinner/index";
+import { LoadingSpinner } from "@/components/spinner";
 
 import { Toaster } from "../components/ui/sonner";
 
