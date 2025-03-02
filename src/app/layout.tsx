@@ -9,6 +9,7 @@ import { ClerkLoaded, ClerkLoading, ClerkProvider } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 
 import { cn } from "@/lib/utils";
+import { Toaster } from "@/components/ui/sonner";
 import { LoadingSpinner } from "@/components/spinner";
 
 export const metadata: Metadata = {
@@ -108,6 +109,7 @@ export default function RootLayout({
           <ClerkLoaded>
             <main className="flex flex-col flex-1 relative">
               <Providers>{children}</Providers>
+              <Toaster richColors />
             </main>
           </ClerkLoaded>
         </ClerkProvider>

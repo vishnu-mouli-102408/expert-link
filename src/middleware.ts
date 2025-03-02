@@ -10,6 +10,7 @@ const isPublicRoutes = createRouteMatcher([
 
 const isUserRoutes = createRouteMatcher(["/user(.*)"]);
 const isExpertRoutes = createRouteMatcher(["/expert(.*)"]);
+const isOnboardingRoute = createRouteMatcher(["/onboarding"]);
 
 export default clerkMiddleware(async (auth, req) => {
   if (!isPublicRoutes(req)) await auth.protect();
@@ -26,6 +27,16 @@ export default clerkMiddleware(async (auth, req) => {
   ) {
     const url = new URL("/", req.url);
     return NextResponse.redirect(url);
+  }
+
+  const { userId, sessionClaims, redirectToSignIn } = await auth();
+  if (userId && isOnboardingRoute(req)) {
+    return NextResponse.next();
+  }
+
+  if (userId && !sessionClaims?.metadata?.onboardingComplete) {
+    const onboardingUrl = new URL("/onboarding", req.url);
+    return NextResponse.redirect(onboardingUrl);
   }
 });
 
