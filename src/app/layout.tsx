@@ -91,6 +91,12 @@ export default function RootLayout({
         )}
       >
         <ClerkProvider
+          signInForceRedirectUrl={"/onboarding"}
+          signUpForceRedirectUrl={"/onboarding"}
+          allowedRedirectOrigins={[
+            "http://localhost:3000",
+            "https://expert-link.vishnumouli.me",
+          ]}
           appearance={{
             baseTheme: dark,
             elements: {
