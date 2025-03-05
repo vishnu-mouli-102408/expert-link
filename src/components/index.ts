@@ -9,6 +9,7 @@ import MaxWidthWrapper from "./global/max-width-wrapper";
 import LogoTicker from "./logo-ticker";
 import Navbar from "./navbar";
 import Pricing from "./pricing";
+import Settings from "./settings";
 import SectionBadge from "./ui/section-badge";
 
 export {
@@ -24,4 +25,5 @@ export {
   Navbar,
   Pricing,
   SectionBadge,
+  Settings,
 };

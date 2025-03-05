@@ -37,7 +37,7 @@ const AppLayoutContent: React.FC<AppLayoutProps> = ({ children }) => {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background dark">
+    <div className="flex  bg-background dark">
       <Sidebar />
 
       <motion.div

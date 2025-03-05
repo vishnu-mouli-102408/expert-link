@@ -13,11 +13,16 @@ model User {
   email      String   @unique
   role       Role?
   createdAt  DateTime @default(now())
+  firstName  String?
+  lastName   String?
   updatedAt  DateTime @updatedAt
   gender     String?
   bio        String?
   externalId String?  @unique
   expertise  String?
+  profilePic String?
+  phone      String?
+  username   String?
 
   @@index([email])
 }

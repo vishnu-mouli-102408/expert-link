@@ -198,6 +198,16 @@ body {
   }
 }
 
+@layer utilities {
+  .glass-effect {
+    @apply border border-white/10 bg-white/5 shadow-[0_8px_24px_-4px_rgba(0,0,0,0.2)] backdrop-blur-xl;
+  }
+
+  .neo-blur {
+    @apply border border-white/10 bg-black/40 backdrop-blur-xl;
+  }
+}
+
 ::selection {
   background-color: var(--primary);
   color: var(--foreground);

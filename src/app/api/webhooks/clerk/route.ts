@@ -89,11 +89,24 @@ export async function POST(req: Request) {
   if (eventType === "user.created") {
     console.info("INSIDE USER CREATED");
 
-    const { id, email_addresses } = evt.data;
+    const {
+      id,
+      email_addresses,
+      first_name,
+      last_name,
+      phone_numbers,
+      username,
+      image_url,
+    } = evt.data;
 
     const user = await createUser({
       email: email_addresses?.[0]?.email_address || "",
       externalId: id,
+      firstName: first_name,
+      lastName: last_name,
+      phone: phone_numbers?.[0]?.phone_number || null,
+      username: username,
+      profilePic: image_url,
     });
 
     console.info("USER", user);

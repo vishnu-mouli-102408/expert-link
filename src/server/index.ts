@@ -1,4 +1,5 @@
 import { j } from "./jstack";
+import { accountRouter } from "./routers/account-router";
 import { authRouter } from "./routers/auth-router";
 import { healthCheckRouter } from "./routers/health-check-router";
 
@@ -22,7 +23,8 @@ const appRouter = j.mergeRouters(api, {
   // For importing heavy router dynamically
   // auth: dynamic(() => import("./routers/auth-router")),
   auth: authRouter,
-  healthCheck: healthCheckRouter,
+  health: healthCheckRouter,
+  account: accountRouter,
 });
 
 export type AppRouter = typeof appRouter;

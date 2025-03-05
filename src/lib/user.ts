@@ -2,6 +2,7 @@
 
 import { db } from "@/db";
 import { clerkClient } from "@clerk/nextjs/server";
+import type { User } from "@prisma/client";
 
 import type { Roles } from "@/types/global";
 
@@ -20,15 +21,21 @@ export async function setRole(id: string, role: Roles) {
   }
 }
 
-export async function createUser(userPayload: {
-  email: string;
-  externalId: string;
-}) {
+export async function createUser(
+  userPayload: Omit<
+    User,
+    "id" | "createdAt" | "updatedAt" | "role" | "gender" | "bio" | "expertise"
+  >
+) {
   try {
     const user = await db.user.create({
       data: {
         email: userPayload.email,
         externalId: userPayload.externalId,
+        firstName: userPayload.firstName,
+        lastName: userPayload.lastName,
+        phone: userPayload.phone,
+        username: userPayload.username,
       },
     });
     console.info("DB USER", user);
