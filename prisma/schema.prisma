@@ -8,6 +8,8 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+
+
 model User {
   id         String   @id @default(uuid())
   email      String   @unique
@@ -23,6 +25,13 @@ model User {
   profilePic String?
   phone      String?
   username   String?
+  certifications String?
+  yearsOfExperience String?
+  availability String?
+  hourlyRate String?
+  interests String?
+  preferences String?
+  
 
   @@index([email])
 }

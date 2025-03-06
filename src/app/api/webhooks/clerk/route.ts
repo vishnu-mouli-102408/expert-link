@@ -2,6 +2,7 @@ import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { WebhookEvent } from "@clerk/nextjs/server";
+import type { Role } from "@prisma/client";
 import { Webhook } from "svix";
 
 import { createUser, deleteUser } from "@/lib/user";
@@ -97,6 +98,7 @@ export async function POST(req: Request) {
       phone_numbers,
       username,
       image_url,
+      public_metadata,
     } = evt.data;
 
     const user = await createUser({
@@ -107,6 +109,7 @@ export async function POST(req: Request) {
       phone: phone_numbers?.[0]?.phone_number || null,
       username: username,
       profilePic: image_url,
+      role: (public_metadata?.role as Role) || null,
     });
 
     console.info("USER", user);

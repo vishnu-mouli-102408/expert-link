@@ -1,15 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useDbUser } from "@/hooks";
+import { useUser } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useQuery } from "@tanstack/react-query";
-import { Info, Lock, Phone, Save, User } from "lucide-react";
+import { useMutation } from "@tanstack/react-query";
+import { Award, Info, Lock, Phone, Save, User } from "lucide-react";
 import { motion } from "motion/react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
 
 import { client } from "@/lib/client";
+import { getQueryClient } from "@/lib/get-query-client";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -32,16 +34,15 @@ import { Textarea } from "@/components/ui/textarea";
 import ProfileImageUpload from "./profile-image-upload";
 import ProfileSection from "./profile-section";
 
-// Define the form schema with Zod
-const formSchema = z.object({
-  profileImage: z.string().optional(),
+const baseSchema = {
+  profilePic: z.string().optional(),
   username: z
     .string()
     .min(3, "Username must be at least 3 characters")
     .max(30, "Username cannot exceed 30 characters"),
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
-  phoneNumber: z
+  phone: z
     .string()
     .refine(
       (value) =>
@@ -52,58 +53,162 @@ const formSchema = z.object({
     .optional(),
   email: z.string().email("Invalid email address").min(1, "Email is required"),
   bio: z.string().optional(),
-  expertise: z.string().optional(),
+  //   expertise: z.string().optional(),
   gender: z.string().optional(),
-});
+};
+
+const expertSchema = {
+  ...baseSchema,
+  expertise: z.string().optional(),
+  certifications: z.string().optional(),
+  yearsOfExperience: z.string().optional(),
+  availability: z.string().optional(),
+  hourlyRate: z.string().optional(),
+};
+
+const userSchema = {
+  ...baseSchema,
+  interests: z.string().optional(),
+  preferences: z.string().optional(),
+};
+
+// Create Zod objects from the schema definitions
+const expertSchemaObject = z.object(expertSchema);
+const userSchemaObject = z.object(userSchema);
+
+type ExpertFormValues = z.infer<typeof expertSchemaObject>;
+type UserFormValues = z.infer<typeof userSchemaObject>;
+type FormValues = ExpertFormValues | UserFormValues;
+
+// Define the form schema with Zod
+// const formSchema = z.object({
+//   profilePic: z.string().optional(),
+//   username: z
+//     .string()
+//     .min(3, "Username must be at least 3 characters")
+//     .max(30, "Username cannot exceed 30 characters"),
+//   firstName: z.string().min(1, "First name is required"),
+//   lastName: z.string().min(1, "Last name is required"),
+//   phone: z
+//     .string()
+//     .refine(
+//       (value) =>
+//         value === "" ||
+//         /^(\+\d{1,3})?\s?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/.test(value),
+//       { message: "Please enter a valid phone number" }
+//     )
+//     .optional(),
+//   email: z.string().email("Invalid email address").min(1, "Email is required"),
+//   bio: z.string().optional(),
+//   expertise: z.string().optional(),
+//   gender: z.string().optional(),
+// });
 
 // TypeScript type for our form values
-type FormValues = z.infer<typeof formSchema>;
+// type FormValues = z.infer<typeof formSchema>;
 
 const SettingsForm = () => {
-  const [isLoading, setIsLoading] = useState(false);
+  const queryClient = getQueryClient();
 
-  const { data: user } = useQuery({
-    queryKey: ["user"],
-    queryFn: async () => {
-      const response = await client.auth.getUserDetails.$get();
-      return await response.json();
-    },
-  });
+  const { data: userData } = useDbUser();
 
-  console.log("USER", user);
+  const { user } = useUser();
+
+  const isExpert = user?.publicMetadata?.role === "expert";
+
+  console.log("IS EXPERT", isExpert);
+
+  console.log("USER", userData);
 
   // Initialize the form with react-hook-form and zodResolver
   const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(isExpert ? expertSchemaObject : userSchemaObject),
     values: {
-      profileImage: user?.data?.profilePic || "",
-      username: user?.data?.username || "",
-      firstName: user?.data?.firstName || "",
-      lastName: user?.data?.lastName || "",
-      phoneNumber: user?.data?.phone || "",
-      email: user?.data?.email || "",
-      bio: user?.data?.bio || "",
-      expertise: user?.data?.expertise || "",
-      gender: user?.data?.gender || "",
+      profilePic: userData?.data?.profilePic || "",
+      username: userData?.data?.username || "",
+      firstName: userData?.data?.firstName || "",
+      lastName: userData?.data?.lastName || "",
+      phone: userData?.data?.phone || "",
+      email: userData?.data?.email || "",
+      bio: userData?.data?.bio || "",
+      //   expertise: user?.data?.expertise || "",
+      gender: userData?.data?.gender || "",
+      ...(isExpert
+        ? {
+            certifications: "",
+            yearsOfExperience: "",
+            availability: "",
+            hourlyRate: "",
+            expertise: userData?.data?.expertise || "",
+          }
+        : {
+            interests: "",
+            preferences: "",
+          }),
     },
   });
 
   // Form submission handler
   const onSubmit = async (data: FormValues) => {
-    setIsLoading(true);
-
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      toast.success("Settings Updated", {
-        description: "Your Settings has been successfully updated.",
+    try {
+      const updatedFields = Object.keys(form.formState.dirtyFields).reduce(
+        (acc, key) => {
+          acc[key as keyof FormValues] = data[key as keyof FormValues];
+          return acc;
+        },
+        {} as Partial<FormValues>
+      );
+      console.log("Updated Fields:", updatedFields);
+      onSubmitForm(updatedFields);
+    } catch (error) {
+      console.error("ERROR", error);
+      toast.error("There was a problem.", {
+        description:
+          "Seems like there was an issue on our end. Please try again later.",
         duration: 3000,
         position: "bottom-center",
         closeButton: true,
       });
-      console.info("Form data:", data);
-    }, 800);
+      return;
+    }
   };
+
+  const { mutateAsync: onSubmitForm, isPending } = useMutation({
+    mutationFn: async (formData: Partial<FormValues>) => {
+      const response = await client.auth.updateUserDetails.$post(formData);
+      const result = await response.json();
+      console.log("RESULT", result);
+      return result;
+    },
+    onSuccess: (data) => {
+      if (data?.success) {
+        queryClient.invalidateQueries({ queryKey: ["user"] });
+        toast.success("Settings Updated", {
+          description: "Your Settings has been successfully updated.",
+          duration: 3000,
+          position: "bottom-center",
+          closeButton: true,
+        });
+      } else {
+        toast.error("There was a problem.", {
+          description:
+            "Seems like there was an issue on our end. Please try again later.",
+          duration: 3000,
+          position: "bottom-center",
+          closeButton: true,
+        });
+      }
+    },
+    onError: (error) => {
+      toast.error("There was a problem.", {
+        description:
+          "Seems like there was an issue on our end. Please try again later.",
+        duration: 3000,
+        position: "bottom-center",
+        closeButton: true,
+      });
+    },
+  });
 
   const inputVariants = {
     focus: { scale: 1.01, transition: { duration: 0.2 } },
@@ -119,7 +224,7 @@ const SettingsForm = () => {
         <ProfileSection title="Profile Picture" index={0}>
           <FormField
             control={form.control}
-            name="profileImage"
+            name="profilePic"
             render={({ field }) => (
               <FormItem>
                 <FormControl>
@@ -220,7 +325,7 @@ const SettingsForm = () => {
 
             <FormField
               control={form.control}
-              name="phoneNumber"
+              name="phone"
               render={({ field }) => (
                 <FormItem className="space-y-2">
                   <FormLabel className="text-sm font-medium text-zinc-200">
@@ -306,27 +411,6 @@ const SettingsForm = () => {
 
             <FormField
               control={form.control}
-              name="expertise"
-              render={({ field }) => (
-                <FormItem className="space-y-2">
-                  <FormLabel className="text-sm font-medium text-zinc-200">
-                    Areas of Expertise
-                  </FormLabel>
-                  <motion.div whileFocus="focus" initial="blur" animate="blur">
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder="e.g. Design, Development, Marketing"
-                        className="bg-white/5 border-white/10 focus:border-white/20 transition-all duration-300"
-                      />
-                    </FormControl>
-                  </motion.div>
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
               name="gender"
               render={({ field }) => (
                 <FormItem className="space-y-2 w-full">
@@ -335,7 +419,8 @@ const SettingsForm = () => {
                   </FormLabel>
                   <Select
                     onValueChange={field.onChange}
-                    defaultValue={field.value}
+                    // defaultValue={field.value}
+                    value={field.value}
                   >
                     <FormControl>
                       <SelectTrigger className="bg-white/5 cursor-pointer border-white/10 focus:border-white/20 transition-all duration-300">
@@ -372,6 +457,249 @@ const SettingsForm = () => {
                 </FormItem>
               )}
             />
+
+            {/* Expert-specific fields */}
+            {isExpert && (
+              <>
+                <FormField
+                  control={form.control}
+                  name="expertise"
+                  render={({ field }) => (
+                    <FormItem className="space-y-2">
+                      <FormLabel className="text-sm font-medium text-zinc-200">
+                        Areas of Expertise
+                      </FormLabel>
+                      <motion.div
+                        whileFocus="focus"
+                        initial="blur"
+                        animate="blur"
+                      >
+                        <FormControl>
+                          <Input
+                            {...field}
+                            placeholder="e.g. Design, Development, Marketing"
+                            className="bg-white/5 border-white/10 focus:border-white/20 transition-all duration-300"
+                          />
+                        </FormControl>
+                      </motion.div>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="certifications"
+                  render={({ field }) => (
+                    <FormItem className="space-y-2">
+                      <FormLabel className="text-sm font-medium text-zinc-200">
+                        Certifications
+                      </FormLabel>
+                      <div className="relative">
+                        <motion.div
+                          whileFocus="focus"
+                          initial="blur"
+                          animate="blur"
+                        >
+                          <FormControl>
+                            <Input
+                              {...field}
+                              placeholder="e.g. AWS Certified, Google Analytics, PMP"
+                              className="bg-white/5 border-white/10 focus:border-white/20 transition-all duration-300 pl-9"
+                            />
+                          </FormControl>
+                        </motion.div>
+                        <div className="absolute left-3 top-1/2 -translate-y-1/2">
+                          <Award size={16} className="text-zinc-500" />
+                        </div>
+                      </div>
+                    </FormItem>
+                  )}
+                />
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <FormField
+                    control={form.control}
+                    name="yearsOfExperience"
+                    render={({ field }) => (
+                      <FormItem className="space-y-2">
+                        <FormLabel className="text-sm font-medium text-zinc-200">
+                          Years of Experience
+                        </FormLabel>
+                        <motion.div
+                          whileFocus="focus"
+                          initial="blur"
+                          animate="blur"
+                        >
+                          <FormControl>
+                            <Input
+                              {...field}
+                              type="number"
+                              min="0"
+                              placeholder="e.g. 5"
+                              className="bg-white/5 border-white/10 focus:border-white/20 transition-all duration-300"
+                            />
+                          </FormControl>
+                        </motion.div>
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="hourlyRate"
+                    render={({ field }) => (
+                      <FormItem className="space-y-2">
+                        <FormLabel className="text-sm font-medium text-zinc-200">
+                          Hourly Rate ($)
+                        </FormLabel>
+                        <motion.div
+                          whileFocus="focus"
+                          initial="blur"
+                          animate="blur"
+                        >
+                          <FormControl>
+                            <Input
+                              {...field}
+                              type="number"
+                              min="0"
+                              placeholder="e.g. 75"
+                              className="bg-white/5 border-white/10 focus:border-white/20 transition-all duration-300"
+                            />
+                          </FormControl>
+                        </motion.div>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <FormField
+                  control={form.control}
+                  name="availability"
+                  render={({ field }) => (
+                    <FormItem className="space-y-2">
+                      <FormLabel className="text-sm font-medium text-zinc-200">
+                        Availability
+                      </FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        // defaultValue={field.value}
+                        value={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="bg-white/5 cursor-pointer border-white/10 focus:border-white/20 transition-all duration-300">
+                            <SelectValue placeholder="Select availability" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="cursor-pointer bg-black">
+                          <SelectItem
+                            className="hover:bg-gray-500/40  cursor-pointer transition-colors duration-300"
+                            value="full-time"
+                          >
+                            Full-time
+                          </SelectItem>
+                          <SelectItem
+                            className="hover:bg-gray-500/40  cursor-pointer transition-colors duration-300"
+                            value="part-time"
+                          >
+                            Part-time
+                          </SelectItem>
+                          <SelectItem
+                            className="hover:bg-gray-500/40  cursor-pointer transition-colors duration-300"
+                            value="weekends"
+                          >
+                            Weekends only
+                          </SelectItem>
+                          <SelectItem
+                            className="hover:bg-gray-500/40  cursor-pointer transition-colors duration-300"
+                            value="evenings"
+                          >
+                            Evenings only
+                          </SelectItem>
+                          <SelectItem
+                            className="hover:bg-gray-500/40  cursor-pointer transition-colors duration-300"
+                            value="custom"
+                          >
+                            Custom schedule
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormItem>
+                  )}
+                />
+              </>
+            )}
+
+            {/* User-specific fields */}
+            {!isExpert && (
+              <>
+                <FormField
+                  control={form.control}
+                  name="interests"
+                  render={({ field }) => (
+                    <FormItem className="space-y-2">
+                      <FormLabel className="text-sm font-medium text-zinc-200">
+                        Interests
+                      </FormLabel>
+                      <motion.div
+                        whileFocus="focus"
+                        initial="blur"
+                        animate="blur"
+                      >
+                        <FormControl>
+                          <Textarea
+                            {...field}
+                            placeholder="What topics are you interested in learning about?"
+                            className="min-h-24 bg-white/5 border-white/10 focus:border-white/20 transition-all duration-300"
+                          />
+                        </FormControl>
+                      </motion.div>
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="preferences"
+                  render={({ field }) => (
+                    <FormItem className="space-y-2">
+                      <FormLabel className="text-sm font-medium text-zinc-200">
+                        Preferences
+                      </FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        // defaultValue={field.value}
+                        value={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="bg-white/5 cursor-pointer border-white/10 focus:border-white/20 transition-all duration-300">
+                            <SelectValue placeholder="Select preferred learning style" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="cursor-pointer bg-black">
+                          <SelectItem
+                            className="hover:bg-gray-500/40  cursor-pointer transition-colors duration-300"
+                            value="audio"
+                          >
+                            Audio Call
+                          </SelectItem>
+                          <SelectItem
+                            className="hover:bg-gray-500/40  cursor-pointer transition-colors duration-300"
+                            value="video"
+                          >
+                            Video Call
+                          </SelectItem>
+                          <SelectItem
+                            className="hover:bg-gray-500/40  cursor-pointer transition-colors duration-300"
+                            value="chat"
+                          >
+                            Text-based chat
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormItem>
+                  )}
+                />
+              </>
+            )}
           </div>
         </ProfileSection>
 
@@ -387,10 +715,10 @@ const SettingsForm = () => {
         >
           <Button
             type="submit"
-            disabled={isLoading}
+            disabled={isPending}
             className="px-8 glass-effect cursor-pointer hover:bg-white/10 text-white border-white/10"
           >
-            {isLoading ? (
+            {isPending ? (
               <motion.div
                 animate={{ rotate: 360 }}
                 transition={{ duration: 1, repeat: Infinity, ease: "linear" }}

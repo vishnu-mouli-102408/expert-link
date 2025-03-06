@@ -24,7 +24,18 @@ export async function setRole(id: string, role: Roles) {
 export async function createUser(
   userPayload: Omit<
     User,
-    "id" | "createdAt" | "updatedAt" | "role" | "gender" | "bio" | "expertise"
+    | "id"
+    | "createdAt"
+    | "updatedAt"
+    | "gender"
+    | "bio"
+    | "expertise"
+    | "certifications"
+    | "yearsOfExperience"
+    | "availability"
+    | "hourlyRate"
+    | "interests"
+    | "preferences"
   >
 ) {
   try {

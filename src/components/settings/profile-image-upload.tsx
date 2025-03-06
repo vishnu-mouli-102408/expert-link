@@ -201,7 +201,8 @@ const ProfileImageUpload = ({ value, onChange }: ProfileImageUploadProps) => {
         setIsCropping(false);
 
         toast.success("Profile picture updated", {
-          description: "Your new profile picture has been saved.",
+          description:
+            "Your profile picture has been set. Please save your changes.",
           duration: 3000,
           position: "bottom-center",
           closeButton: true,
@@ -320,6 +321,7 @@ const ProfileImageUpload = ({ value, onChange }: ProfileImageUploadProps) => {
                 className="relative rounded-full overflow-hidden border-2 border-white/20 h-32 w-32 group"
               >
                 <Image
+                  priority
                   src={value}
                   alt="Profile"
                   className="h-full w-full object-cover"

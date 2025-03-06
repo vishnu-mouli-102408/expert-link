@@ -18,6 +18,8 @@ const Settings = async () => {
     },
   });
 
+  //   const user = await currentUser();
+
   return (
     <div className="py-12 px-6 sm:px-8 md:px-12">
       <AnimationContainer className="max-w-4xl mx-auto">
