@@ -27,7 +27,7 @@ export async function setRole(id: string, role: Roles) {
     console.info("✅ Clerk Role Updated:", res.publicMetadata);
     console.info("✅ DB Role Updated:", roleUpdate);
 
-    return { message: res.publicMetadata, success: true };
+    return { message: res.publicMetadata, success: true, data: roleUpdate };
   } catch (err) {
     console.error("❌ ERROR:", err);
     return {
