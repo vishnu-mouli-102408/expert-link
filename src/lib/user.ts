@@ -2,7 +2,7 @@
 
 import { db } from "@/db";
 import { clerkClient } from "@clerk/nextjs/server";
-import type { User } from "@prisma/client";
+import type { Role, User } from "@prisma/client";
 
 import type { Roles } from "@/types/global";
 
@@ -10,14 +10,31 @@ export async function setRole(id: string, role: Roles) {
   const client = await clerkClient();
 
   try {
-    const res = await client.users.updateUser(id, {
-      publicMetadata: { role, onboardingComplete: true },
-    });
+    const [res, roleUpdate] = await Promise.all([
+      client.users.updateUser(id, {
+        publicMetadata: { role, onboardingComplete: true },
+      }),
+      db.user.update({
+        where: { externalId: id },
+        data: { role: role?.toUpperCase() as Role },
+      }),
+    ]);
+
+    if (!res || !roleUpdate) {
+      throw new Error("One or both role updates failed.");
+    }
+
+    console.info("✅ Clerk Role Updated:", res.publicMetadata);
+    console.info("✅ DB Role Updated:", roleUpdate);
 
     return { message: res.publicMetadata, success: true };
   } catch (err) {
-    console.info("ERROR", err);
-    return { message: "Internal Server Error", success: false, error: err };
+    console.error("❌ ERROR:", err);
+    return {
+      message: "Internal Server Error",
+      success: false,
+      error: err instanceof Error ? err.message : err,
+    };
   }
 }
 
