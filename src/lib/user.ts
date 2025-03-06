@@ -36,6 +36,7 @@ export async function createUser(
         lastName: userPayload.lastName,
         phone: userPayload.phone,
         username: userPayload.username,
+        profilePic: userPayload.profilePic,
       },
     });
     console.info("DB USER", user);

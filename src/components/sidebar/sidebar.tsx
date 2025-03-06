@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { UserButton } from "@clerk/clerk-react";
 import { useUser } from "@clerk/nextjs";
 import {
@@ -32,12 +33,20 @@ const Sidebar: React.FC<SidebarProps> = ({ className }) => {
   const [activeItemIndex, setActiveItemIndex] = React.useState(0);
 
   const navItems = [
-    { icon: <Home size={18} />, label: "Home", href: "/" },
+    {
+      icon: <Home size={18} />,
+      label: "Home",
+      href: `/${user?.publicMetadata?.role === "user" ? "user" : "expert"}`,
+    },
     { icon: <LayoutDashboard size={18} />, label: "Dashboard", href: "/" },
     { icon: <Users size={18} />, label: "Users", href: "/" },
     { icon: <Mail size={18} />, label: "Messages", href: "/" },
     { icon: <Search size={18} />, label: "Search", href: "/" },
-    { icon: <Settings size={18} />, label: "Settings", href: "/" },
+    {
+      icon: <Settings size={18} />,
+      label: "Settings",
+      href: `/${user?.publicMetadata?.role === "user" ? "user" : "expert"}/settings`,
+    },
   ];
 
   return (
@@ -66,14 +75,16 @@ const Sidebar: React.FC<SidebarProps> = ({ className }) => {
             <div className="flex items-center gap-2">
               {isOpen && (
                 <motion.div className="flex justify-center items-center gap-2">
-                  <motion.span
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    className="text-lg ml-2 font-semibold cursor-pointer hover:scale-[1.04] transitio duration-300 ease-in-out text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-red-500"
-                  >
-                    Expert Link
-                  </motion.span>
+                  <Link href={"/"}>
+                    <motion.span
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      className="text-lg ml-2 font-semibold cursor-pointer hover:scale-[1.04] transitio duration-300 ease-in-out text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-red-500"
+                    >
+                      Expert Link
+                    </motion.span>
+                  </Link>
                   {/* <motion.div
                     className="flex items-center justify-center h-8 w-8 rounded-md bg-white/10 text-white"
                     whileHover={{ scale: 1.05 }}
@@ -133,40 +144,42 @@ const Sidebar: React.FC<SidebarProps> = ({ className }) => {
                   key={index}
                   className={!isOpen ? "flex justify-center" : ""}
                 >
-                  <motion.div
-                    className={cn(
-                      "flex items-center gap-3 rounded-md cursor-pointer",
-                      isOpen ? "px-3 py-2" : "h-10 w-10 justify-center",
-                      activeItemIndex === index
-                        ? "bg-white/20 text-white"
-                        : "text-white/70 hover:bg-white/10 hover:text-white"
-                    )}
-                    whileHover={{ scale: isOpen ? 1.02 : 1.1 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => setActiveItemIndex(index)}
-                  >
-                    <div
+                  <Link href={item.href}>
+                    <motion.div
                       className={cn(
-                        "flex items-center justify-center",
-                        isOpen ? "h-5 w-5" : "",
+                        "flex items-center gap-3 rounded-md cursor-pointer",
+                        isOpen ? "px-3 py-2" : "h-10 w-10 justify-center",
                         activeItemIndex === index
-                          ? "text-white"
-                          : "text-white/70"
+                          ? "bg-white/20 text-white"
+                          : "text-white/70 hover:bg-white/10 hover:text-white"
                       )}
+                      whileHover={{ scale: isOpen ? 1.02 : 1.1 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => setActiveItemIndex(index)}
                     >
-                      {item.icon}
-                    </div>
-                    {isOpen && (
-                      <motion.span
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="text-sm font-medium"
+                      <div
+                        className={cn(
+                          "flex items-center justify-center",
+                          isOpen ? "h-5 w-5" : "",
+                          activeItemIndex === index
+                            ? "text-white"
+                            : "text-white/70"
+                        )}
                       >
-                        {item.label}
-                      </motion.span>
-                    )}
-                  </motion.div>
+                        {item.icon}
+                      </div>
+                      {isOpen && (
+                        <motion.span
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          className="text-sm font-medium"
+                        >
+                          {item.label}
+                        </motion.span>
+                      )}
+                    </motion.div>
+                  </Link>
                 </div>
               ))}
             </nav>
