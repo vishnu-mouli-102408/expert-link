@@ -135,15 +135,15 @@ const SettingsForm = () => {
       gender: userData?.data?.gender || "",
       ...(isExpert
         ? {
-            certifications: "",
-            yearsOfExperience: "",
-            availability: "",
-            hourlyRate: "",
+            certifications: userData?.data?.certifications || "",
+            yearsOfExperience: userData?.data?.yearsOfExperience || "",
+            availability: userData?.data?.availability || "",
+            hourlyRate: userData?.data?.hourlyRate || "",
             expertise: userData?.data?.expertise || "",
           }
         : {
-            interests: "",
-            preferences: "",
+            interests: userData?.data?.interests || "",
+            preferences: userData?.data?.preferences || "",
           }),
     },
   });
