@@ -9,5 +9,6 @@ export const useDbUser = () => {
       const response = await client.auth.getUserDetails.$get();
       return await response.json();
     },
+    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 };
