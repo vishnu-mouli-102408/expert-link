@@ -30,28 +30,28 @@ const analyticsData = [
     value: "124",
     icon: Phone,
     change: "+12%",
-    color: "bg-indigo-500",
+    color: "bg-[#6366f133]",
   },
   {
     title: "Active Experts",
     value: "48",
     icon: Users,
     change: "+5%",
-    color: "bg-emerald-500",
+    color: "bg-[#10b98133]",
   },
   {
     title: "Avg. Call Duration",
     value: "24m",
     icon: Clock,
     change: "-3%",
-    color: "bg-amber-500",
+    color: "bg-[#f59e0b33]",
   },
   {
     title: "Upcoming Calls",
     value: "8",
     icon: Calendar,
     change: "+2%",
-    color: "bg-rose-500",
+    color: "bg-[#f43f5e33]",
   },
 ];
 
