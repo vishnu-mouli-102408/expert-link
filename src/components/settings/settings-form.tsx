@@ -80,33 +80,6 @@ type ExpertFormValues = z.infer<typeof expertSchemaObject>;
 type UserFormValues = z.infer<typeof userSchemaObject>;
 type FormValues = ExpertFormValues | UserFormValues;
 
-// Define the form schema with Zod
-// const formSchema = z.object({
-//   profilePic: z.string().optional(),
-//   username: z
-//     .string()
-//     .min(3, "Username must be at least 3 characters")
-//     .max(30, "Username cannot exceed 30 characters"),
-//   firstName: z.string().min(1, "First name is required"),
-//   lastName: z.string().min(1, "Last name is required"),
-//   phone: z
-//     .string()
-//     .refine(
-//       (value) =>
-//         value === "" ||
-//         /^(\+\d{1,3})?\s?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/.test(value),
-//       { message: "Please enter a valid phone number" }
-//     )
-//     .optional(),
-//   email: z.string().email("Invalid email address").min(1, "Email is required"),
-//   bio: z.string().optional(),
-//   expertise: z.string().optional(),
-//   gender: z.string().optional(),
-// });
-
-// TypeScript type for our form values
-// type FormValues = z.infer<typeof formSchema>;
-
 const SettingsForm = () => {
   const queryClient = getQueryClient();
 

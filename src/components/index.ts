@@ -11,6 +11,8 @@ import Navbar from "./navbar";
 import Pricing from "./pricing";
 import Settings from "./settings";
 import SectionBadge from "./ui/section-badge";
+import UserLayout from "./user/layout";
+import UserOverview from "./user/user-overview";
 
 export {
   AnimationContainer,
@@ -26,4 +28,6 @@ export {
   Pricing,
   SectionBadge,
   Settings,
+  UserLayout,
+  UserOverview,
 };

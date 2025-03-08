@@ -1,40 +1,51 @@
+import React from "react";
 import { cva, VariantProps } from "class-variance-authority";
+import { Loader2 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
-const spinnerVariants = cva(
-  "aspect-square rounded-full relative flex justify-center items-center animate-[spin_3s_linear_infinite] z-40 bg-[conic-gradient(white_0deg,white_300deg,transparent_270deg,transparent_360deg)] before:animate-[spin_2s_linear_infinite] before:absolute before:w-[60%] before:aspect-square before:rounded-full before:z-[80] before:bg-[conic-gradient(white_0deg,white_270deg,transparent_180deg,transparent_360deg)] after:absolute after:w-3/4 after:aspect-square after:rounded-full after:z-[60] after:animate-[spin_3s_linear_infinite] after:bg-[conic-gradient(#065f46_0deg,#065f46_180deg,transparent_180deg,transparent_360deg)]",
-  {
-    variants: {
-      size: {
-        sm: "w-12",
-        md: "w-16",
-        lg: "w-24",
-      },
+const spinnerVariants = cva("flex-col items-center justify-center", {
+  variants: {
+    show: {
+      true: "flex",
+      false: "hidden",
     },
-    defaultVariants: {
-      size: "md",
-    },
-  }
-);
+  },
+  defaultVariants: {
+    show: true,
+  },
+});
 
-interface LoadingSpinnerProps extends VariantProps<typeof spinnerVariants> {
+const loaderVariants = cva("animate-spin text-primary", {
+  variants: {
+    size: {
+      small: "size-6",
+      medium: "size-8",
+      large: "size-12",
+    },
+  },
+  defaultVariants: {
+    size: "medium",
+  },
+});
+
+interface SpinnerContentProps
+  extends VariantProps<typeof spinnerVariants>,
+    VariantProps<typeof loaderVariants> {
   className?: string;
-  mainClassName?: string;
+  children?: React.ReactNode;
 }
 
-const LoadingSpinner = ({
+export default function Spinner({
   size,
+  show,
+  children,
   className,
-  mainClassName,
-}: LoadingSpinnerProps) => {
+}: SpinnerContentProps) {
   return (
-    <div className={cn("flex justify-center items-center", mainClassName)}>
-      <div className={spinnerVariants({ size, className })}>
-        <span className="absolute w-[85%] aspect-square rounded-full z-[60] animate-[spin_5s_linear_infinite] bg-[conic-gradient(#34d399_0deg,#34d399_180deg,transparent_180deg,transparent_360deg)]"></span>
-      </div>
-    </div>
+    <span className={spinnerVariants({ show })}>
+      <Loader2 className={cn(loaderVariants({ size }), className)} />
+      {children}
+    </span>
   );
-};
-
-export { LoadingSpinner };
+}

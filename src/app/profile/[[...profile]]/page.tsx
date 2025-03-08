@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { UserProfile } from "@clerk/nextjs";
 import { auth } from "@clerk/nextjs/server";
 
-import { LoadingSpinner } from "@/components/ui/spinner";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 const Profile = async () => {
   const { userId } = await auth();

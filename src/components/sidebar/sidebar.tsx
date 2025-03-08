@@ -1,12 +1,13 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { UserButton } from "@clerk/clerk-react";
 import { useUser } from "@clerk/nextjs";
 import {
+  BarChart3,
   ChevronLeft,
-  Home,
   LayoutDashboard,
   Mail,
   Menu,
@@ -30,12 +31,17 @@ const Sidebar: React.FC<SidebarProps> = ({ className }) => {
   const { user } = useUser();
   const { isOpen, toggleSidebar } = useSidebar();
   const isMobile = useIsMobile();
-  const [activeItemIndex, setActiveItemIndex] = React.useState(0);
+  const [activeItemIndex, setActiveItemIndex] = React.useState(
+    `/${user?.publicMetadata?.role === "user" ? "user" : "expert"}`
+  );
+
+  const pathname = usePathname();
+  //   console.log("pathname", pathname);
 
   const navItems = [
     {
-      icon: <Home size={18} />,
-      label: "Home",
+      icon: <BarChart3 size={18} />,
+      label: "Overview",
       href: `/${user?.publicMetadata?.role === "user" ? "user" : "expert"}`,
     },
     { icon: <LayoutDashboard size={18} />, label: "Dashboard", href: "/" },
@@ -49,13 +55,17 @@ const Sidebar: React.FC<SidebarProps> = ({ className }) => {
     },
   ];
 
+  useEffect(() => {
+    setActiveItemIndex(pathname);
+  }, [pathname]);
+
   return (
     <>
       {/* Main Sidebar */}
       <motion.aside
         initial={false}
         animate={{
-          width: isMobile ? (isOpen ? "100%" : "0") : isOpen ? "240px" : "64px",
+          width: isMobile ? (isOpen ? "70%" : "0") : isOpen ? "240px" : "66px",
           x: isMobile && !isOpen ? "-100%" : 0,
         }}
         transition={{
@@ -71,7 +81,7 @@ const Sidebar: React.FC<SidebarProps> = ({ className }) => {
       >
         <div className="h-full flex flex-col">
           {/* Sidebar header */}
-          <div className="flex items-center justify-between px-4 h-14 border-b border-white/10">
+          <div className="flex items-center justify-between px-4 h-16 border-b border-white/10">
             <div className="flex items-center gap-2">
               {isOpen && (
                 <motion.div className="flex justify-center items-center gap-2">
@@ -85,19 +95,6 @@ const Sidebar: React.FC<SidebarProps> = ({ className }) => {
                       Expert Link
                     </motion.span>
                   </Link>
-                  {/* <motion.div
-                    className="flex items-center justify-center h-8 w-8 rounded-md bg-white/10 text-white"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <motion.span
-                      className="text-lg font-bold"
-                      animate={{ rotate: isOpen ? 0 : 360 }}
-                      transition={{ duration: 0.5 }}
-                    >
-                      {user?.firstName?.[0]}
-                    </motion.span>
-                  </motion.div> */}
                 </motion.div>
               )}
             </div>
@@ -149,19 +146,19 @@ const Sidebar: React.FC<SidebarProps> = ({ className }) => {
                       className={cn(
                         "flex items-center gap-3 rounded-md cursor-pointer",
                         isOpen ? "px-3 py-2" : "h-10 w-10 justify-center",
-                        activeItemIndex === index
+                        activeItemIndex === item.href
                           ? "bg-white/20 text-white"
                           : "text-white/70 hover:bg-white/10 hover:text-white"
                       )}
                       whileHover={{ scale: isOpen ? 1.02 : 1.1 }}
                       whileTap={{ scale: 0.95 }}
-                      onClick={() => setActiveItemIndex(index)}
+                      onClick={() => setActiveItemIndex(item.href)}
                     >
                       <div
                         className={cn(
                           "flex items-center justify-center",
                           isOpen ? "h-5 w-5" : "",
-                          activeItemIndex === index
+                          activeItemIndex === item.href
                             ? "text-white"
                             : "text-white/70"
                         )}
@@ -189,37 +186,11 @@ const Sidebar: React.FC<SidebarProps> = ({ className }) => {
           <div className="p-4 border-t border-white/10">
             {isOpen ? (
               <div className="flex items-center gap-2 text-sm text-white/70">
-                {/* <motion.div
-                  className="flex items-center justify-center h-8 w-8 rounded-md bg-white/10 text-white"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <motion.span
-                    className="text-lg font-bold"
-                    animate={{ rotate: isOpen ? 0 : 360 }}
-                    transition={{ duration: 0.5 }}
-                  >
-                    {user?.firstName?.[0]}
-                  </motion.span>
-                </motion.div> */}
                 <UserButton />
                 <span>{user?.fullName || "User"}</span>
               </div>
             ) : (
               <UserButton />
-              //   <motion.div
-              //     className="flex items-center justify-center h-8 w-8 rounded-md bg-white/10 text-white"
-              //     whileHover={{ scale: 1.05 }}
-              //     whileTap={{ scale: 0.95 }}
-              //   >
-              //     <motion.span
-              //       className="text-lg font-bold"
-              //       animate={{ rotate: isOpen ? 0 : 360 }}
-              //       transition={{ duration: 0.5 }}
-              //     >
-              //       {user?.firstName?.[0]}
-              //     </motion.span>
-              //   </motion.div>
             )}
           </div>
         </div>
@@ -235,22 +206,6 @@ const Sidebar: React.FC<SidebarProps> = ({ className }) => {
           className="fixed inset-0 bg-black z-30"
         />
       )}
-
-      {/* Floating toggle button for desktop */}
-      {/* {!isMobile && !isOpen && (
-        <motion.button
-          initial={{ opacity: 0, x: -10 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -10 }}
-          transition={{ delay: 0.2 }}
-          onClick={toggleSidebar}
-          className="fixed left-16 top-4 z-30 cursor-pointer flex items-center justify-center h-8 w-8 rounded-full bg-black/90 text-white hover:bg-black shadow-lg border border-white/10"
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-        >
-          <ChevronRight size={16} />
-        </motion.button>
-      )} */}
     </>
   );
 };
