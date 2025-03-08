@@ -1,14 +1,6 @@
 "use client";
 
-import {
-  Calendar,
-  Clock,
-  Phone,
-  TrendingUp,
-  User,
-  Users,
-  Video,
-} from "lucide-react";
+import { Calendar, Clock, Phone, TrendingUp, Users, Video } from "lucide-react";
 import { motion } from "motion/react";
 import {
   Area,
@@ -21,6 +13,15 @@ import {
 } from "recharts";
 
 import { fadeInUp, staggerContainer } from "@/lib/framer-animations";
+
+import { User } from "../animations/user";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 // Mock data for the dashboard
 const analyticsData = [
@@ -143,17 +144,46 @@ const UserOverview = () => {
       <div className="flex items-center justify-between">
         <motion.h1
           variants={fadeInUp}
-          className="text-2xl font-bold text-white"
+          className="md:text-2xl text-xl font-bold text-white"
         >
           Dashboard Overview
         </motion.h1>
         <motion.div variants={fadeInUp}>
-          <select className="bg-[#222222] border border-white/10 rounded-md px-3 py-2 text-sm text-gray-300">
-            <option>Last 7 days</option>
-            <option>Last 30 days</option>
-            <option>Last 90 days</option>
-            <option>This Year</option>
-          </select>
+          <Select
+          // onValueChange={field.onChange}
+          // defaultValue={"7days"}
+          // value={field.value}
+          >
+            <SelectTrigger className="bg-white/5 px-4 cursor-pointer rounded-xl text-gray-300 border-white/10  transition-all duration-300">
+              <SelectValue placeholder="Select Filter" />
+            </SelectTrigger>
+            <SelectContent className="cursor-pointer bg-black">
+              <SelectItem
+                value="7days"
+                className="hover:bg-gray-500/40  cursor-pointer transition-colors duration-300"
+              >
+                Last 7 days
+              </SelectItem>
+              <SelectItem
+                value="30days"
+                className="hover:bg-gray-500/40  cursor-pointer transition-colors duration-300"
+              >
+                Last 30 days
+              </SelectItem>
+              <SelectItem
+                value="90days"
+                className="hover:bg-gray-500/40  cursor-pointer transition-colors duration-300"
+              >
+                Last 90 days
+              </SelectItem>
+              <SelectItem
+                value="thisyear"
+                className="hover:bg-gray-500/40 cursor-pointer transition-colors duration-300"
+              >
+                This Year
+              </SelectItem>
+            </SelectContent>
+          </Select>
         </motion.div>
       </div>
 
@@ -165,9 +195,9 @@ const UserOverview = () => {
         {analyticsData.map((item, index) => (
           <div
             key={index}
-            className="bg-gradient-to-br from-[#222222] to-[#1A1F2C] rounded-xl border border-white/10 p-5 shadow-lg"
+            className="bg-gradient-to-br hover:scale-[1.01] transition-all duration-300 ease-in-out cursor-pointer hover:shadow-[inset_0px_0px_16px_0px_#FFFFFF20] backdrop-blur-[30px] from-[#222222] to-[#1A1F2C] rounded-xl border border-white/10 hover:border-white/20 p-5 shadow-lg"
           >
-            <div className="flex justify-between items-start">
+            <div className="flex justify-between md:items-start items-center">
               <div>
                 <p className="text-gray-400 text-sm">{item.title}</p>
                 <h3 className="text-2xl font-bold text-white mt-1">
@@ -193,9 +223,9 @@ const UserOverview = () => {
         {/* Updated Chat Activity Chart */}
         <motion.div
           variants={fadeInUp}
-          className="bg-gradient-to-br from-[#222222] to-[#1A1F2C] rounded-xl border border-white/10 p-5 shadow-lg lg:col-span-2"
+          className="bg-gradient-to-br hover:scale-[1.003] transition-all duration-300 ease-in-out cursor-pointer hover:shadow-[inset_0px_0px_16px_0px_#FFFFFF10] backdrop-blur-[30px] hover:border-white/20 from-[#171717] to-[#0e1118] rounded-xl border border-white/10 md:p-5 p-4 shadow-lg lg:col-span-2"
         >
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex flex-col md:flex-row gap-2 items-center justify-between mb-6">
             <h2 className="text-lg font-semibold text-white">
               Communication Activity
             </h2>
@@ -214,7 +244,7 @@ const UserOverview = () => {
               </div>
             </div>
           </div>
-          <div className="h-64">
+          <div className="h-64 -ml-8">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart
                 data={chatActivityData}
@@ -297,7 +327,7 @@ const UserOverview = () => {
         {/* Upcoming Calls */}
         <motion.div
           variants={fadeInUp}
-          className="bg-gradient-to-br from-[#222222] to-[#1A1F2C] rounded-xl border border-white/10 p-5 shadow-lg"
+          className="bg-gradient-to-br hover:scale-[1.004] transition-all duration-300 ease-in-out cursor-pointer hover:shadow-[inset_0px_0px_16px_0px_#FFFFFF10] backdrop-blur-[30px] hover:border-white/20 from-[#151414] to-[#0b0d13] rounded-xl border border-white/10 p-5 shadow-lg"
         >
           <h2 className="text-lg font-semibold text-white mb-4">
             Upcoming Calls
@@ -330,7 +360,7 @@ const UserOverview = () => {
                 </div>
               </div>
             ))}
-            <button className="w-full text-sm text-center text-primary hover:text-primary/80 mt-2">
+            <button className="w-full text-sm text-center cursor-pointer text-primary hover:text-primary/80 mt-2">
               View All Upcoming Calls
             </button>
           </div>
@@ -340,7 +370,7 @@ const UserOverview = () => {
       {/* Recent Call History */}
       <motion.div
         variants={fadeInUp}
-        className="bg-gradient-to-br from-[#222222] to-[#1A1F2C] rounded-xl border border-white/10 p-5 shadow-lg"
+        className="bg-gradient-to-br hover:scale-[1.002] transition-all duration-300 ease-in-out cursor-pointer hover:shadow-[inset_0px_0px_16px_0px_#FFFFFF10] backdrop-blur-[30px] hover:border-white/20 from-[#191919] to-[#11151d] rounded-xl border border-white/10 p-5 shadow-lg"
       >
         <h2 className="text-lg font-semibold text-white mb-4">
           Recent Call History
@@ -348,19 +378,19 @@ const UserOverview = () => {
         <div className="overflow-x-auto">
           <table className="w-full table-auto">
             <thead>
-              <tr className="text-left text-gray-400 text-xs border-b border-white/10">
-                <th className="pb-3 font-medium">Expert</th>
-                <th className="pb-3 font-medium">Type</th>
-                <th className="pb-3 font-medium">Date & Time</th>
-                <th className="pb-3 font-medium">Duration</th>
-                <th className="pb-3 font-medium">Status</th>
+              <tr className="text-left  text-gray-400 text-xs border-b border-white/10">
+                <th className="pb-3 pr-2 font-medium">Expert</th>
+                <th className="pb-3 px-2 font-medium">Type</th>
+                <th className="pb-3 px-2 font-medium">Date & Time</th>
+                <th className="pb-3 px-2 font-medium">Duration</th>
+                <th className="pb-3 pl-2 font-medium">Status</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/10">
               {recentCalls.map((call) => (
                 <tr key={call.id} className="text-sm">
-                  <td className="py-3 text-white">{call.expert}</td>
-                  <td className="py-3 text-gray-300">
+                  <td className="py-3 pr-2 text-white">{call.expert}</td>
+                  <td className="py-3 px-2 text-gray-300">
                     {call.type === "Video" ? (
                       <div className="flex items-center">
                         <Video className="h-4 w-4 text-indigo-400 mr-1" />
@@ -373,9 +403,9 @@ const UserOverview = () => {
                       </div>
                     )}
                   </td>
-                  <td className="py-3 text-gray-300">{call.date}</td>
-                  <td className="py-3 text-gray-300">{call.duration}</td>
-                  <td className="py-3">
+                  <td className="py-3 px-2 text-gray-300">{call.date}</td>
+                  <td className="py-3 px-2 text-gray-300">{call.duration}</td>
+                  <td className="py-3 pl-2">
                     <span
                       className={`px-2 py-1 rounded-full text-xs ${
                         call.status === "Completed"
@@ -394,7 +424,7 @@ const UserOverview = () => {
           </table>
         </div>
         <div className="mt-4 text-center">
-          <button className="text-sm text-primary hover:text-primary/80">
+          <button className="text-sm text-primary cursor-pointer hover:text-primary/80">
             View Full Call History
           </button>
         </div>

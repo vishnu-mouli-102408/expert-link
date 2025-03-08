@@ -103,7 +103,7 @@ const Sidebar: React.FC<SidebarProps> = ({ className }) => {
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={toggleSidebar}
-              className="flex items-center cursor-pointer justify-center h-8 w-8 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors duration-200"
+              className="flex items-center  cursor-pointer justify-center h-8 w-8 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors duration-200"
               title={isOpen ? "Collapse sidebar" : "Expand sidebar"}
             >
               {isMobile ? (
@@ -134,7 +134,7 @@ const Sidebar: React.FC<SidebarProps> = ({ className }) => {
           </div>
 
           {/* Navigation */}
-          <div className="flex-1 px-3 py-4 overflow-y-auto scrollbar-none">
+          <div className="flex-1 px-3 py-4  overflow-y-auto scrollbar-none">
             <nav className="space-y-2 transition-all duration-300 ease-in-out">
               {navItems.map((item, index) => (
                 <div
