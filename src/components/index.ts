@@ -12,6 +12,7 @@ import Pricing from "./pricing";
 import Settings from "./settings";
 import SectionBadge from "./ui/section-badge";
 import UserLayout from "./user/layout";
+import OverviewSkeleton from "./user/overview-skeleton";
 import UserOverview from "./user/user-overview";
 
 export {
@@ -25,6 +26,7 @@ export {
   LogoTicker,
   MaxWidthWrapper,
   Navbar,
+  OverviewSkeleton,
   Pricing,
   SectionBadge,
   Settings,

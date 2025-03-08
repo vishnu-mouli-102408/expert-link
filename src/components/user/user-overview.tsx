@@ -1,5 +1,8 @@
 "use client";
 
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { format } from "date-fns";
 import { Calendar, Clock, Phone, TrendingUp, Users, Video } from "lucide-react";
 import { motion } from "motion/react";
 import {
@@ -12,6 +15,7 @@ import {
   YAxis,
 } from "recharts";
 
+import { client } from "@/lib/client";
 import { fadeInUp, staggerContainer } from "@/lib/framer-animations";
 
 import { User } from "../animations/user";
@@ -22,117 +26,124 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import OverviewSkeleton from "./overview-skeleton";
 
-// Mock data for the dashboard
-const analyticsData = [
-  {
-    title: "Total Calls",
-    value: "124",
-    icon: Phone,
-    change: "+12%",
-    color: "bg-[#6366f133]",
-  },
-  {
-    title: "Active Experts",
-    value: "48",
-    icon: Users,
-    change: "+5%",
-    color: "bg-[#10b98133]",
-  },
-  {
-    title: "Avg. Call Duration",
-    value: "24m",
-    icon: Clock,
-    change: "-3%",
-    color: "bg-[#f59e0b33]",
-  },
-  {
-    title: "Upcoming Calls",
-    value: "8",
-    icon: Calendar,
-    change: "+2%",
-    color: "bg-[#f43f5e33]",
-  },
-];
+// const recentCalls = [
+//   {
+//     id: 1,
+//     expert: "Dr. Sarah Johnson",
+//     type: "Video",
+//     date: "Today, 2:30 PM",
+//     duration: "45 min",
+//     status: "Completed",
+//   },
+//   {
+//     id: 2,
+//     expert: "Michael Chen",
+//     type: "Audio",
+//     date: "Today, 11:15 AM",
+//     duration: "30 min",
+//     status: "Completed",
+//   },
+//   {
+//     id: 3,
+//     expert: "Jessica Barnes",
+//     type: "Video",
+//     date: "Yesterday, 4:00 PM",
+//     duration: "60 min",
+//     status: "Completed",
+//   },
+//   {
+//     id: 4,
+//     expert: "Robert Kim",
+//     type: "Audio",
+//     date: "Yesterday, 10:30 AM",
+//     duration: "15 min",
+//     status: "Missed",
+//   },
+//   {
+//     id: 5,
+//     expert: "Emma Wilson",
+//     type: "Video",
+//     date: "May 12, 2:00 PM",
+//     duration: "30 min",
+//     status: "Cancelled",
+//   },
+// ];
 
-const recentCalls = [
-  {
-    id: 1,
-    expert: "Dr. Sarah Johnson",
-    type: "Video",
-    date: "Today, 2:30 PM",
-    duration: "45 min",
-    status: "Completed",
-  },
-  {
-    id: 2,
-    expert: "Michael Chen",
-    type: "Audio",
-    date: "Today, 11:15 AM",
-    duration: "30 min",
-    status: "Completed",
-  },
-  {
-    id: 3,
-    expert: "Jessica Barnes",
-    type: "Video",
-    date: "Yesterday, 4:00 PM",
-    duration: "60 min",
-    status: "Completed",
-  },
-  {
-    id: 4,
-    expert: "Robert Kim",
-    type: "Audio",
-    date: "Yesterday, 10:30 AM",
-    duration: "15 min",
-    status: "Missed",
-  },
-  {
-    id: 5,
-    expert: "Emma Wilson",
-    type: "Video",
-    date: "May 12, 2:00 PM",
-    duration: "30 min",
-    status: "Cancelled",
-  },
-];
-
-const upcomingCalls = [
-  {
-    id: 1,
-    expert: "Olivia Rodriguez",
-    type: "Video",
-    date: "Tomorrow, 3:00 PM",
-    duration: "45 min",
-  },
-  {
-    id: 2,
-    expert: "David Thomas",
-    type: "Audio",
-    date: "Tomorrow, 5:30 PM",
-    duration: "30 min",
-  },
-  {
-    id: 3,
-    expert: "Dr. James Lee",
-    type: "Video",
-    date: "May 15, 10:00 AM",
-    duration: "60 min",
-  },
-];
-
+type Filter = "7days" | "30days" | "90days" | "thisyear" | undefined;
 const UserOverview = () => {
-  // Enhanced data for the chat activity chart
-  const chatActivityData = [
-    { day: "Mon", calls: 5, messages: 12, meetings: 2 },
-    { day: "Tue", calls: 8, messages: 15, meetings: 3 },
-    { day: "Wed", calls: 6, messages: 10, meetings: 1 },
-    { day: "Thu", calls: 9, messages: 18, meetings: 4 },
-    { day: "Fri", calls: 4, messages: 8, meetings: 2 },
-    { day: "Sat", calls: 3, messages: 5, meetings: 1 },
-    { day: "Sun", calls: 7, messages: 9, meetings: 3 },
+  const [filter, setFilter] = useState<Filter>(undefined);
+
+  const { data, isPending } = useQuery({
+    queryKey: ["userOverview", filter],
+    queryFn: async () => {
+      const response = await client.user.getUserAnalytics.$get({
+        filter: { type: filter },
+      });
+      return await response.json();
+    },
+  });
+
+  const recentCalls = data?.data?.recentCalls?.map((item) => ({
+    id: item?.id,
+    expert: `${item?.expert?.firstName} ${item?.expert?.lastName}`,
+    type: item?.callType,
+    date: format(item?.startedAt, "MMM dd, h:mm a"),
+    duration: `${item?.duration} min`,
+    status: item?.status,
+  }));
+
+  const upcomingCalls = data?.data?.upcomingCalls?.map((item) => ({
+    id: item?.id,
+    expert: `${item?.expert?.firstName} ${item?.expert?.lastName}`,
+    type: item?.callType,
+    date: format(item?.scheduledAt, "MMM dd, h:mm a"),
+    duration: `${item?.duration} min`,
+  }));
+
+  const chatActivityData = data?.data?.activityArray?.map((item) => ({
+    day: item.day,
+    video: item.video_calls,
+    messages: item.text_messages,
+    audio: item.audio_calls,
+  }));
+
+  const analyticsData = [
+    {
+      title: "Total Calls",
+      value: data?.data?.analytics?.totalCalls?.totalCalls || "0",
+      icon: Phone,
+      change: `${data?.data?.analytics?.totalCalls?.callPercentageChange || 0 >= 0 ? "+" : ""}${data?.data?.analytics?.totalCalls?.callPercentageChange ?? "N/A"}%`,
+      color: "bg-[#6366f133]",
+    },
+    {
+      title: "Active Experts",
+      value: data?.data?.analytics?.activeExperts?.totalActiveExperts || "0",
+      icon: Users,
+      change: `${data?.data?.analytics?.activeExperts?.expertPercentageChange || 0 >= 0 ? "+" : ""}${data?.data?.analytics?.activeExperts?.expertPercentageChange ?? "N/A"}%`,
+      color: "bg-[#10b98133]",
+    },
+    {
+      title: "Avg. Call Duration",
+      value:
+        data?.data?.analytics?.averageCallDuration?.avgCallDurationValue || "0",
+      icon: Clock,
+      change: `${data?.data?.analytics?.averageCallDuration?.callDurationPercentageChange || 0 >= 0 ? "+" : ""}${data?.data?.analytics?.averageCallDuration?.callDurationPercentageChange ?? "N/A"}%`,
+      color: "bg-[#f59e0b33]",
+    },
+    {
+      title: "Upcoming Calls",
+      value: data?.data?.analytics?.upcomingCalls?.totalUpcomingCalls || "0",
+      icon: Calendar,
+      change: `${data?.data?.analytics?.upcomingCalls?.upcomingCallsPercentageChange || 0 >= 0 ? "+" : ""}${data?.data?.analytics?.upcomingCalls?.upcomingCallsPercentageChange ?? "N/A"}%`,
+      color: "bg-[#f43f5e33]",
+    },
   ];
+
+  if (isPending) {
+    return <OverviewSkeleton />;
+  }
 
   return (
     <motion.div
@@ -150,9 +161,8 @@ const UserOverview = () => {
         </motion.h1>
         <motion.div variants={fadeInUp}>
           <Select
-          // onValueChange={field.onChange}
-          // defaultValue={"7days"}
-          // value={field.value}
+            onValueChange={(value) => setFilter(value as Filter)}
+            value={filter}
           >
             <SelectTrigger className="bg-white/5 px-4 cursor-pointer rounded-xl text-gray-300 border-white/10  transition-all duration-300">
               <SelectValue placeholder="Select Filter" />
@@ -245,82 +255,100 @@ const UserOverview = () => {
             </div>
           </div>
           <div className="h-64 -ml-8">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart
-                data={chatActivityData}
-                margin={{ top: 10, right: 10, left: 0, bottom: 5 }}
-              >
-                <defs>
-                  <linearGradient id="colorCalls" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#8B5CF6" stopOpacity={0.8} />
-                    <stop offset="95%" stopColor="#8B5CF6" stopOpacity={0.1} />
-                  </linearGradient>
-                  <linearGradient
-                    id="colorMessages"
-                    x1="0"
-                    y1="0"
-                    x2="0"
-                    y2="1"
-                  >
-                    <stop offset="5%" stopColor="#10B981" stopOpacity={0.8} />
-                    <stop offset="95%" stopColor="#10B981" stopOpacity={0.1} />
-                  </linearGradient>
-                  <linearGradient
-                    id="colorMeetings"
-                    x1="0"
-                    y1="0"
-                    x2="0"
-                    y2="1"
-                  >
-                    <stop offset="5%" stopColor="#F59E0B" stopOpacity={0.8} />
-                    <stop offset="95%" stopColor="#F59E0B" stopOpacity={0.1} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  stroke="#333"
-                  vertical={false}
-                />
-                <XAxis
-                  dataKey="day"
-                  stroke="#666"
-                  tick={{ fill: "#888", fontSize: 12 }}
-                />
-                <YAxis stroke="#666" tick={{ fill: "#888", fontSize: 12 }} />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "#1F2129",
-                    borderColor: "#333",
-                    color: "white",
-                    borderRadius: "8px",
-                    boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
-                  }}
-                  itemStyle={{ color: "white" }}
-                  labelStyle={{ color: "gray" }}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="calls"
-                  stroke="#8B5CF6"
-                  fillOpacity={1}
-                  fill="url(#colorCalls)"
-                />
-                <Area
-                  type="monotone"
-                  dataKey="messages"
-                  stroke="#10B981"
-                  fillOpacity={0.8}
-                  fill="url(#colorMessages)"
-                />
-                <Area
-                  type="monotone"
-                  dataKey="meetings"
-                  stroke="#F59E0B"
-                  fillOpacity={0.6}
-                  fill="url(#colorMeetings)"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
+            {chatActivityData?.length ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart
+                  data={chatActivityData}
+                  margin={{ top: 10, right: 10, left: 0, bottom: 5 }}
+                >
+                  <defs>
+                    <linearGradient id="colorCalls" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#8B5CF6" stopOpacity={0.8} />
+                      <stop
+                        offset="95%"
+                        stopColor="#8B5CF6"
+                        stopOpacity={0.1}
+                      />
+                    </linearGradient>
+                    <linearGradient
+                      id="colorMessages"
+                      x1="0"
+                      y1="0"
+                      x2="0"
+                      y2="1"
+                    >
+                      <stop offset="5%" stopColor="#10B981" stopOpacity={0.8} />
+                      <stop
+                        offset="95%"
+                        stopColor="#10B981"
+                        stopOpacity={0.1}
+                      />
+                    </linearGradient>
+                    <linearGradient
+                      id="colorMeetings"
+                      x1="0"
+                      y1="0"
+                      x2="0"
+                      y2="1"
+                    >
+                      <stop offset="5%" stopColor="#F59E0B" stopOpacity={0.8} />
+                      <stop
+                        offset="95%"
+                        stopColor="#F59E0B"
+                        stopOpacity={0.1}
+                      />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    stroke="#333"
+                    vertical={false}
+                  />
+                  <XAxis
+                    dataKey="day"
+                    stroke="#666"
+                    tick={{ fill: "#888", fontSize: 12 }}
+                  />
+                  <YAxis stroke="#666" tick={{ fill: "#888", fontSize: 12 }} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "#1F2129",
+                      borderColor: "#333",
+                      color: "white",
+                      borderRadius: "8px",
+                      boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+                    }}
+                    itemStyle={{ color: "white" }}
+                    labelStyle={{ color: "gray" }}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="calls"
+                    stroke="#8B5CF6"
+                    fillOpacity={1}
+                    fill="url(#colorCalls)"
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="messages"
+                    stroke="#10B981"
+                    fillOpacity={0.8}
+                    fill="url(#colorMessages)"
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="meetings"
+                    stroke="#F59E0B"
+                    fillOpacity={0.6}
+                    fill="url(#colorMeetings)"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="flex items-center text-xl justify-center h-full w-full text-white">
+                No data available
+              </div>
+            )}
           </div>
         </motion.div>
 
@@ -333,36 +361,46 @@ const UserOverview = () => {
             Upcoming Calls
           </h2>
           <div className="space-y-4">
-            {upcomingCalls.map((call) => (
-              <div
-                key={call.id}
-                className="flex items-center space-x-3 p-3 rounded-lg bg-[#2A2F3C] border border-white/5"
-              >
-                <div className="w-10 h-10 rounded-full bg-[#403E43] flex items-center justify-center flex-shrink-0">
-                  <User className="h-5 w-5 text-white" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-white truncate">
-                    {call.expert}
-                  </p>
-                  <div className="flex items-center text-xs text-gray-400 mt-1">
-                    <span className="mr-2">{call.date}</span>
-                    <span className="mr-2">•</span>
-                    <span>{call.duration}</span>
+            {upcomingCalls?.length ? (
+              upcomingCalls.map((call) => (
+                <div
+                  key={call.id}
+                  className="flex items-center space-x-3 p-3 rounded-lg bg-[#2A2F3C] border border-white/5"
+                >
+                  <div className="w-10 h-10 rounded-full bg-[#403E43] flex items-center justify-center flex-shrink-0">
+                    <User className="h-5 w-5 text-white" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-white truncate">
+                      {call.expert}
+                    </p>
+                    <div className="flex items-center text-xs text-gray-400 mt-1">
+                      <span className="mr-2">{call.date}</span>
+                      <span className="mr-2">•</span>
+                      <span>{call.duration}</span>
+                    </div>
+                  </div>
+                  <div className="flex-shrink-0">
+                    {call.type === "VIDEO" ? (
+                      <Video className="h-4 w-4 text-primary" />
+                    ) : (
+                      <Phone className="h-4 w-4 text-primary" />
+                    )}
                   </div>
                 </div>
-                <div className="flex-shrink-0">
-                  {call.type === "Video" ? (
-                    <Video className="h-4 w-4 text-primary" />
-                  ) : (
-                    <Phone className="h-4 w-4 text-primary" />
-                  )}
-                </div>
+              ))
+            ) : (
+              <div className="flex flex-col items-center justify-center h-50 flex-1">
+                <h1 className="text-white text-xl  text-center">
+                  No upcoming calls
+                </h1>
               </div>
-            ))}
-            <button className="w-full text-sm text-center cursor-pointer text-primary hover:text-primary/80 mt-2">
-              View All Upcoming Calls
-            </button>
+            )}
+            {upcomingCalls && upcomingCalls?.length > 0 && (
+              <button className="w-full text-sm text-center cursor-pointer text-primary hover:text-primary/80 mt-2">
+                View All Upcoming Calls
+              </button>
+            )}
           </div>
         </motion.div>
       </div>
@@ -387,47 +425,60 @@ const UserOverview = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-white/10">
-              {recentCalls.map((call) => (
-                <tr key={call.id} className="text-sm">
-                  <td className="py-3 pr-2 text-white">{call.expert}</td>
-                  <td className="py-3 px-2 text-gray-300">
-                    {call.type === "Video" ? (
-                      <div className="flex items-center">
-                        <Video className="h-4 w-4 text-indigo-400 mr-1" />
-                        <span>Video</span>
-                      </div>
-                    ) : (
-                      <div className="flex items-center">
-                        <Phone className="h-4 w-4 text-emerald-400 mr-1" />
-                        <span>Audio</span>
-                      </div>
-                    )}
-                  </td>
-                  <td className="py-3 px-2 text-gray-300">{call.date}</td>
-                  <td className="py-3 px-2 text-gray-300">{call.duration}</td>
-                  <td className="py-3 pl-2">
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs ${
-                        call.status === "Completed"
-                          ? "bg-green-500/20 text-green-400"
-                          : call.status === "Missed"
-                            ? "bg-red-500/20 text-red-400"
-                            : "bg-yellow-500/20 text-yellow-400"
-                      }`}
-                    >
-                      {call.status}
-                    </span>
+              {recentCalls?.length ? (
+                recentCalls.map((call) => (
+                  <tr key={call.id} className="text-sm">
+                    <td className="py-3 pr-2 text-white">{call.expert}</td>
+                    <td className="py-3 px-2 text-gray-300">
+                      {call.type === "VIDEO" ? (
+                        <div className="flex items-center">
+                          <Video className="h-4 w-4 text-indigo-400 mr-1" />
+                          <span>Video</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center">
+                          <Phone className="h-4 w-4 text-emerald-400 mr-1" />
+                          <span>Audio</span>
+                        </div>
+                      )}
+                    </td>
+                    <td className="py-3 px-2 text-gray-300">{call.date}</td>
+                    <td className="py-3 px-2 text-gray-300">{call.duration}</td>
+                    <td className="py-3 pl-2">
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs ${
+                          call.status === "COMPLETED"
+                            ? "bg-green-500/20 text-green-400"
+                            : call.status === "MISSED"
+                              ? "bg-red-500/20 text-red-400"
+                              : "bg-yellow-500/20 text-yellow-400"
+                        }`}
+                      >
+                        {call.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr className="text-sm">
+                  <td
+                    colSpan={5}
+                    className="py-4 text-xl text-white text-center"
+                  >
+                    No recent calls
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>
-        <div className="mt-4 text-center">
-          <button className="text-sm text-primary cursor-pointer hover:text-primary/80">
-            View Full Call History
-          </button>
-        </div>
+        {recentCalls && recentCalls?.length > 0 && (
+          <div className="mt-4 text-center">
+            <button className="text-sm text-primary cursor-pointer hover:text-primary/80">
+              View Full Call History
+            </button>
+          </div>
+        )}
       </motion.div>
     </motion.div>
   );

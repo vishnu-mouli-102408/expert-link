@@ -6,6 +6,13 @@ import type { Role, User } from "@prisma/client";
 
 import type { Roles } from "@/types/global";
 
+import {
+  ACCEPTED,
+  CREATED,
+  INTERNAL_SERVER_ERROR,
+  OK,
+} from "./http-status-codes";
+
 export async function setRole(id: string, role: Roles) {
   const client = await clerkClient();
 
@@ -27,13 +34,19 @@ export async function setRole(id: string, role: Roles) {
     console.info("✅ Clerk Role Updated:", res.publicMetadata);
     console.info("✅ DB Role Updated:", roleUpdate);
 
-    return { message: res.publicMetadata, success: true, data: roleUpdate };
+    return {
+      message: res.publicMetadata,
+      success: true,
+      data: roleUpdate,
+      code: ACCEPTED,
+    };
   } catch (err) {
     console.error("❌ ERROR:", err);
     return {
       message: "Internal Server Error",
       success: false,
       error: err instanceof Error ? err.message : err,
+      code: INTERNAL_SERVER_ERROR,
     };
   }
 }
@@ -69,7 +82,7 @@ export async function createUser(
     });
     console.info("DB USER", user);
 
-    return { message: "User created", success: true };
+    return { message: "User created", success: true, code: CREATED };
   } catch (error) {
     console.info("USER ERROR", error);
 
@@ -77,6 +90,7 @@ export async function createUser(
       message: "Internal Server Error",
       success: false,
       error: "User not created. Please try again later.",
+      code: INTERNAL_SERVER_ERROR,
     };
   }
 }
@@ -89,13 +103,14 @@ export async function deleteUser(id: string) {
       },
     });
     console.info("DB DELETE USER", user);
-    return { message: "User deleted", success: true };
+    return { message: "User deleted", success: true, code: OK };
   } catch (error) {
     console.info("DELETE USER ERROR", error);
     return {
       message: "Internal Server Error",
       success: false,
       error: "User not deleted. Please try again later.",
+      code: INTERNAL_SERVER_ERROR,
     };
   }
 }

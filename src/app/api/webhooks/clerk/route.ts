@@ -5,6 +5,12 @@ import { WebhookEvent } from "@clerk/nextjs/server";
 import type { Role } from "@prisma/client";
 import { Webhook } from "svix";
 
+import {
+  CREATED,
+  INTERNAL_SERVER_ERROR,
+  NOT_FOUND,
+  OK,
+} from "@/lib/http-status-codes";
 import { createUser, deleteUser } from "@/lib/user";
 
 export async function GET() {
@@ -16,10 +22,18 @@ export async function GET() {
       },
     });
     console.info("USER", user);
-    return NextResponse.json({ message: "Webhook route", data: user });
+    return NextResponse.json({
+      message: "Webhook route",
+      data: user,
+      code: OK,
+    });
   } catch (error) {
     console.info("ERROR", error);
-    return NextResponse.json({ message: "Error", error });
+    return NextResponse.json({
+      message: "Internal Server Error",
+      error,
+      code: INTERNAL_SERVER_ERROR,
+    });
   }
 }
 
@@ -116,20 +130,29 @@ export async function POST(req: Request) {
 
     if (user?.success) {
       console.info("User created successfully");
-      return NextResponse.json({ message: "User created", success: true });
+      return NextResponse.json({
+        message: "User created",
+        success: true,
+        code: CREATED,
+      });
     }
   }
 
   if (eventType === "user.deleted") {
     console.info("INSIDE USER DELETED");
     const { id } = evt.data;
-    if (!id) return new Response("Error: Missing user ID", { status: 400 });
+    if (!id)
+      return new Response("Error: Missing user ID", { status: NOT_FOUND });
     const user = await deleteUser(id);
     console.info("DELETE USER", user);
 
     if (user?.success) {
       console.info("User deleted successfully");
-      return NextResponse.json({ message: "User deleted", success: true });
+      return NextResponse.json({
+        message: "User deleted",
+        success: true,
+        code: OK,
+      });
     }
   }
 

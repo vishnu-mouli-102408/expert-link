@@ -1,6 +1,9 @@
 import { db } from "@/db";
 import { z } from "zod";
 
+import { INTERNAL_SERVER_ERROR, NOT_FOUND, OK } from "@/lib/http-status-codes";
+import { logger } from "@/lib/logger";
+
 import { j, privateProcedure } from "../jstack";
 
 const UserSchema = z.object({
@@ -29,9 +32,19 @@ export const authRouter = j.router({
       },
     });
     if (!user) {
-      return c.json({ message: "User not found", success: false, data: null });
+      return c.json({
+        message: "User not found",
+        success: false,
+        data: null,
+        code: NOT_FOUND,
+      });
     }
-    return c.json({ message: "User found", success: true, data: user });
+    return c.json({
+      message: "User found",
+      success: true,
+      data: user,
+      code: OK,
+    });
   }),
   updateUserDetails: privateProcedure
     .input(UserSchema)
@@ -49,19 +62,22 @@ export const authRouter = j.router({
             message: "User not found",
             success: false,
             data: null,
+            code: NOT_FOUND,
           });
         }
         return c.json({
           message: "User Updated",
           success: true,
           data: updatedUser,
+          code: OK,
         });
       } catch (error) {
-        console.info("ERROR", error);
+        logger.error("Error updating user details", error);
         return c.json({
           message: "Internal Server Error",
           success: false,
           error: error,
+          code: INTERNAL_SERVER_ERROR,
         });
       }
     }),

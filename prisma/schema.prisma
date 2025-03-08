@@ -8,34 +8,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
-
-model User {
-  id         String   @id @default(uuid())
-  email      String   @unique
-  role       Role?
-  createdAt  DateTime @default(now())
-  firstName  String?
-  lastName   String?
-  updatedAt  DateTime @updatedAt
-  gender     String?
-  bio        String?
-  externalId String?  @unique
-  expertise  String?
-  profilePic String?
-  phone      String?
-  username   String?
-  certifications String?
-  yearsOfExperience String?
-  availability String?
-  hourlyRate String?
-  interests String?
-  preferences String?
-  
-
-  @@index([email])
-}
-
 enum Role {
   USER
   ADMIN
@@ -65,3 +37,123 @@ enum Plan {
   PRO
   ENTERPRISE
 }
+
+enum CallStatus {
+  ONGOING
+  COMPLETED
+  MISSED
+  CANCELED
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  FILE
+}
+
+enum MessageStatus {
+  SENT
+  DELIVERED
+  READ
+}
+
+enum ScheduledCallStatus {
+  PENDING
+  CONFIRMED
+  CANCELED
+  COMPLETED
+}
+
+
+model User {
+  id         String   @id @default(uuid())
+  email      String   @unique
+  role       Role?
+  createdAt  DateTime @default(now())
+  firstName  String?
+  lastName   String?
+  updatedAt  DateTime @updatedAt
+  gender     String?
+  bio        String?
+  externalId String?  @unique
+  expertise  String?
+  profilePic String?
+  phone      String?
+  username   String?
+  certifications String?
+  yearsOfExperience String?
+  availability String?
+  hourlyRate String?
+  interests String?
+  preferences String?
+
+
+  userCalls      Call[] @relation("UserCalls")  // Calls initiated by user
+  expertCalls    Call[] @relation("ExpertCalls") // Calls received as an expert
+  scheduledCalls   ScheduledCall[] @relation("UserScheduledCalls") // Calls user has scheduled
+  expertSchedules  ScheduledCall[] @relation("ExpertScheduledCalls") // Calls expert is booked for
+  sentMessages   Message[] @relation("SenderMessages")
+  receivedMessages Message[] @relation("ReceiverMessages")
+  
+
+  @@index([email])
+  
+}
+
+model Call {
+  id         String   @id @default(uuid())
+  userId     String
+  expertId   String
+  callType   CallType
+  duration   Int // in seconds
+  status     CallStatus
+  startedAt  DateTime
+  endedAt    DateTime?
+
+  user   User @relation(fields: [userId], references: [id], name: "UserCalls")
+  expert User @relation(fields: [expertId], references: [id], name: "ExpertCalls")
+  ScheduledCall ScheduledCall[]
+
+  @@index([userId])
+  @@index([expertId])
+}
+
+model Message {
+   id          String      @id @default(uuid())
+  senderId    String
+  receiverId  String
+  messageType MessageType
+  content     String? // Only for TEXT messages
+  mediaUrl    String? // For IMAGE or FILE messages
+  status      MessageStatus @default(SENT)
+  sentAt      DateTime @default(now())
+  deliveredAt DateTime?
+  readAt      DateTime?
+
+  sender   User @relation(fields: [senderId], references: [id], name: "SenderMessages")
+  receiver User @relation(fields: [receiverId], references: [id], name: "ReceiverMessages")
+
+  @@index([senderId])
+  @@index([receiverId])
+}
+
+model ScheduledCall {
+  id          String   @id @default(uuid())
+  userId      String
+  expertId    String
+  callType    CallType
+  scheduledAt DateTime // When the call is scheduled
+  duration    Int? // Estimated duration in minutes
+  status      ScheduledCallStatus @default(PENDING)
+  createdAt   DateTime @default(now())
+
+  // Relations
+  user   User @relation(fields: [userId], references: [id], name: "UserScheduledCalls")
+  expert User @relation(fields: [expertId], references: [id], name: "ExpertScheduledCalls")
+  actualCall Call? @relation(fields: [actualCallId], references: [id]) // Links to completed call
+  actualCallId String? // Nullable since call may not have happened yet
+
+  @@index([userId])
+  @@index([expertId])
+}
+

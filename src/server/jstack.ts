@@ -3,6 +3,8 @@ import { currentUser } from "@clerk/nextjs/server";
 import { HTTPException } from "hono/http-exception";
 import { jstack } from "jstack";
 
+import { logger } from "@/lib/logger";
+
 interface Env {
   Bindings: {
     DATABASE_URL: string;
@@ -38,5 +40,18 @@ const authMiddleware = j.middleware(async ({ c, next }) => {
   return next({ user });
 });
 
-export const publicProcedure = j.procedure;
+const loggerMiddleware = j.middleware(async ({ c, next }) => {
+  const start = Date.now();
+  await next();
+  const duration = Date.now() - start;
+
+  logger.info({
+    method: c.req.method,
+    url: c.req.url,
+    status: c.res.status,
+    duration: `${duration}ms`,
+  });
+});
+
+export const publicProcedure = j.procedure.use(loggerMiddleware);
 export const privateProcedure = publicProcedure.use(authMiddleware);
