@@ -476,61 +476,61 @@ const ExpertProfile = () => {
 
       {/* Schedule Dialog */}
       <Dialog open={isScheduleOpen} onOpenChange={setIsScheduleOpen}>
-        <DialogContent className="bg-[#1A1F2C] border border-white/10 text-white max-w-md">
+        <DialogContent className="bg-[#12151c] border border-white/10 text-white max-w-md">
           <DialogHeader>
             <DialogTitle className="text-xl">
               Schedule a Call with {expert?.name}
             </DialogTitle>
-            <DialogDescription className="text-gray-400">
+            <DialogDescription className="text-gray-400 text-wrap">
               Choose a date and time that works for you to connect with{" "}
               {expert?.name.split(" ")[0]}.
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 my-4">
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-3  gap-2">
               <Button
                 variant="outline"
-                className="bg-[#222222] border-white/10 hover:bg-[#403E43]/50"
+                className="bg-[#222222]/80 transition-all duration-200 ease-in-out cursor-pointer border-white/10 hover:bg-[#403E43]/50"
               >
                 Today
               </Button>
               <Button
                 variant="outline"
-                className="bg-[#222222] border-white/10 hover:bg-[#403E43]/50"
+                className="bg-[#222222]/80 transition-all duration-200 ease-in-out cursor-pointer border-white/10 hover:bg-[#403E43]/50"
               >
                 Tomorrow
               </Button>
               <Button
                 variant="outline"
-                className="bg-[#222222] border-white/10 hover:bg-[#403E43]/50"
+                className="bg-[#222222]/80 transition-all duration-200 ease-in-out cursor-pointer border-white/10 hover:bg-[#403E43]/50"
               >
                 Next Week
               </Button>
             </div>
 
-            <div className="bg-[#222222] rounded-lg p-4 border border-white/5">
+            <div className="bg-[#222222]/70 rounded-lg p-4 border border-white/5">
               <h3 className="text-sm font-medium mb-3 text-gray-300">
                 Select Format
               </h3>
               <div className="grid grid-cols-3 gap-2">
                 <Button
                   variant="outline"
-                  className="flex flex-col items-center py-3 h-auto bg-[#403E43]/40 border-primary/50 text-white"
+                  className="flex flex-col cursor-pointer items-center py-3 h-auto bg-[#403E43]/40 border-primary/50 text-white"
                 >
                   <Phone className="h-5 w-5 mb-1" />
                   <span className="text-xs">Phone</span>
                 </Button>
                 <Button
                   variant="outline"
-                  className="flex flex-col items-center py-3 h-auto bg-[#221F26] border-white/10 text-gray-400"
+                  className="flex flex-col items-center cursor-pointer py-3 h-auto bg-[#221F26] border-white/10 text-gray-400"
                 >
                   <Video className="h-5 w-5 mb-1" />
                   <span className="text-xs">Video</span>
                 </Button>
                 <Button
                   variant="outline"
-                  className="flex flex-col items-center py-3 h-auto bg-[#221F26] border-white/10 text-gray-400"
+                  className="flex flex-col items-center py-3 cursor-pointer h-auto bg-[#221F26] border-white/10 text-gray-400"
                 >
                   <Headphones className="h-5 w-5 mb-1" />
                   <span className="text-xs">Audio</span>
@@ -538,7 +538,7 @@ const ExpertProfile = () => {
               </div>
             </div>
 
-            <div className="bg-[#222222] rounded-lg p-4 border border-white/5">
+            <div className="bg-[#222222]/70 cursor-pointer rounded-lg p-4 border border-white/5">
               <h3 className="text-sm font-medium mb-3 text-gray-300">
                 Duration & Rate
               </h3>
@@ -560,12 +560,12 @@ const ExpertProfile = () => {
           <DialogFooter>
             <Button
               variant="outline"
-              className="bg-[#221F26] border-white/10 text-gray-300"
+              className="bg-[#221F26] border-white/10 cursor-pointer text-gray-300"
               onClick={() => setIsScheduleOpen(false)}
             >
               Cancel
             </Button>
-            <Button className="bg-gradient-to-r from-[#403E43] to-[#221F26] hover:opacity-90 border border-white/10">
+            <Button className="bg-gradient-to-r cursor-pointer text-white from-[#403E43] to-[#221F26] hover:opacity-90 border border-white/10">
               Confirm Booking
             </Button>
           </DialogFooter>
