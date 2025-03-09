@@ -3,7 +3,16 @@
 import React, { useEffect, useState } from "react";
 import { useDbUser, useIsMobile } from "@/hooks";
 import { UserButton } from "@clerk/nextjs";
-import { Bell, Command, Menu, Search } from "lucide-react";
+import {
+  BarChart3,
+  Bell,
+  Command,
+  Mail,
+  Menu,
+  Search,
+  Settings,
+  Users,
+} from "lucide-react";
 import { motion } from "motion/react";
 
 import { Button } from "@/components/ui/button";
@@ -58,9 +67,30 @@ const AppLayoutContent: React.FC<AppLayoutProps> = ({ children }) => {
     },
   };
 
+  const navItems = [
+    {
+      icon: <BarChart3 size={18} />,
+      label: "Overview",
+      href: "/user",
+    },
+    {
+      icon: <Users size={18} />,
+      label: "Explore Experts",
+      href: "/user/explore-experts",
+    },
+    { icon: <Users size={18} />, label: "Users", href: "/" },
+    { icon: <Mail size={18} />, label: "Messages", href: "/" },
+    { icon: <Search size={18} />, label: "Search", href: "/" },
+    {
+      icon: <Settings size={18} />,
+      label: "Settings",
+      href: "/user/settings",
+    },
+  ];
+
   return (
     <div className="flex h-screen overflow-hidden bg-background dark">
-      <Sidebar />
+      <Sidebar navItems={navItems} />
 
       <motion.div
         initial={false}
@@ -111,7 +141,7 @@ const AppLayoutContent: React.FC<AppLayoutProps> = ({ children }) => {
           initial={false}
           animate={isOpen ? "open" : "closed"}
           variants={isMobile ? undefined : contentVariants}
-          className="hidden md:flex items-center sticky justify-between z-[999] top-0  bg-black shadow-sm px-4 h-16 border-b border-white/10"
+          className="hidden md:flex items-center sticky justify-between z-[100] top-0  bg-black shadow-sm px-4 h-16 border-b border-white/10"
         >
           <div className="flex w-full items-center justify-between h-14 px-4">
             <div className="flex items-center">

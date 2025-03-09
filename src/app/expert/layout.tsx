@@ -2,8 +2,16 @@
 
 import React from "react";
 import { useIsMobile } from "@/hooks";
-import { UserButton } from "@clerk/nextjs";
-import { Menu } from "lucide-react";
+import { UserButton, useUser } from "@clerk/nextjs";
+import {
+  BarChart3,
+  LayoutDashboard,
+  Mail,
+  Menu,
+  Search,
+  Settings,
+  Users,
+} from "lucide-react";
 import { motion } from "motion/react";
 
 import Sidebar from "@/components/sidebar/sidebar";
@@ -20,6 +28,7 @@ interface AppLayoutProps {
 const AppLayoutContent: React.FC<AppLayoutProps> = ({ children }) => {
   const { isOpen, toggleSidebar } = useSidebar();
   const isMobile = useIsMobile();
+  const { user } = useUser();
 
   const contentVariants = {
     open: {
@@ -36,9 +45,26 @@ const AppLayoutContent: React.FC<AppLayoutProps> = ({ children }) => {
     },
   };
 
+  const navItems = [
+    {
+      icon: <BarChart3 size={18} />,
+      label: "Overview",
+      href: "/expert",
+    },
+    { icon: <LayoutDashboard size={18} />, label: "Dashboard", href: "/" },
+    { icon: <Users size={18} />, label: "Users", href: "/" },
+    { icon: <Mail size={18} />, label: "Messages", href: "/" },
+    { icon: <Search size={18} />, label: "Search", href: "/" },
+    {
+      icon: <Settings size={18} />,
+      label: "Settings",
+      href: "/expert/settings",
+    },
+  ];
+
   return (
     <div className="flex  bg-background dark">
-      <Sidebar />
+      <Sidebar navItems={navItems} />
 
       <motion.div
         initial={false}

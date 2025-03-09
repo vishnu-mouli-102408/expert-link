@@ -5,17 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { UserButton } from "@clerk/clerk-react";
 import { useUser } from "@clerk/nextjs";
-import {
-  BarChart3,
-  ChevronLeft,
-  LayoutDashboard,
-  Mail,
-  Menu,
-  Search,
-  Settings,
-  Users,
-  X,
-} from "lucide-react";
+import { ChevronLeft, Menu, X } from "lucide-react";
 import { motion } from "motion/react";
 
 import { cn } from "@/lib/utils";
@@ -25,9 +15,14 @@ import { useSidebar } from "./sidebar-context";
 
 interface SidebarProps {
   className?: string;
+  navItems: {
+    icon: React.JSX.Element;
+    label: string;
+    href: string;
+  }[];
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ className }) => {
+const Sidebar: React.FC<SidebarProps> = ({ className, navItems }) => {
   const { user } = useUser();
   const { isOpen, toggleSidebar } = useSidebar();
   const isMobile = useIsMobile();
@@ -37,23 +32,6 @@ const Sidebar: React.FC<SidebarProps> = ({ className }) => {
 
   const pathname = usePathname();
   //   console.log("pathname", pathname);
-
-  const navItems = [
-    {
-      icon: <BarChart3 size={18} />,
-      label: "Overview",
-      href: `/${user?.publicMetadata?.role === "user" ? "user" : "expert"}`,
-    },
-    { icon: <LayoutDashboard size={18} />, label: "Dashboard", href: "/" },
-    { icon: <Users size={18} />, label: "Users", href: "/" },
-    { icon: <Mail size={18} />, label: "Messages", href: "/" },
-    { icon: <Search size={18} />, label: "Search", href: "/" },
-    {
-      icon: <Settings size={18} />,
-      label: "Settings",
-      href: `/${user?.publicMetadata?.role === "user" ? "user" : "expert"}/settings`,
-    },
-  ];
 
   useEffect(() => {
     setActiveItemIndex(pathname);

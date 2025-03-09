@@ -17,10 +17,12 @@ export interface ExpertProps {
   specialties: string[];
 }
 
+// shadow-[0_1px_1px_rgba(0,0,0,0.05), 0_4px_6px_rgba(34,42,53,0.04),0_24px_68px_rgba(47,48,55,0.05),0_2px_3px_rgba(0,0,0,0.04)]
+
 const ExpertCard = ({ expert }: { expert: ExpertProps }) => {
   return (
     <motion.div
-      className="bg-gradient-to-br from-[#222222] to-[#1A1F2C] rounded-xl border border-border/20 overflow-hidden shadow-card"
+      className="bg-gradient-to-br from-[#222222] cursor-pointer to-[#1A1F2C] backdrop-blur-[30px] shadow-[inset_0px_0px_20px_0px_#FFFFFF33] rounded-xl border border-[#FFFFFF26] overflow-hidden shadow-card"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
@@ -36,7 +38,7 @@ const ExpertCard = ({ expert }: { expert: ExpertProps }) => {
           transition={{ duration: 0.4 }}
         />
         <div className="absolute top-3 left-3">
-          <span className="chip bg-black/50 backdrop-blur-sm text-white shadow-sm border border-white/10">
+          <span className="chip bg-black/50 backdrop-blur-sm rounded-xl text-white shadow-sm border border-white/10">
             {expert.category}
           </span>
         </div>
@@ -85,7 +87,7 @@ const ExpertCard = ({ expert }: { expert: ExpertProps }) => {
           <Button
             variant="outline"
             size="sm"
-            className="flex items-center justify-center bg-[#221F26] border-white/10 text-gray-300 hover:bg-[#403E43]/50 hover:text-white"
+            className="flex items-center cursor-pointer transition-all duration-300 ease-in-out justify-center bg-[#221F26] border-white/10 text-gray-300 hover:bg-[#403E43]/50 hover:text-white"
           >
             <MessageCircle className="h-4 w-4 mr-1" />
             <span className="text-xs">Chat</span>
@@ -93,7 +95,7 @@ const ExpertCard = ({ expert }: { expert: ExpertProps }) => {
           <Button
             variant="outline"
             size="sm"
-            className="flex items-center justify-center bg-[#221F26] border-white/10 text-gray-300 hover:bg-[#403E43]/50 hover:text-white"
+            className="flex items-center justify-center cursor-pointer transition-all duration-300 ease-in-out bg-[#221F26] border-white/10 text-gray-300 hover:bg-[#403E43]/50 hover:text-white"
           >
             <Phone className="h-4 w-4 mr-1" />
             <span className="text-xs">Call</span>
@@ -101,7 +103,7 @@ const ExpertCard = ({ expert }: { expert: ExpertProps }) => {
           <Button
             variant="outline"
             size="sm"
-            className="flex items-center justify-center bg-[#221F26] border-white/10 text-gray-300 hover:bg-[#403E43]/50 hover:text-white"
+            className="flex items-center justify-center cursor-pointer transition-all duration-300 ease-in-out bg-[#221F26] border-white/10 text-gray-300 hover:bg-[#403E43]/50 hover:text-white"
           >
             <Video className="h-4 w-4 mr-1" />
             <span className="text-xs">Video</span>
@@ -111,7 +113,7 @@ const ExpertCard = ({ expert }: { expert: ExpertProps }) => {
         <div className="mt-3">
           <Button
             asChild
-            className="w-full rounded-lg bg-gradient-to-r from-[#403E43] to-[#221F26] hover:opacity-90 text-white"
+            className="w-full rounded-lg hover:border hover:border-[slate-800] hover:scale-[1.002] transition-all duration-200 ease-in-out bg-gradient-to-r from-[#403E43] to-[#221F26] hover:opacity-90 text-white"
             variant="default"
           >
             <Link href={`/expert/${expert.id}`}>View Profile</Link>

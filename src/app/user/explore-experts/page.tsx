@@ -1,11 +1,11 @@
-import { UserOverview } from "@/components";
+import { ExploreExperts } from "@/components";
 
-function Page() {
+const Page = () => {
   return (
     <div className="container min-h-[calc(100vh-64px)] bg-black/50 mx-auto p-6">
-      <UserOverview />
+      <ExploreExperts />
     </div>
   );
-}
+};
 
 export default Page;
