@@ -116,7 +116,7 @@ const ExpertCard = ({ expert }: { expert: ExpertProps }) => {
             className="w-full rounded-lg hover:border hover:border-[slate-800] hover:scale-[1.002] transition-all duration-200 ease-in-out bg-gradient-to-r from-[#403E43] to-[#221F26] hover:opacity-90 text-white"
             variant="default"
           >
-            <Link href={`/expert/${expert.id}`}>View Profile</Link>
+            <Link href={`/user/expert-profile/${expert.id}`}>View Profile</Link>
           </Button>
         </div>
       </div>

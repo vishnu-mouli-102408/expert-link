@@ -52,7 +52,7 @@ const Sidebar: React.FC<SidebarProps> = ({ className, navItems }) => {
           damping: 30,
         }}
         className={cn(
-          "fixed top-0 left-0 z-40 h-screen overflow-hidden bg-black border-r border-white/10",
+          "fixed top-0 left-0 z-[999] h-screen overflow-hidden bg-black border-r border-white/10",
           isMobile && !isOpen ? "w-0" : "",
           className
         )}

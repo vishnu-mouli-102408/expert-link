@@ -2,7 +2,7 @@ import { ExploreExperts } from "@/components";
 
 const Page = () => {
   return (
-    <div className="container min-h-[calc(100vh-64px)] bg-black/50 mx-auto p-6">
+    <div className="min-h-[calc(100vh-64px)] w-full bg-black/50 mx-auto p-6">
       <ExploreExperts />
     </div>
   );

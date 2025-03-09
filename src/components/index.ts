@@ -11,6 +11,7 @@ import Navbar from "./navbar";
 import Pricing from "./pricing";
 import Settings from "./settings";
 import SectionBadge from "./ui/section-badge";
+import ExpertProfile from "./user/expert-profile";
 import ExploreExperts from "./user/explore-experts";
 import UserLayout from "./user/layout";
 import OverviewSkeleton from "./user/overview-skeleton";
@@ -20,6 +21,7 @@ export {
   AnimationContainer,
   AuroraHero,
   CTA,
+  ExpertProfile,
   ExploreExperts,
   FAQ,
   FeaturesSection,
