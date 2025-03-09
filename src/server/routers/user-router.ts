@@ -23,288 +23,6 @@ export const userRouter = j.router({
         .optional()
     )
     .query(async ({ c, ctx, input }) => {
-      //   try {
-      //     const userId = ctx.user.id;
-      //     const { filter: { type = "7days" } = {} } = input || {};
-      //     if (!userId) {
-      //       return c.json({
-      //         message: "User not found",
-      //         success: false,
-      //         data: null,
-      //         code: NOT_FOUND,
-      //       });
-      //     }
-
-      //     const dateRanges = {
-      //       "7days": 7,
-      //       "30days": 30,
-      //       "90days": 90,
-      //       thisyear: 365,
-      //     };
-
-      //     const days = dateRanges[type ?? "7days"] || 7;
-      //     const startDate = new Date();
-      //     startDate.setDate(startDate.getDate() - days);
-
-      //     logger.info({ startDate }, "START DATE");
-
-      //     const prevStartDate = new Date(startDate);
-      //     prevStartDate.setDate(prevStartDate.getDate() - days);
-
-      //     logger.info({ prevStartDate }, "PREV START DATE");
-
-      //     // **** SECTION 1: CALL ANALYTICS ****
-      //     // Total calls
-      //     const totalCalls = await db.call.count({
-      //       where: {
-      //         userId,
-      //         startedAt: { gte: startDate },
-      //       },
-      //     });
-
-      //     logger.info({ totalCalls }, "TOTAL CALLS");
-
-      //     const previousTotalCalls = await db.call.count({
-      //       where: {
-      //         userId,
-      //         startedAt: { gte: prevStartDate },
-      //       },
-      //     });
-
-      //     logger.info({ previousTotalCalls }, "PREVIOUS TOTAL CALLS");
-
-      //     const callPercentageChange =
-      //       previousTotalCalls === 0
-      //         ? 0
-      //         : ((totalCalls - previousTotalCalls) / previousTotalCalls) * 100;
-
-      //     logger.info({ callPercentageChange }, "CALL PERCENTAGE CHANGE");
-
-      //     // Active experts (who had calls)
-      //     const activeExperts = await db.call.groupBy({
-      //       by: ["expertId"],
-      //       where: {
-      //         userId,
-      //         startedAt: { gte: startDate },
-      //       },
-      //       _count: {
-      //         expertId: true,
-      //       },
-      //     });
-
-      //     logger.info({ activeExperts }, "ACTIVE EXPERTS");
-
-      //     const totalActiveExperts = activeExperts.length;
-
-      //     logger.info({ totalActiveExperts }, "TOTAL ACTIVE EXPERTS");
-
-      //   const previousActiveExperts = await db.call.groupBy({
-      //     by: ["expertId"],
-      //     where: {
-      //       userId,
-      //       startedAt: { gte: prevStartDate, lt: startDate },
-      //     },
-      //     _count: {
-      //       expertId: true,
-      //     },
-      //   });
-
-      //     logger.info({ previousActiveExperts }, "PREVIOUS ACTIVE EXPERTS");
-
-      //     const prevTotalActiveExperts = previousActiveExperts.length;
-
-      //     logger.info(
-      //       { prevTotalActiveExperts },
-      //       "PREVIOUS TOTAL ACTIVE EXPERTS"
-      //     );
-
-      //     const expertPercentageChange =
-      //       prevTotalActiveExperts === 0
-      //         ? 0
-      //         : ((totalActiveExperts - prevTotalActiveExperts) /
-      //             prevTotalActiveExperts) *
-      //           100;
-
-      //     logger.info({ expertPercentageChange }, "EXPERT PERCENTAGE CHANGE");
-
-      //     // Average call duration
-      //     const avgCallDuration = await db.call.aggregate({
-      //       _avg: { duration: true },
-      //       where: {
-      //         userId,
-      //         startedAt: { gte: startDate },
-      //       },
-      //     });
-
-      //     logger.info({ avgCallDuration }, "AVG CALL DURATION");
-
-      //     const previousAvgCallDuration = await db.call.aggregate({
-      //       _avg: { duration: true },
-      //       where: {
-      //         userId,
-      //         startedAt: { gte: prevStartDate, lt: startDate },
-      //       },
-      //     });
-
-      //     logger.info({ previousAvgCallDuration }, "PREVIOUS AVG CALL DURATION");
-
-      //     const avgCallDurationValue = avgCallDuration._avg.duration || 0;
-
-      //     logger.info({ avgCallDurationValue }, "AVG CALL DURATION VALUE");
-
-      //     const previousAvgCallDurationValue =
-      //       previousAvgCallDuration._avg.duration || 0;
-
-      //     logger.info(
-      //       { previousAvgCallDurationValue },
-      //       "PREVIOUS AVG CALL DURATION VALUE"
-      //     );
-
-      //     const callDurationPercentageChange =
-      //       previousAvgCallDurationValue === 0
-      //         ? 0
-      //         : ((avgCallDurationValue - previousAvgCallDurationValue) /
-      //             previousAvgCallDurationValue) *
-      //           100;
-
-      //     logger.info(
-      //       { callDurationPercentageChange },
-      //       "CALL DURATION PERCENTAGE CHANGE"
-      //     );
-
-      //     // SECTION 2: COMMUNICATION ACTIVITY (Calls per day)
-      //     const communicationActivity = await db.call.groupBy({
-      //       by: ["startedAt"],
-      //       where: {
-      //         userId,
-      //         startedAt: { gte: startDate },
-      //       },
-      //       _count: {
-      //         id: true,
-      //       },
-      //     });
-
-      //     logger.info({ communicationActivity }, "COMMUNICATION ACTIVITY");
-
-      //     const activityByDay = communicationActivity.map((data) => ({
-      //       day: new Intl.DateTimeFormat("en-US", { weekday: "long" }).format(
-      //         data.startedAt
-      //       ),
-      //       callCount: data._count.id,
-      //     }));
-
-      //     logger.info({ activityByDay }, "ACTIVITY BY DAY");
-
-      //     // SECTION 3: UPCOMING CALLS
-      //     const upcomingCalls = await db.scheduledCall.findMany({
-      //       where: {
-      //         userId,
-      //         status: "CONFIRMED",
-      //         scheduledAt: { gte: new Date() },
-      //       },
-      //       select: {
-      //         id: true,
-      //         scheduledAt: true,
-      //         expert: {
-      //           select: {
-      //             firstName: true,
-      //             lastName: true,
-      //             expertise: true,
-      //             profilePic: true,
-      //           },
-      //         },
-      //       },
-      //       orderBy: { scheduledAt: "asc" },
-      //     });
-
-      //     logger.info({ upcomingCalls }, "UPCOMING CALLS");
-
-      //     const totalUpcomingCalls = upcomingCalls.length;
-
-      //     logger.info({ totalUpcomingCalls }, "TOTAL UPCOMING CALLS");
-
-      //     const previousUpcomingCalls = await db.scheduledCall.count({
-      //       where: {
-      //         userId,
-      //         status: "CONFIRMED",
-      //         scheduledAt: { gte: prevStartDate, lt: startDate },
-      //       },
-      //     });
-
-      //     logger.info({ previousUpcomingCalls }, "PREVIOUS UPCOMING CALLS");
-
-      //     const upcomingCallsPercentageChange =
-      //       previousUpcomingCalls === 0
-      //         ? 0
-      //         : ((totalUpcomingCalls - previousUpcomingCalls) /
-      //             previousUpcomingCalls) *
-      //           100;
-
-      //     logger.info(
-      //       { upcomingCallsPercentageChange },
-      //       "UPCOMING CALLS PERCENTAGE CHANGE"
-      //     );
-
-      //     // SECTION 4: RECENT CALL HISTORY
-      //     const recentCalls = await db.call.findMany({
-      //       where: {
-      //         userId,
-      //       },
-      //       select: {
-      //         id: true,
-      //         startedAt: true,
-      //         duration: true,
-      //         status: true,
-      //         expert: {
-      //           select: {
-      //             firstName: true,
-      //             lastName: true,
-      //           },
-      //         },
-      //       },
-      //       orderBy: { startedAt: "desc" },
-      //       take: 5,
-      //     });
-
-      //     logger.info({ recentCalls }, "RECENT CALLS");
-
-      //     return c.superjson({
-      //       message: "User analytics fetched successfully",
-      //       success: true,
-      //       code: OK,
-      //       data: {
-      //         analytics: {
-      //           totalCalls: {
-      //             totalCalls,
-      //             callPercentageChange,
-      //           },
-      //           activeExperts: {
-      //             totalActiveExperts,
-      //             expertPercentageChange,
-      //           },
-      //           averageCallDuration: {
-      //             avgCallDurationValue,
-      //             callDurationPercentageChange,
-      //           },
-      //           upcomingCalls: {
-      //             totalUpcomingCalls,
-      //             upcomingCallsPercentageChange,
-      //           },
-      //         },
-      //         activityByDay,
-      //         upcomingCalls,
-      //         recentCalls,
-      //       },
-      //     });
-      //   } catch (error) {
-      //     logger.error("Error fetching user analytics", error);
-      //     return c.json({
-      //       message: "Internal server error",
-      //       success: false,
-      //       data: null,
-      //       code: INTERNAL_SERVER_ERROR,
-      //     });
-      //   }
       try {
         const userId = ctx.user.id;
         const { filter: { type = "7days" } = {} } = input || {};
@@ -348,7 +66,7 @@ export const userRouter = j.router({
           upcomingCalls,
           previousUpcomingCalls,
           recentCalls,
-        ] = await Promise.all([
+        ] = await Promise.allSettled([
           // SECTION 1: CALL ANALYTICS
           // Total calls
           db.call.count({
@@ -493,18 +211,32 @@ export const userRouter = j.router({
         logger.info({ previousTotalCalls }, "PREVIOUS TOTAL CALLS");
 
         // Calculate derived metrics
-        const totalActiveExperts = activeExperts.length;
-        const prevTotalActiveExperts = previousActiveExperts.length;
-        const totalUpcomingCalls = upcomingCalls.length;
-        const avgCallDurationValue = avgCallDuration._avg.duration || 0;
+        const totalActiveExperts =
+          activeExperts.status === "fulfilled" ? activeExperts.value.length : 0;
+        const prevTotalActiveExperts =
+          previousActiveExperts.status === "fulfilled"
+            ? previousActiveExperts.value.length
+            : 0;
+        const totalUpcomingCalls =
+          upcomingCalls.status === "fulfilled" ? upcomingCalls.value.length : 0;
+        const avgCallDurationValue =
+          avgCallDuration.status === "fulfilled"
+            ? avgCallDuration.value._avg.duration
+            : 0;
         const previousAvgCallDurationValue =
-          previousAvgCallDuration._avg.duration || 0;
+          previousAvgCallDuration.status === "fulfilled"
+            ? previousAvgCallDuration.value._avg.duration
+            : 0;
 
-        // Calculate percentage changes
         const callPercentageChange =
-          previousTotalCalls === 0
-            ? 0
-            : ((totalCalls - previousTotalCalls) / previousTotalCalls) * 100;
+          previousTotalCalls.status === "fulfilled" &&
+          totalCalls.status === "fulfilled"
+            ? previousTotalCalls.value === 0
+              ? 0
+              : ((totalCalls.value - previousTotalCalls.value) /
+                  previousTotalCalls.value) *
+                100
+            : 0;
 
         const expertPercentageChange =
           prevTotalActiveExperts === 0
@@ -516,16 +248,19 @@ export const userRouter = j.router({
         const callDurationPercentageChange =
           previousAvgCallDurationValue === 0
             ? 0
-            : ((avgCallDurationValue - previousAvgCallDurationValue) /
-                previousAvgCallDurationValue) *
+            : (((avgCallDurationValue ?? 0) -
+                (previousAvgCallDurationValue ?? 0)) /
+                (previousAvgCallDurationValue ?? 0)) *
               100;
 
         const upcomingCallsPercentageChange =
-          previousUpcomingCalls === 0
-            ? 0
-            : ((totalUpcomingCalls - previousUpcomingCalls) /
-                previousUpcomingCalls) *
-              100;
+          previousUpcomingCalls.status === "fulfilled"
+            ? previousUpcomingCalls.value === 0
+              ? 0
+              : ((totalUpcomingCalls - previousUpcomingCalls.value) /
+                  previousUpcomingCalls.value) *
+                100
+            : 0;
 
         // Format activity by day
         const activityByDay: Record<
@@ -534,41 +269,55 @@ export const userRouter = j.router({
         > = {};
 
         // 🟢 Process communication (audio/video calls)
-        communicationActivity.forEach((data) => {
-          if (!data.startedAt) return; // Ensure date exists
-          const day = new Intl.DateTimeFormat("en-US", {
-            weekday: "short",
-          }).format(data.startedAt); // Convert to "Mon", "Tue", etc.
+        if (communicationActivity.status === "fulfilled") {
+          communicationActivity.value.forEach((data) => {
+            if (!data.startedAt) return; // Ensure date exists
+            const day = new Intl.DateTimeFormat("en-US", {
+              weekday: "short",
+            }).format(data.startedAt); // Convert to "Mon", "Tue", etc.
 
-          if (!activityByDay[day])
-            activityByDay[day] = {
-              video_calls: 0,
-              audio_calls: 0,
-              text_messages: 0,
-            };
+            if (!activityByDay[day])
+              activityByDay[day] = {
+                video_calls: 0,
+                audio_calls: 0,
+                text_messages: 0,
+              };
 
-          if (data.callType === "AUDIO")
-            activityByDay[day].audio_calls += data._count.id;
-          if (data.callType === "VIDEO")
-            activityByDay[day].video_calls += data._count.id;
-        });
+            if (data.callType === "AUDIO")
+              activityByDay[day].audio_calls += data._count.id;
+            if (data.callType === "VIDEO")
+              activityByDay[day].video_calls += data._count.id;
+          });
+        } else {
+          logger.error(
+            { communicationActivity },
+            "Error fetching communication activity"
+          );
+        }
 
         // 🟢 Process messages
-        messagesActivity.forEach((data) => {
-          if (!data.sentAt) return; // Ensure date exists
-          const day = new Intl.DateTimeFormat("en-US", {
-            weekday: "short",
-          }).format(data.sentAt); // Convert to "Mon", "Tue", etc.
+        if (messagesActivity.status === "fulfilled") {
+          messagesActivity.value.forEach((data) => {
+            if (!data.sentAt) return; // Ensure date exists
+            const day = new Intl.DateTimeFormat("en-US", {
+              weekday: "short",
+            }).format(data.sentAt); // Convert to "Mon", "Tue", etc.
 
-          if (!activityByDay[day])
-            activityByDay[day] = {
-              video_calls: 0,
-              audio_calls: 0,
-              text_messages: 0,
-            };
+            if (!activityByDay[day])
+              activityByDay[day] = {
+                video_calls: 0,
+                audio_calls: 0,
+                text_messages: 0,
+              };
 
-          activityByDay[day].text_messages += data._count.id;
-        });
+            activityByDay[day].text_messages += data._count.id;
+          });
+        } else {
+          logger.error(
+            { messagesActivity },
+            "Error fetching messages activity"
+          );
+        }
 
         // 🟢 Convert object to array with required format
         const activityArray = Object.keys(activityByDay).map((day) => ({
@@ -600,8 +349,9 @@ export const userRouter = j.router({
           data: {
             analytics: {
               totalCalls: {
-                totalCalls,
-                callPercentageChange,
+                totalCalls:
+                  totalCalls.status === "fulfilled" ? totalCalls.value : 0,
+                callPercentageChange: callPercentageChange,
               },
               activeExperts: {
                 totalActiveExperts,
@@ -617,8 +367,10 @@ export const userRouter = j.router({
               },
             },
             activityArray,
-            upcomingCalls,
-            recentCalls,
+            upcomingCalls:
+              upcomingCalls.status === "fulfilled" ? upcomingCalls.value : [],
+            recentCalls:
+              recentCalls.status === "fulfilled" ? recentCalls.value : [],
           },
         });
       } catch (error) {
