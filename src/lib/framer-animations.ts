@@ -49,10 +49,24 @@ export const fadeInScale: Variants = {
 };
 
 // Staggered children animation
+// export const staggerContainer: Variants = {
+//   initial: {},
+//   animate: {
+//     transition: {
+//       staggerChildren: 0.1,
+//     },
+//   },
+// };
+
 export const staggerContainer: Variants = {
-  initial: {},
+  initial: {
+    opacity: 1, // ensure the container is visible
+  },
   animate: {
+    opacity: 1,
     transition: {
+      // The container will trigger the children's animations before finishing
+      when: "beforeChildren",
       staggerChildren: 0.1,
     },
   },

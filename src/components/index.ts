@@ -6,12 +6,14 @@ import Footer from "./footer";
 import AnimationContainer from "./global/animation-container";
 import Icons from "./global/icons";
 import MaxWidthWrapper from "./global/max-width-wrapper";
+import ResultsNotFound from "./global/results-not-found";
 import LogoTicker from "./logo-ticker";
 import Navbar from "./navbar";
 import Pricing from "./pricing";
 import Settings from "./settings";
 import { Modal } from "./ui/modal";
 import SectionBadge from "./ui/section-badge";
+import SkeletonExpertCard from "./user/expert-card-skeleton";
 import ExpertProfile from "./user/expert-profile";
 import ExploreExperts from "./user/explore-experts";
 import UserLayout from "./user/layout";
@@ -34,8 +36,10 @@ export {
   Navbar,
   OverviewSkeleton,
   Pricing,
+  ResultsNotFound,
   SectionBadge,
   Settings,
+  SkeletonExpertCard,
   UserLayout,
   UserOverview,
 };

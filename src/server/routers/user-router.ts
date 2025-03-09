@@ -383,4 +383,65 @@ export const userRouter = j.router({
         });
       }
     }),
+  getAllExperts: privateProcedure
+    .input(
+      z
+        .object({
+          page: z.number().int().optional(),
+          limit: z.number().int().optional(),
+          search: z.string().optional(),
+        })
+        .optional()
+    )
+    .query(async ({ c, ctx, input }) => {
+      try {
+        const { page = 1, limit = 10, search = "" } = input || {};
+        const offset = ((page ?? 1) - 1) * (limit ?? 10);
+
+        logger.info({ page, limit, search }, "Query parameters");
+
+        let whereCondition = {};
+        if (search?.trim() !== "") {
+          whereCondition = {
+            OR: [
+              { firstName: { contains: search, mode: "insensitive" } },
+              { lastName: { contains: search, mode: "insensitive" } },
+              { expertise: { contains: search, mode: "insensitive" } },
+              { username: { contains: search, mode: "insensitive" } },
+              { email: { contains: search, mode: "insensitive" } },
+            ],
+          };
+        }
+
+        const [total, experts] = await Promise.all([
+          db.user.count({ where: { ...whereCondition, role: "EXPERT" } }),
+          db.user.findMany({
+            where: { ...whereCondition, role: "EXPERT" },
+            skip: offset,
+            take: limit ?? 10,
+            orderBy: { createdAt: "desc" },
+          }),
+        ]);
+
+        return c.json({
+          message: "Experts fetched successfully",
+          success: true,
+          data: {
+            totalExperts: total,
+            experts,
+            currentPage: page,
+            totalPages: Math.ceil(total / (limit ?? 10)),
+          },
+          code: OK,
+        });
+      } catch (error) {
+        logger.error({ error }, "Error fetching experts");
+        return c.json({
+          message: "Internal server error",
+          success: false,
+          data: null,
+          code: INTERNAL_SERVER_ERROR,
+        });
+      }
+    }),
 });
