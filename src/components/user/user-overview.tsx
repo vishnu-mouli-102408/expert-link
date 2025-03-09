@@ -28,52 +28,9 @@ import {
 } from "../ui/select";
 import OverviewSkeleton from "./overview-skeleton";
 
-// const recentCalls = [
-//   {
-//     id: 1,
-//     expert: "Dr. Sarah Johnson",
-//     type: "Video",
-//     date: "Today, 2:30 PM",
-//     duration: "45 min",
-//     status: "Completed",
-//   },
-//   {
-//     id: 2,
-//     expert: "Michael Chen",
-//     type: "Audio",
-//     date: "Today, 11:15 AM",
-//     duration: "30 min",
-//     status: "Completed",
-//   },
-//   {
-//     id: 3,
-//     expert: "Jessica Barnes",
-//     type: "Video",
-//     date: "Yesterday, 4:00 PM",
-//     duration: "60 min",
-//     status: "Completed",
-//   },
-//   {
-//     id: 4,
-//     expert: "Robert Kim",
-//     type: "Audio",
-//     date: "Yesterday, 10:30 AM",
-//     duration: "15 min",
-//     status: "Missed",
-//   },
-//   {
-//     id: 5,
-//     expert: "Emma Wilson",
-//     type: "Video",
-//     date: "May 12, 2:00 PM",
-//     duration: "30 min",
-//     status: "Cancelled",
-//   },
-// ];
-
-type Filter = "7days" | "30days" | "90days" | "thisyear" | undefined;
+type Filter = "7days" | "30days" | "90days" | "thisyear";
 const UserOverview = () => {
-  const [filter, setFilter] = useState<Filter>(undefined);
+  const [filter, setFilter] = useState<Filter>("7days");
 
   const { data, isPending } = useQuery({
     queryKey: ["userOverview", filter],

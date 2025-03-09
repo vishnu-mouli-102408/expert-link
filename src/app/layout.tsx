@@ -5,6 +5,7 @@ import { Providers } from "../components/providers";
 
 import "./globals.css";
 
+import { Suspense } from "react";
 import { ClerkLoaded, ClerkLoading, ClerkProvider } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 
@@ -111,10 +112,12 @@ export default function RootLayout({
             <LoadingSpinner mainClassName="h-screen" />
           </ClerkLoading>
           <ClerkLoaded>
-            <main className="flex flex-col flex-1 relative">
-              <Providers>{children}</Providers>
-              <Toaster richColors />
-            </main>
+            <Suspense fallback={<LoadingSpinner mainClassName="h-screen" />}>
+              <main className="flex flex-col flex-1 relative">
+                <Providers>{children}</Providers>
+                <Toaster richColors />
+              </main>
+            </Suspense>
           </ClerkLoaded>
         </ClerkProvider>
       </body>

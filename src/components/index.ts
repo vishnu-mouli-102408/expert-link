@@ -10,6 +10,7 @@ import LogoTicker from "./logo-ticker";
 import Navbar from "./navbar";
 import Pricing from "./pricing";
 import Settings from "./settings";
+import { Modal } from "./ui/modal";
 import SectionBadge from "./ui/section-badge";
 import ExpertProfile from "./user/expert-profile";
 import ExploreExperts from "./user/explore-experts";
@@ -29,6 +30,7 @@ export {
   Icons,
   LogoTicker,
   MaxWidthWrapper,
+  Modal,
   Navbar,
   OverviewSkeleton,
   Pricing,

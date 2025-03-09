@@ -13,26 +13,20 @@ import {
   Star,
   Video,
 } from "lucide-react";
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 
 import {
   fadeInLeft,
   fadeInUp,
+  modalVariants,
   staggerContainer,
 } from "@/lib/framer-animations";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 
 import { Button } from "../ui/button";
 import { HoverButton } from "../ui/hover-button";
+import { Modal } from "../ui/modal";
 
 const ExpertProfile = () => {
   const { expertId } = useParams<{ expertId: string }>();
@@ -475,102 +469,115 @@ const ExpertProfile = () => {
       </div>
 
       {/* Schedule Dialog */}
-      <Dialog open={isScheduleOpen} onOpenChange={setIsScheduleOpen}>
-        <DialogContent className="bg-[#12151c] border border-white/10 text-white max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-xl">
-              Schedule a Call with {expert?.name}
-            </DialogTitle>
-            <DialogDescription className="text-gray-400 text-wrap">
-              Choose a date and time that works for you to connect with{" "}
-              {expert?.name.split(" ")[0]}.
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="space-y-4 my-4">
-            <div className="grid grid-cols-3  gap-2">
-              <Button
-                variant="outline"
-                className="bg-[#222222]/80 transition-all duration-200 ease-in-out cursor-pointer border-white/10 hover:bg-[#403E43]/50"
-              >
-                Today
-              </Button>
-              <Button
-                variant="outline"
-                className="bg-[#222222]/80 transition-all duration-200 ease-in-out cursor-pointer border-white/10 hover:bg-[#403E43]/50"
-              >
-                Tomorrow
-              </Button>
-              <Button
-                variant="outline"
-                className="bg-[#222222]/80 transition-all duration-200 ease-in-out cursor-pointer border-white/10 hover:bg-[#403E43]/50"
-              >
-                Next Week
-              </Button>
-            </div>
-
-            <div className="bg-[#222222]/70 rounded-lg p-4 border border-white/5">
-              <h3 className="text-sm font-medium mb-3 text-gray-300">
-                Select Format
-              </h3>
-              <div className="grid grid-cols-3 gap-2">
-                <Button
-                  variant="outline"
-                  className="flex flex-col cursor-pointer items-center py-3 h-auto bg-[#403E43]/40 border-primary/50 text-white"
-                >
-                  <Phone className="h-5 w-5 mb-1" />
-                  <span className="text-xs">Phone</span>
-                </Button>
-                <Button
-                  variant="outline"
-                  className="flex flex-col items-center cursor-pointer py-3 h-auto bg-[#221F26] border-white/10 text-gray-400"
-                >
-                  <Video className="h-5 w-5 mb-1" />
-                  <span className="text-xs">Video</span>
-                </Button>
-                <Button
-                  variant="outline"
-                  className="flex flex-col items-center py-3 cursor-pointer h-auto bg-[#221F26] border-white/10 text-gray-400"
-                >
-                  <Headphones className="h-5 w-5 mb-1" />
-                  <span className="text-xs">Audio</span>
-                </Button>
-              </div>
-            </div>
-
-            <div className="bg-[#222222]/70 cursor-pointer rounded-lg p-4 border border-white/5">
-              <h3 className="text-sm font-medium mb-3 text-gray-300">
-                Duration & Rate
-              </h3>
-              <div className="flex justify-between items-center">
-                <div>
-                  <p className="text-sm text-gray-300">30 minutes</p>
-                  <p className="text-xs text-gray-500">Standard consultation</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-sm font-medium text-white">
-                    ${expert?.hourlyRate ? expert.hourlyRate / 2 : 0}
-                  </p>
-                  <p className="text-xs text-gray-500">USD total</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <DialogFooter>
-            <Button
-              variant="outline"
-              className="bg-[#221F26] border-white/10 cursor-pointer text-gray-300"
-              onClick={() => setIsScheduleOpen(false)}
+      <AnimatePresence>
+        {isScheduleOpen && (
+          <Modal
+            className="max-w-md p-6 bg-[#12151c] text-white border border-white/10 border-none"
+            showModal={isScheduleOpen}
+            setShowModal={setIsScheduleOpen}
+          >
+            <motion.div
+              variants={modalVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
             >
-              Cancel
-            </Button>
-            <Button className="bg-gradient-to-r cursor-pointer text-white from-[#403E43] to-[#221F26] hover:opacity-90 border border-white/10">
-              Confirm Booking
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+              <div>
+                <h1 className="text-lg">Schedule a Call with {expert?.name}</h1>
+                <p className="text-gray-400 text-sm text-pretty">
+                  Choose a date and time that works for you to connect with{" "}
+                  {expert?.name.split(" ")[0]}.
+                </p>
+              </div>
+
+              <div className="space-y-4 my-4">
+                <div className="grid grid-cols-3  gap-2">
+                  <Button
+                    variant="outline"
+                    className="bg-[#222222]/80 transition-all duration-200 ease-in-out cursor-pointer border-white/10 hover:bg-[#403E43]/50"
+                  >
+                    Today
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="bg-[#222222]/80 transition-all duration-200 ease-in-out cursor-pointer border-white/10 hover:bg-[#403E43]/50"
+                  >
+                    Tomorrow
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="bg-[#222222]/80 transition-all duration-200 ease-in-out cursor-pointer border-white/10 hover:bg-[#403E43]/50"
+                  >
+                    Next Week
+                  </Button>
+                </div>
+
+                <div className="bg-[#222222]/70 rounded-lg p-4 border border-white/5">
+                  <h3 className="text-sm font-medium mb-3 text-gray-300">
+                    Select Format
+                  </h3>
+                  <div className="grid grid-cols-3 gap-2">
+                    <Button
+                      variant="outline"
+                      className="flex flex-col cursor-pointer items-center py-3 h-auto bg-[#403E43]/40 border-primary/50 text-white"
+                    >
+                      <Phone className="h-5 w-5 mb-1" />
+                      <span className="text-xs">Phone</span>
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="flex flex-col items-center cursor-pointer py-3 h-auto bg-[#221F26] border-white/10 text-gray-400"
+                    >
+                      <Video className="h-5 w-5 mb-1" />
+                      <span className="text-xs">Video</span>
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="flex flex-col items-center py-3 cursor-pointer h-auto bg-[#221F26] border-white/10 text-gray-400"
+                    >
+                      <Headphones className="h-5 w-5 mb-1" />
+                      <span className="text-xs">Audio</span>
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="bg-[#222222]/70 cursor-pointer rounded-lg p-4 border border-white/5">
+                  <h3 className="text-sm font-medium mb-3 text-gray-300">
+                    Duration & Rate
+                  </h3>
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <p className="text-sm text-gray-300">30 minutes</p>
+                      <p className="text-xs text-gray-500">
+                        Standard consultation
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-medium text-white">
+                        ${expert?.hourlyRate ? expert.hourlyRate / 2 : 0}
+                      </p>
+                      <p className="text-xs text-gray-500">USD total</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-2 justify-end">
+                <Button
+                  variant="outline"
+                  className="bg-[#221F26] border-white/10 cursor-pointer text-gray-300"
+                  onClick={() => setIsScheduleOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button className="bg-gradient-to-r cursor-pointer text-white from-[#403E43] to-[#221F26] hover:opacity-90 border border-white/10">
+                  Confirm Booking
+                </Button>
+              </div>
+            </motion.div>
+          </Modal>
+        )}
+      </AnimatePresence>
     </>
   );
 };
