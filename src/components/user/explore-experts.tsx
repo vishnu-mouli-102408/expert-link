@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { mockExperts } from "@/constants/mock-data";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { motion, useInView } from "motion/react";
+import { motion } from "motion/react";
 
 import { client } from "@/lib/client";
 import { fadeInUp, staggerContainer } from "@/lib/framer-animations";
@@ -16,9 +16,7 @@ import SkeletonExpertCard from "./expert-card-skeleton";
 
 const ExploreExperts = () => {
   const router = useRouter();
-  const divRef = useRef(null);
-
-  const isInView = useInView(divRef, { once: false, initial: false });
+  const bottomRef = useRef<HTMLDivElement | null>(null);
 
   const { data, status, error, fetchNextPage, isFetchingNextPage } =
     useInfiniteQuery({
@@ -42,16 +40,28 @@ const ExploreExperts = () => {
     });
 
   useEffect(() => {
-    if (isInView) {
-      fetchNextPage();
-    }
-  }, [fetchNextPage, isInView]);
+    const handleScroll = () => {
+      const scrollableHeight =
+        document.documentElement.scrollHeight - window.innerHeight;
+      const scrolled = window.scrollY;
+
+      if (scrolled >= scrollableHeight - 10 && !isFetchingNextPage) {
+        console.log("User reached the bottom of the page!");
+        fetchNextPage();
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [fetchNextPage, isFetchingNextPage]);
 
   console.log("DATA", data);
   console.log("STATUS", status);
   console.log("ERROR", error);
   console.log("IS FETCHING NEXT PAGE", isFetchingNextPage);
-  console.log("IS IN VIEW", isInView);
 
   if (status === "pending") {
     return (
@@ -104,10 +114,10 @@ const ExploreExperts = () => {
           ))}
         </motion.div>
 
-        <div id="infinite-paginate" ref={divRef}>
+        <div id="infinite-paginate" ref={bottomRef}>
           {isFetchingNextPage && (
             <motion.div
-              variants={fadeInUp}
+              //   variants={fadeInUp}
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
             >
               {[...Array(3)].map((_, index) => (

@@ -113,7 +113,7 @@ export default function RootLayout({
           </ClerkLoading>
           <ClerkLoaded>
             <Suspense fallback={<LoadingSpinner mainClassName="h-screen" />}>
-              <main className="flex flex-col flex-1 relative">
+              <main className="flex flex-col relative">
                 <Providers>{children}</Providers>
                 <Toaster richColors />
               </main>

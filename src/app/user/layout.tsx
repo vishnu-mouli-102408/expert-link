@@ -89,14 +89,14 @@ const AppLayoutContent: React.FC<AppLayoutProps> = ({ children }) => {
   ];
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background dark">
+    <div className="flex min-h-screen  bg-background dark">
       <Sidebar navItems={navItems} />
 
       <motion.div
         initial={false}
         animate="main"
         variants={contentVariants}
-        className="flex-1 overflow-auto"
+        className="w-full"
       >
         {/* Mobile header */}
         <div className="flex sticky top-0 z-[100] justify-between md:hidden shadow-[0_1px_1px_rgba(0,0,0,0.05),0_4px_6px_rgba(34,42,53,0.04),0_24px_68px_rgba(47,48,55,0.05),0_2px_3px_rgba(0,0,0,0.04)] px-5 items-center h-16 border-b bg-transparent border-b-gray-500/30 backdrop-blur-lg bg-opacity-80">
