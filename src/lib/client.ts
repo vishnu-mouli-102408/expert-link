@@ -1,3 +1,4 @@
+import env from "@/env";
 import type { AppRouter } from "@/server";
 import { createClient } from "jstack";
 
@@ -12,8 +13,8 @@ function getBaseUrl() {
   }
 
   // 👇 Use Vercel URL in production
-  if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}`;
+  if (env.VERCEL_URL) {
+    return `https://${env.VERCEL_URL}`;
   }
 
   // 👇 Default to localhost

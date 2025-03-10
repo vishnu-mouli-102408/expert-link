@@ -1,4 +1,5 @@
 import { db } from "@/db";
+import type { Environment } from "@/env";
 import { currentUser } from "@clerk/nextjs/server";
 import { HTTPException } from "hono/http-exception";
 import { jstack } from "jstack";
@@ -6,12 +7,7 @@ import { jstack } from "jstack";
 import { logger } from "@/lib/logger";
 
 interface Env {
-  Bindings: {
-    DATABASE_URL: string;
-    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: string;
-    CLERK_SECRET_KEY: string;
-    VERCEL_URL: string;
-  };
+  Bindings: Environment;
 }
 
 export const j = jstack.init<Env>();

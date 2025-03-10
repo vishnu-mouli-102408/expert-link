@@ -1,6 +1,7 @@
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { db } from "@/db";
+import env from "@/env";
 import { WebhookEvent } from "@clerk/nextjs/server";
 import type { Role } from "@prisma/client";
 import { Webhook } from "svix";
@@ -40,7 +41,7 @@ export async function GET() {
 export async function POST(req: Request) {
   console.info("INSIDE POST WEBHOOK");
 
-  const SIGNING_SECRET = process.env.SIGNING_SECRET;
+  const SIGNING_SECRET = env.SIGNING_SECRET;
 
   if (!SIGNING_SECRET) {
     throw new Error(
