@@ -6,16 +6,7 @@
 
 html,
 body {
-  font-family:
-    var(--font-poppins),
-    var(--font-open-sans),
-    var(--font-roboto),
-    sans-serif,
-    -apple-system,
-    Roboto,
-    "Helvetica Neue",
-    Arial,
-    "Noto Sans";
+  font-family: var(--font-poppins);
 
   font-display: "swap";
   margin: 0;

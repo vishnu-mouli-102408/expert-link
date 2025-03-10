@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { AnimationContainer, MaxWidthWrapper } from "@/components";
 import { useUser } from "@clerk/nextjs";
@@ -16,11 +16,11 @@ export default function OnboardingComponent() {
 
   console.info("USER", user);
 
-  const [selectedRole, setSelectedRole] = React.useState<
-    "USER" | "EXPERT" | null
-  >(null);
+  const [selectedRole, setSelectedRole] = useState<"USER" | "EXPERT" | null>(
+    null
+  );
 
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!user) {
     router.push("/sign-in");

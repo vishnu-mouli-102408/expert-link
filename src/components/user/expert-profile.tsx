@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import dynamic from "next/dynamic";
 import { useParams, useRouter } from "next/navigation";
 import { mockExperts } from "@/constants/mock-data";
 import {
@@ -26,7 +27,17 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 import { Button } from "../ui/button";
 import { HoverButton } from "../ui/hover-button";
-import { Modal } from "../ui/modal";
+import { LoadingSpinner } from "../ui/loading-spinner";
+
+// import { Modal } from "../ui/modal";
+const Modal = dynamic(() => import("../ui/modal").then((mod) => mod.Modal), {
+  ssr: false,
+  loading: () => (
+    <div>
+      <LoadingSpinner />
+    </div>
+  ),
+});
 
 const ExpertProfile = () => {
   const { expertId } = useParams<{ expertId: string }>();
@@ -472,7 +483,7 @@ const ExpertProfile = () => {
       <AnimatePresence>
         {isScheduleOpen && (
           <Modal
-            className="max-w-md p-6 bg-[#12151c] text-white border border-white/10 border-none"
+            className="max-w-md p-8 bg-[#12151c] text-white border border-white/10 border-none"
             showModal={isScheduleOpen}
             setShowModal={setIsScheduleOpen}
           >
@@ -490,7 +501,7 @@ const ExpertProfile = () => {
                 </p>
               </div>
 
-              <div className="space-y-4 my-4">
+              <div className="space-y-6 my-4">
                 <div className="grid grid-cols-3  gap-2">
                   <Button
                     variant="outline"

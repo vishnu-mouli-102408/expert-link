@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Open_Sans, Poppins, Roboto } from "next/font/google";
+import { Poppins } from "next/font/google";
 
 import { Providers } from "../components/providers";
 
@@ -20,21 +20,6 @@ export const metadata: Metadata = {
   icons: [{ rel: "icon", url: "/favicon/favicon.ico" }],
 };
 
-const openSans = Open_Sans({
-  subsets: ["latin"],
-  variable: "--font-open-sans",
-  weight: ["300", "400", "500", "600", "700"],
-  display: "swap",
-  preload: true,
-});
-
-const roboto = Roboto({
-  subsets: ["latin"],
-  variable: "--font-roboto",
-  weight: ["300", "400", "500", "700"],
-  display: "swap",
-  preload: true,
-});
 const poppins = Poppins({
   subsets: ["latin"],
   variable: "--font-poppins",
@@ -54,8 +39,6 @@ export default function RootLayout({
       lang="en"
       className={cn(
         poppins.variable,
-        openSans.variable,
-        roboto.variable,
         "min-h-screen overflow-x-hidden antialiased dark"
       )}
     >
@@ -83,14 +66,7 @@ export default function RootLayout({
         <link rel="manifest" href="/favicon/site.webmanifest" />
         <meta name="theme-color" content="#ffffff" />
       </head>
-      <body
-        className={cn(
-          roboto.className,
-          openSans.className,
-          poppins.className,
-          "antialiased dark"
-        )}
-      >
+      <body className={cn(poppins.className, "antialiased dark")}>
         <ClerkProvider
           allowedRedirectOrigins={[
             "http://localhost:3000",
