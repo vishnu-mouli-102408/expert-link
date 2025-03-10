@@ -13,7 +13,7 @@ const env = createEnv({
     DATABASE_URL: z.string().url(),
     PORT: z.coerce.number().default(3000),
     CLERK_SECRET_KEY: z.string().min(1),
-    VERCEL_URL: z.string().url(),
+    VERCEL_URL: z.string().min(1),
     SIGNING_SECRET: z.string().min(1),
     CLOUDINARY_CLOUD_NAME: z.string().min(1),
     CLOUDINARY_API_KEY: z.string().min(1),
