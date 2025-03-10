@@ -66,6 +66,7 @@ export async function createUser(
     | "hourlyRate"
     | "interests"
     | "preferences"
+    | "skills"
   >
 ) {
   try {

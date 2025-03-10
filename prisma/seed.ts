@@ -26,6 +26,7 @@ async function main() {
       hourlyRate: "120",
       interests: "Technology, AI, Leadership",
       preferences: "Remote Consulting",
+      skills: ["AWS", "Cloud Computing", "DevOps", "Kubernetes"],
     },
     {
       externalId: "EX-002",
@@ -46,6 +47,7 @@ async function main() {
       hourlyRate: "95",
       interests: "Web Technologies, Design, Open Source",
       preferences: "Remote & In-Person Consulting",
+      skills: ["React", "TypeScript", "Next.js", "Tailwind CSS"],
     },
     {
       externalId: "EX-003",
@@ -66,6 +68,7 @@ async function main() {
       hourlyRate: "150",
       interests: "Law, Business Ethics, Intellectual Property",
       preferences: "Video Consultations",
+      skills: ["Contract Law", "Business Law", "Intellectual Property"],
     },
     {
       externalId: "EX-004",
@@ -86,6 +89,7 @@ async function main() {
       hourlyRate: "135",
       interests: "AI, Big Data, Data Visualization",
       preferences: "Remote Consulting",
+      skills: ["Machine Learning", "Python", "TensorFlow", "Big Data"],
     },
     {
       externalId: "EX-005",
@@ -107,6 +111,7 @@ async function main() {
       hourlyRate: "85",
       interests: "Design Thinking, User Behavior, Usability Testing",
       preferences: "Remote Consulting",
+      skills: ["User Testing", "Prototyping", "Information Architecture"],
     },
     {
       externalId: "EX-006",
@@ -127,6 +132,7 @@ async function main() {
       hourlyRate: "110",
       interests: "Stock Market, Wealth Management, Financial Planning",
       preferences: "In-Person & Remote Consulting",
+      skills: ["Investment Strategies", "Tax Planning", "Wealth Management"],
     },
     {
       externalId: "EX-007",
@@ -148,6 +154,7 @@ async function main() {
       hourlyRate: "130",
       interests: "Branding, Digital Advertising, Consumer Psychology",
       preferences: "Remote Consulting",
+      skills: ["SEO", "Content Marketing", "Social Media Strategy"],
     },
     {
       externalId: "EX-008",
@@ -168,6 +175,7 @@ async function main() {
       hourlyRate: "175",
       interests: "Healthcare Innovation, Patient Experience, Telemedicine",
       preferences: "Video Consultations",
+      skills: ["Hospital Operations", "Medical Technology", "Telemedicine"],
     },
     {
       externalId: "EX-009",
@@ -189,27 +197,7 @@ async function main() {
       hourlyRate: "80",
       interests: "E-learning, Pedagogy, Education Technology",
       preferences: "Remote Consulting",
-    },
-    {
-      externalId: "EX-010",
-      email: "sophia.patel@example.com",
-      role: Role.EXPERT,
-      firstName: "Sophia",
-      lastName: "Patel",
-      gender: "Female",
-      bio: "UX/UI Designer with expertise in product design, interaction design, and design systems.",
-      expertise: "UX/UI Design",
-      profilePic:
-        "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
-      phone: "+1567894321",
-      username: "sophiapatel",
-      certifications:
-        "Google UX Design Certificate, Interaction Design Foundation",
-      yearsOfExperience: "10",
-      availability: "Weekdays",
-      hourlyRate: "105",
-      interests: "Human-Centered Design, Prototyping, Design Thinking",
-      preferences: "Remote Consulting",
+      skills: ["Curriculum Development", "E-learning", "Instructional Design"],
     },
   ];
 

@@ -22,6 +22,13 @@ const UserSchema = z.object({
   hourlyRate: z.string().nullable().optional(),
   interests: z.string().nullable().optional(),
   preferences: z.string().nullable().optional(),
+  skills: z
+    .array(z.string())
+    .default([])
+    .refine((skills) => skills.length <= 5, {
+      message: "You can add up to 5 skills only",
+    })
+    .optional(),
 });
 
 export const authRouter = j.router({
@@ -50,10 +57,11 @@ export const authRouter = j.router({
     .input(UserSchema)
     .mutation(async ({ c, ctx, input }) => {
       try {
-        console.log("INPUT", input);
+        logger.info({ input }, "Updating user details");
         const updatedUser = await db.user.update({
           where: {
             email: ctx.user.email,
+            // externalId: ctx.user.id,
           },
           data: input,
         });
@@ -65,6 +73,7 @@ export const authRouter = j.router({
             code: NOT_FOUND,
           });
         }
+        logger.info({ updatedUser }, "User updated successfully");
         return c.json({
           message: "User Updated",
           success: true,
@@ -72,7 +81,7 @@ export const authRouter = j.router({
           code: OK,
         });
       } catch (error) {
-        logger.error("Error updating user details", error);
+        logger.error({ error }, "Error updating user details");
         return c.json({
           message: "Internal Server Error",
           success: false,

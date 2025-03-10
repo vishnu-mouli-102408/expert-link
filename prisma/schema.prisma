@@ -64,7 +64,6 @@ enum ScheduledCallStatus {
   COMPLETED
 }
 
-
 model User {
   id         String   @id @default(uuid())
   email      String   @unique
@@ -86,18 +85,16 @@ model User {
   hourlyRate String?
   interests String?
   preferences String?
+  skills String[] @default([]) 
 
-
-  userCalls      Call[] @relation("UserCalls")  // Calls initiated by user
-  expertCalls    Call[] @relation("ExpertCalls") // Calls received as an expert
-  scheduledCalls   ScheduledCall[] @relation("UserScheduledCalls") // Calls user has scheduled
-  expertSchedules  ScheduledCall[] @relation("ExpertScheduledCalls") // Calls expert is booked for
-  sentMessages   Message[] @relation("SenderMessages")
+  userCalls       Call[] @relation("UserCalls")  // Calls initiated by user
+  expertCalls     Call[] @relation("ExpertCalls") // Calls received as an expert
+  scheduledCalls  ScheduledCall[] @relation("UserScheduledCalls") // Calls user has scheduled
+  expertSchedules ScheduledCall[] @relation("ExpertScheduledCalls") // Calls expert is booked for
+  sentMessages    Message[] @relation("SenderMessages")
   receivedMessages Message[] @relation("ReceiverMessages")
-  
 
   @@index([email])
-  
 }
 
 model Call {
@@ -110,8 +107,9 @@ model Call {
   startedAt  DateTime
   endedAt    DateTime?
 
-  user   User @relation(fields: [userId], references: [id], name: "UserCalls")
-  expert User @relation(fields: [expertId], references: [id], name: "ExpertCalls")
+  user   User @relation(fields: [userId], references: [id], name: "UserCalls", onDelete: Cascade)
+  expert User @relation(fields: [expertId], references: [id], name: "ExpertCalls", onDelete: Cascade)
+  
   ScheduledCall ScheduledCall[]
 
   @@index([userId])
@@ -119,7 +117,7 @@ model Call {
 }
 
 model Message {
-   id          String      @id @default(uuid())
+  id          String      @id @default(uuid())
   senderId    String
   receiverId  String
   messageType MessageType
@@ -130,8 +128,8 @@ model Message {
   deliveredAt DateTime?
   readAt      DateTime?
 
-  sender   User @relation(fields: [senderId], references: [id], name: "SenderMessages")
-  receiver User @relation(fields: [receiverId], references: [id], name: "ReceiverMessages")
+  sender   User @relation(fields: [senderId], references: [id], name: "SenderMessages", onDelete: Cascade)
+  receiver User @relation(fields: [receiverId], references: [id], name: "ReceiverMessages", onDelete: Cascade)
 
   @@index([senderId])
   @@index([receiverId])
@@ -148,12 +146,12 @@ model ScheduledCall {
   createdAt   DateTime @default(now())
 
   // Relations
-  user   User @relation(fields: [userId], references: [id], name: "UserScheduledCalls")
-  expert User @relation(fields: [expertId], references: [id], name: "ExpertScheduledCalls")
-  actualCall Call? @relation(fields: [actualCallId], references: [id]) // Links to completed call
+  user   User @relation(fields: [userId], references: [id], name: "UserScheduledCalls", onDelete: Cascade)
+  expert User @relation(fields: [expertId], references: [id], name: "ExpertScheduledCalls", onDelete: Cascade)
+  
   actualCallId String? // Nullable since call may not have happened yet
+  actualCall   Call?   @relation(fields: [actualCallId], references: [id], onDelete: Cascade) // Links to completed call
 
   @@index([userId])
   @@index([expertId])
 }
-

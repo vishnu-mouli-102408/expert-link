@@ -1,10 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import { useDbUser } from "@/hooks";
 import { useUser } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { Award, Info, Lock, Phone, Save, User } from "lucide-react";
+import { Award, Info, Lock, Phone, Plus, Save, User, X } from "lucide-react";
 import { motion } from "motion/react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -31,6 +32,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 
+import { LoadingSpinner } from "../ui/loading-spinner";
 import ProfileImageUpload from "./profile-image-upload";
 import ProfileSection from "./profile-section";
 
@@ -59,6 +61,13 @@ const baseSchema = {
 
 const expertSchema = {
   ...baseSchema,
+  skills: z
+    .array(z.string())
+    .default([])
+    .refine((skills) => skills.length <= 5, {
+      message: "You can add up to 5 skills only",
+    })
+    .optional(),
   expertise: z.string().optional(),
   certifications: z.string().optional(),
   yearsOfExperience: z.string().optional(),
@@ -83,7 +92,10 @@ type FormValues = ExpertFormValues | UserFormValues;
 const SettingsForm = () => {
   const queryClient = getQueryClient();
 
-  const { data: userData } = useDbUser();
+  const { data: userData, isPending: isFetchingUserData } = useDbUser();
+
+  const [newSkill, setNewSkill] = useState("");
+  const [skillLimitReached, setSkillLimitReached] = useState(false);
 
   const { user } = useUser();
 
@@ -108,6 +120,7 @@ const SettingsForm = () => {
       gender: userData?.data?.gender || "",
       ...(isExpert
         ? {
+            skills: userData?.data?.skills || [],
             certifications: userData?.data?.certifications || "",
             yearsOfExperience: userData?.data?.yearsOfExperience || "",
             availability: userData?.data?.availability || "",
@@ -121,9 +134,57 @@ const SettingsForm = () => {
     },
   });
 
+  // Handler for adding a new skill
+  const handleAddSkill = () => {
+    if (!newSkill.trim()) return;
+
+    const currentSkills = (form.getValues("skills") as string[]) || [];
+
+    if (currentSkills.length >= 5) {
+      setSkillLimitReached(true);
+      toast.error("Skill limit reached", {
+        description: "You can add a maximum of 5 skills.",
+        duration: 3000,
+        position: "bottom-center",
+        closeButton: true,
+      });
+      return;
+    }
+
+    if (currentSkills.includes(newSkill.trim())) {
+      toast.error("Duplicate skill", {
+        description: `"${newSkill.trim()}" has already been added to your skills.`,
+        duration: 3000,
+        position: "bottom-center",
+        closeButton: true,
+      });
+      return;
+    }
+
+    if (!currentSkills.includes(newSkill)) {
+      form.setValue("skills", [...currentSkills, newSkill.trim()], {
+        shouldDirty: true,
+      });
+      setNewSkill("");
+      setSkillLimitReached(currentSkills.length + 1 >= 5);
+    }
+  };
+
+  const handleRemoveSkill = (skillToRemove: string) => {
+    const currentSkills = (form.getValues("skills") as string[]) || [];
+    const updatedSkills = currentSkills.filter(
+      (skill) => skill !== skillToRemove
+    );
+    form.setValue("skills", updatedSkills);
+    setSkillLimitReached(updatedSkills.length >= 5);
+  };
+
   // Form submission handler
   const onSubmit = async (data: FormValues) => {
     try {
+      console.log("DATA", data);
+      console.log("FORM", form.formState.dirtyFields);
+
       const updatedFields = Object.keys(form.formState.dirtyFields).reduce(
         (acc, key) => {
           acc[key as keyof FormValues] = data[key as keyof FormValues];
@@ -131,6 +192,7 @@ const SettingsForm = () => {
         },
         {} as Partial<FormValues>
       );
+
       console.log("Updated Fields:", updatedFields);
       onSubmitForm(updatedFields);
     } catch (error) {
@@ -188,6 +250,12 @@ const SettingsForm = () => {
     blur: { scale: 1, transition: { duration: 0.2 } },
   };
 
+  console.log("IS FETCHING", isFetchingUserData);
+
+  if (isFetchingUserData) {
+    return <LoadingSpinner />;
+  }
+
   return (
     <Form {...form}>
       <form
@@ -218,7 +286,7 @@ const SettingsForm = () => {
               control={form.control}
               name="username"
               render={({ field }) => (
-                <FormItem className="space-y-2">
+                <FormItem className="space-y-1">
                   <FormLabel className="text-sm font-medium text-zinc-200">
                     Username
                   </FormLabel>
@@ -249,7 +317,7 @@ const SettingsForm = () => {
                 control={form.control}
                 name="firstName"
                 render={({ field }) => (
-                  <FormItem className="space-y-2">
+                  <FormItem className="space-y-1">
                     <FormLabel className="text-sm font-medium text-zinc-200">
                       First Name
                     </FormLabel>
@@ -274,7 +342,7 @@ const SettingsForm = () => {
                 control={form.control}
                 name="lastName"
                 render={({ field }) => (
-                  <FormItem className="space-y-2">
+                  <FormItem className="space-y-1">
                     <FormLabel className="text-sm font-medium text-zinc-200">
                       Last Name
                     </FormLabel>
@@ -300,7 +368,7 @@ const SettingsForm = () => {
               control={form.control}
               name="phone"
               render={({ field }) => (
-                <FormItem className="space-y-2">
+                <FormItem className="space-y-1">
                   <FormLabel className="text-sm font-medium text-zinc-200">
                     Phone Number
                   </FormLabel>
@@ -327,7 +395,7 @@ const SettingsForm = () => {
               )}
             />
 
-            <div className="space-y-2">
+            <div className="space-y-1">
               <div className="flex items-center justify-between">
                 <label
                   htmlFor="email"
@@ -365,7 +433,7 @@ const SettingsForm = () => {
               control={form.control}
               name="bio"
               render={({ field }) => (
-                <FormItem className="space-y-2">
+                <FormItem className="space-y-1">
                   <FormLabel className="text-sm font-medium text-zinc-200">
                     Bio
                   </FormLabel>
@@ -386,7 +454,7 @@ const SettingsForm = () => {
               control={form.control}
               name="gender"
               render={({ field }) => (
-                <FormItem className="space-y-2 w-full">
+                <FormItem className="space-y-1 w-full">
                   <FormLabel className="text-sm font-medium text-zinc-200">
                     Gender
                   </FormLabel>
@@ -436,9 +504,87 @@ const SettingsForm = () => {
               <>
                 <FormField
                   control={form.control}
+                  name="skills"
+                  render={({ field }) => (
+                    <FormItem className="space-y-1">
+                      <div className="flex items-center justify-between">
+                        <FormLabel className="text-sm font-medium text-zinc-200">
+                          Skills (Max 5)
+                        </FormLabel>
+                        <span className="text-xs text-zinc-400">
+                          {field.value?.length || 0}/5 skills
+                        </span>
+                      </div>
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2">
+                          <div className="relative flex-1">
+                            <motion.div
+                              whileFocus="focus"
+                              initial="blur"
+                              animate="blur"
+                              variants={inputVariants}
+                            >
+                              <Input
+                                value={newSkill}
+                                onChange={(e) => setNewSkill(e.target.value)}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") {
+                                    e.preventDefault();
+                                    handleAddSkill();
+                                  }
+                                }}
+                                placeholder="Enter a skill and press Enter or Add"
+                                className="bg-white/5 border-white/10 focus:border-white/20 transition-all duration-300"
+                                disabled={skillLimitReached}
+                              />
+                            </motion.div>
+                          </div>
+                          <Button
+                            type="button"
+                            onClick={handleAddSkill}
+                            className="glass-effect cursor-pointer hover:bg-white/10 text-white border-white/10"
+                            size="sm"
+                            disabled={skillLimitReached}
+                          >
+                            <Plus size={16} />
+                          </Button>
+                        </div>
+
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {field.value?.map((skill: string, index: number) => (
+                            <motion.div
+                              key={index}
+                              initial={{ opacity: 0, scale: 0.8 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              className="flex items-center gap-1 px-3 py-1 rounded-full bg-white/10 text-sm text-white"
+                            >
+                              <span>{skill}</span>
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveSkill(skill)}
+                                className="text-zinc-400 cursor-pointer hover:text-white transition-colors focus:outline-none"
+                              >
+                                <X size={14} />
+                              </button>
+                            </motion.div>
+                          ))}
+                        </div>
+                        {field.value?.length === 0 && (
+                          <p className="text-xs text-zinc-500 italic">
+                            No skills added yet. Add up to 5 skills.
+                          </p>
+                        )}
+                      </div>
+                      <FormMessage className="text-red-400 text-xs" />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
                   name="expertise"
                   render={({ field }) => (
-                    <FormItem className="space-y-2">
+                    <FormItem className="space-y-1">
                       <FormLabel className="text-sm font-medium text-zinc-200">
                         Areas of Expertise
                       </FormLabel>
@@ -462,7 +608,7 @@ const SettingsForm = () => {
                   control={form.control}
                   name="certifications"
                   render={({ field }) => (
-                    <FormItem className="space-y-2">
+                    <FormItem className="space-y-1">
                       <FormLabel className="text-sm font-medium text-zinc-200">
                         Certifications
                       </FormLabel>
@@ -493,7 +639,7 @@ const SettingsForm = () => {
                     control={form.control}
                     name="yearsOfExperience"
                     render={({ field }) => (
-                      <FormItem className="space-y-2">
+                      <FormItem className="space-y-1">
                         <FormLabel className="text-sm font-medium text-zinc-200">
                           Years of Experience
                         </FormLabel>
@@ -520,7 +666,7 @@ const SettingsForm = () => {
                     control={form.control}
                     name="hourlyRate"
                     render={({ field }) => (
-                      <FormItem className="space-y-2">
+                      <FormItem className="space-y-1">
                         <FormLabel className="text-sm font-medium text-zinc-200">
                           Hourly Rate ($)
                         </FormLabel>
@@ -548,7 +694,7 @@ const SettingsForm = () => {
                   control={form.control}
                   name="availability"
                   render={({ field }) => (
-                    <FormItem className="space-y-2">
+                    <FormItem className="space-y-1">
                       <FormLabel className="text-sm font-medium text-zinc-200">
                         Availability
                       </FormLabel>
@@ -608,7 +754,7 @@ const SettingsForm = () => {
                   control={form.control}
                   name="interests"
                   render={({ field }) => (
-                    <FormItem className="space-y-2">
+                    <FormItem className="space-y-1">
                       <FormLabel className="text-sm font-medium text-zinc-200">
                         Interests
                       </FormLabel>
@@ -633,7 +779,7 @@ const SettingsForm = () => {
                   control={form.control}
                   name="preferences"
                   render={({ field }) => (
-                    <FormItem className="space-y-2">
+                    <FormItem className="space-y-1">
                       <FormLabel className="text-sm font-medium text-zinc-200">
                         Preferences
                       </FormLabel>
