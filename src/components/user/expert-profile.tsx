@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import dynamic from "next/dynamic";
 import { useParams, useRouter } from "next/navigation";
 import { mockExperts } from "@/constants/mock-data";
+import { useQuery } from "@tanstack/react-query";
 import {
   BadgeCheck,
   Calendar,
@@ -16,13 +17,13 @@ import {
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 
+import { client } from "@/lib/client";
 import {
   fadeInLeft,
   fadeInUp,
   modalVariants,
   staggerContainer,
 } from "@/lib/framer-animations";
-import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 
 import { Button } from "../ui/button";
@@ -41,25 +42,26 @@ const Modal = dynamic(() => import("../ui/modal").then((mod) => mod.Modal), {
 
 const ExpertProfile = () => {
   const { expertId } = useParams<{ expertId: string }>();
-  const [isLoading, setIsLoading] = useState(true);
+
   const [isScheduleOpen, setIsScheduleOpen] = useState(false);
   const router = useRouter();
 
+  const { data, isPending } = useQuery({
+    queryKey: ["expert", expertId],
+    queryFn: async () => {
+      const response = await client.user.getExpertById.$get({ expertId });
+      const data = await response.json();
+      return data;
+    },
+  });
+
   console.log("expertId", expertId);
-
-  // Simulate loading
-  React.useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1500);
-
-    return () => clearTimeout(timer);
-  }, []);
+  console.log("data", data);
 
   // Find expert by ID
   const expert = mockExperts.find((expert) => expert.id === expertId);
 
-  if (!expert && !isLoading) {
+  if (!data && !isPending) {
     return (
       <div className="container py-12 text-center">
         <h1 className="text-2xl font-bold mb-4">Expert not found</h1>
@@ -79,7 +81,7 @@ const ExpertProfile = () => {
   }
 
   // Loading skeleton
-  if (isLoading) {
+  if (isPending) {
     return (
       <div className="container py-8">
         <div className="max-w-5xl mx-auto">
@@ -154,8 +156,8 @@ const ExpertProfile = () => {
                   </span>
                 </div>
                 <motion.img
-                  src={expert?.imageUrl}
-                  alt={expert?.name}
+                  src={data?.data?.profilePic ?? ""}
+                  alt={data?.data?.firstName || ""}
                   className="w-full h-72 object-cover"
                   initial={{ scale: 1.1, opacity: 0.8 }}
                   animate={{ scale: 1, opacity: 1 }}
@@ -175,9 +177,7 @@ const ExpertProfile = () => {
                         />
                       ))}
                     </div>
-                    <span className="text-sm text-gray-300">
-                      ({expert?.reviews} reviews)
-                    </span>
+                    <span className="text-sm text-gray-300">(0 reviews)</span>
                   </div>
                 </div>
               </motion.div>
@@ -188,12 +188,6 @@ const ExpertProfile = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3, duration: 0.5 }}
               >
-                {/* <Button
-                  className="w-full py-6 text-white cursor-pointer text-lg rounded-xl bg-gradient-to-r from-[#403E43] to-[#221F26] hover:opacity-90 border border-white/10 shadow-xl"
-                  onClick={() => setIsScheduleOpen(true)}
-                >
-                  Schedule a Call
-                </Button> */}
                 <HoverButton
                   onClick={() => setIsScheduleOpen(true)}
                   className="w-full flex justify-center text-lg items-center rounded-xl"
@@ -246,12 +240,14 @@ const ExpertProfile = () => {
                 </h3>
                 <p className="text-gray-400 text-sm mb-2">
                   Available:{" "}
-                  <span className="text-white">{expert?.availability}</span>
+                  <span className="text-white">
+                    {data?.data?.availability || "N/A"}
+                  </span>
                 </p>
-                <p className="text-gray-400 text-sm mb-3">
+                {/* <p className="text-gray-400 text-sm mb-3">
                   Response time:{" "}
                   <span className="text-white">Usually within 2 hours</span>
-                </p>
+                </p> */}
                 <div className="grid grid-cols-7 gap-1">
                   {["M", "T", "W", "T", "F", "S", "S"].map((day, i) => (
                     <div
@@ -282,7 +278,7 @@ const ExpertProfile = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5 }}
                 >
-                  {expert?.name}
+                  {`${data?.data?.firstName} ${data?.data?.lastName}` || "N/A"}
                 </motion.h1>
                 <motion.p
                   className="text-xl text-gray-400"
@@ -290,7 +286,7 @@ const ExpertProfile = () => {
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.2, duration: 0.5 }}
                 >
-                  {expert?.title}
+                  {data?.data?.expertise || "N/A"}
                 </motion.p>
               </div>
 
@@ -308,7 +304,7 @@ const ExpertProfile = () => {
                 >
                   <h3 className="text-sm text-gray-400 mb-1">Hourly Rate</h3>
                   <p className="text-2xl font-semibold text-white">
-                    ${expert?.hourlyRate}
+                    ${data?.data?.hourlyRate || 0}
                   </p>
                   <p className="text-xs text-gray-500 mt-1">USD per hour</p>
                 </motion.div>
@@ -318,7 +314,9 @@ const ExpertProfile = () => {
                   whileHover={{ y: -5, transition: { duration: 0.2 } }}
                 >
                   <h3 className="text-sm text-gray-400 mb-1">Experience</h3>
-                  <p className="text-2xl font-semibold text-white">8+ Years</p>
+                  <p className="text-2xl font-semibold text-white">
+                    {data?.data?.yearsOfExperience || 0} years
+                  </p>
                   <p className="text-xs text-gray-500 mt-1">
                     Professional experience
                   </p>
@@ -330,10 +328,10 @@ const ExpertProfile = () => {
                 >
                   <h3 className="text-sm text-gray-400 mb-1">Expertise</h3>
                   <p className="text-lg font-semibold text-white">
-                    {expert?.category}
+                    {data?.data?.expertise || "N/A"}
                   </p>
                   <div className="mt-1 flex flex-wrap gap-1">
-                    {expert?.specialties.slice(0, 2).map((specialty, i) => (
+                    {data?.data?.skills.slice(0, 2).map((specialty, i) => (
                       <span
                         key={i}
                         className="text-xs px-2 py-0.5 bg-[#403E43]/40 rounded-full text-gray-300"
@@ -356,16 +354,7 @@ const ExpertProfile = () => {
                 </h2>
                 <div className="p-5 rounded-xl bg-gradient-to-br from-[#222222] to-[#1A1F2C] border border-white/5 shadow-lg">
                   <p className="text-gray-300 leading-relaxed">
-                    As a {expert?.title.toLowerCase()} with over 8 years of
-                    experience, I've helped hundreds of clients solve complex
-                    problems in {expert?.category.toLowerCase()}. My approach is
-                    centered on practical solutions that drive real results.
-                  </p>
-                  <br />
-                  <p className="text-gray-300 leading-relaxed">
-                    I specialize in {expert?.specialties.join(", ")}, and I'm
-                    passionate about sharing my knowledge to help others
-                    succeed. Looking forward to connecting!
+                    {data?.data?.bio || "No bio available."}
                   </p>
                 </div>
               </motion.div>
@@ -380,7 +369,7 @@ const ExpertProfile = () => {
                   Specialties
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {expert?.specialties.map((specialty, i) => (
+                  {data?.data?.skills.map((specialty, i) => (
                     <motion.div
                       key={i}
                       className="flex items-center transition-all duration-100 ease-in-out cursor-pointer p-3 rounded-lg bg-[#222222] border border-white/5"
@@ -400,7 +389,7 @@ const ExpertProfile = () => {
               </motion.div>
 
               {/* Reviews Section */}
-              <motion.div
+              {/* <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5, duration: 0.5 }}
@@ -473,7 +462,7 @@ const ExpertProfile = () => {
                     Read all reviews
                   </Button>
                 </div>
-              </motion.div>
+              </motion.div> */}
             </motion.div>
           </motion.div>
         </div>
@@ -494,10 +483,13 @@ const ExpertProfile = () => {
               exit="exit"
             >
               <div>
-                <h1 className="text-lg">Schedule a Call with {expert?.name}</h1>
+                <h1 className="text-lg">
+                  Schedule a Call with{" "}
+                  {`${data?.data?.firstName} ${data?.data?.lastName}`}
+                </h1>
                 <p className="text-gray-400 text-sm text-pretty">
                   Choose a date and time that works for you to connect with{" "}
-                  {expert?.name.split(" ")[0]}.
+                  {data?.data?.firstName}.
                 </p>
               </div>
 
@@ -565,7 +557,10 @@ const ExpertProfile = () => {
                     </div>
                     <div className="text-right">
                       <p className="text-sm font-medium text-white">
-                        ${expert?.hourlyRate ? expert.hourlyRate / 2 : 0}
+                        $
+                        {data.data && data.data.hourlyRate
+                          ? Number(data.data.hourlyRate) / 2
+                          : 0}
                       </p>
                       <p className="text-xs text-gray-500">USD total</p>
                     </div>

@@ -105,14 +105,34 @@ const ExploreExperts = () => {
         </div>
 
         {/* Expert Cards Grid */}
-        <motion.div
-          variants={fadeInUp}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-        >
-          {mockExperts.map((expert) => (
-            <ExpertCard key={expert.id} expert={expert} />
-          ))}
-        </motion.div>
+
+        {data?.pages?.map((page) => (
+          <motion.div
+            key={page.data?.currentPage}
+            variants={fadeInUp}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          >
+            {page.data?.experts?.map((expert) => (
+              <ExpertCard
+                key={expert.id}
+                expert={{
+                  availability: expert?.availability || "N/A",
+                  category: expert?.expertise || "N/A",
+                  hourlyRate: Number(expert?.hourlyRate) || 0,
+                  imageUrl:
+                    expert?.profilePic ||
+                    "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2340&q=80",
+                  name: `${expert?.firstName} ${expert?.lastName}` || "N/A",
+                  rating: 0,
+                  id: expert?.id || "N/A",
+                  reviews: 0,
+                  specialties: expert?.skills || [],
+                  title: expert?.expertise || "N/A",
+                }}
+              />
+            ))}
+          </motion.div>
+        ))}
 
         <div id="infinite-paginate" ref={bottomRef}>
           {isFetchingNextPage && (

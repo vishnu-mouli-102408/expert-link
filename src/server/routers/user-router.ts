@@ -444,4 +444,50 @@ export const userRouter = j.router({
         });
       }
     }),
+  getExpertById: privateProcedure
+    .input(
+      z.object({
+        expertId: z.string(),
+      })
+    )
+    .query(async ({ c, ctx, input }) => {
+      try {
+        const { expertId } = input;
+        if (!expertId) {
+          return c.json({
+            message: "Expert ID is required",
+            success: false,
+            data: null,
+            code: NOT_FOUND,
+          });
+        }
+        const expert = await db.user.findUnique({
+          where: {
+            id: expertId,
+          },
+        });
+        if (!expert) {
+          return c.json({
+            message: "Expert not found",
+            success: false,
+            data: null,
+            code: NOT_FOUND,
+          });
+        }
+        return c.json({
+          message: "Expert fetched successfully",
+          success: true,
+          data: expert,
+          code: OK,
+        });
+      } catch (error) {
+        logger.error({ error }, "Error fetching expert by ID");
+        return c.json({
+          message: "Internal server error",
+          success: false,
+          data: null,
+          code: INTERNAL_SERVER_ERROR,
+        });
+      }
+    }),
 });
