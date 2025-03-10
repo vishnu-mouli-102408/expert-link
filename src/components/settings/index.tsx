@@ -1,23 +1,9 @@
-import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import * as motion from "motion/react-client";
-
-import { client } from "@/lib/client";
-import { getQueryClient } from "@/lib/get-query-client";
 
 import AnimationContainer from "../global/animation-container";
 import SettingsForm from "./settings-form";
 
 const Settings = async () => {
-  const queryClient = getQueryClient();
-
-  await queryClient.prefetchQuery({
-    queryKey: ["user"],
-    queryFn: async () => {
-      const response = await client.auth.getUserDetails.$get();
-      return await response.json();
-    },
-  });
-
   //   const user = await currentUser();
 
   return (
@@ -54,9 +40,7 @@ const Settings = async () => {
         </header>
 
         <main className="neo-blur rounded-2xl p-8">
-          <HydrationBoundary state={dehydrate(queryClient)}>
-            <SettingsForm />
-          </HydrationBoundary>
+          <SettingsForm />
         </main>
       </AnimationContainer>
     </div>
