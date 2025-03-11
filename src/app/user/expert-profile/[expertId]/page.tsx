@@ -8,6 +8,8 @@ export const metadata: Metadata = {
   icons: [{ rel: "icon", url: "/favicon/favicon.ico" }],
 };
 
+export const revalidate = 43200;
+
 export async function generateStaticParams() {
   const response = await db.user.findMany({
     where: {
