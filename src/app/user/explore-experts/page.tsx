@@ -1,4 +1,11 @@
+import type { Metadata } from "next";
 import { ExploreExperts } from "@/components";
+
+export const metadata: Metadata = {
+  title: "Explore Experts",
+  description: "This is the layout for the explore experts pages.",
+  icons: [{ rel: "icon", url: "/favicon/favicon.ico" }],
+};
 
 const Page = () => {
   return (

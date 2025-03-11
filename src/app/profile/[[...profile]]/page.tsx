@@ -1,8 +1,15 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { UserProfile } from "@clerk/nextjs";
 import { auth } from "@clerk/nextjs/server";
 
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+
+export const metadata: Metadata = {
+  title: "Profile",
+  description: "This is the layout for the profile pages.",
+  icons: [{ rel: "icon", url: "/favicon/favicon.ico" }],
+};
 
 const Profile = async () => {
   const { userId } = await auth();

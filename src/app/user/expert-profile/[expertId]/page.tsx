@@ -1,4 +1,11 @@
+import type { Metadata } from "next";
 import { ExpertProfile } from "@/components";
+
+export const metadata: Metadata = {
+  title: "Expert Profile",
+  description: "This is the layout for the expert profile page.",
+  icons: [{ rel: "icon", url: "/favicon/favicon.ico" }],
+};
 
 const Page = async ({ params }: { params: Promise<{ expertId: string }> }) => {
   const { expertId } = await params;

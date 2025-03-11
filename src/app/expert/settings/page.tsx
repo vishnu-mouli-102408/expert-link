@@ -1,4 +1,11 @@
+import type { Metadata } from "next";
 import { Settings } from "@/components";
+
+export const metadata: Metadata = {
+  title: "Settings",
+  description: "This is the settings page for expert.",
+  icons: [{ rel: "icon", url: "/favicon/favicon.ico" }],
+};
 
 const SettingsPage = () => {
   return (
