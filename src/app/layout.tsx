@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Poppins } from "next/font/google";
 
 import { Providers } from "../components/providers";
@@ -27,6 +27,10 @@ const poppins = Poppins({
   display: "swap",
   preload: true,
 });
+
+export const viewport: Viewport = {
+  maximumScale: 1, // Disable auto-zoom on mobile Safari, credit to https://github.com/ai-ng
+};
 
 export default function RootLayout({
   children,
