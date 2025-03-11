@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { ExpertProfile } from "@/components";
-
-import { client } from "@/lib/client";
+import { db } from "@/db";
 
 export const metadata: Metadata = {
   title: "Expert Profile",
@@ -10,11 +9,15 @@ export const metadata: Metadata = {
 };
 
 export async function generateStaticParams() {
-  const response = await client.user.getAllExperts.$get();
-  const expertProfiles = await response.json();
-  return expertProfiles?.data?.experts?.map((expertProfile) => ({
-    expertId: expertProfile.id,
+  const response = await db.user.findMany({
+    where: {
+      role: "EXPERT",
+    },
+  });
+  const paths = response.map((expert) => ({
+    expertId: expert.id,
   }));
+  return paths;
 }
 
 const Page = async ({ params }: { params: Promise<{ expertId: string }> }) => {
