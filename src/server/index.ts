@@ -1,3 +1,7 @@
+// needed for cloudflare deployement
+// import { clerkMiddleware } from "@hono/clerk-auth";
+// import type { OperationType } from "jstack";
+
 import { NOT_FOUND } from "@/lib/http-status-codes";
 import { NOT_FOUND_MESSAGE } from "@/lib/http-status-phrases";
 
@@ -13,10 +17,25 @@ import { userRouter } from "./routers/user-router";
  *
  * @see https://jstack.app/docs/backend/app-router
  */
+
 const api = j
+
+  //.router<Record<string, OperationType<any, any, any>>, Env>() // needed for cloudflare deployement
   .router()
   .basePath("/api")
   .use(j.defaults.cors)
+  // needed for cloudflare deployement
+  //   .use("*", (c, next) => {
+  //     // Log environment variables
+  //     console.log("Environment:", c.env);
+  //     return next();
+  //   })
+  //   .use("*", (c, next) => {
+  //     return clerkMiddleware({
+  //       publishableKey: c.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
+  //       secretKey: c.env.CLERK_SECRET_KEY,
+  //     })(c, next);
+  //   })
   .notFound((c) => {
     console.log("NOT FOUND");
     return c.json(

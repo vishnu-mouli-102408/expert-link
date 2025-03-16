@@ -16,6 +16,9 @@ neonConfig.poolQueryViaFetch = true;
 
 let prisma: PrismaClient;
 
+console.log("NODE_ENV", env.NODE_ENV);
+console.log("DATABASE_URL", env.DATABASE_URL);
+
 if (env.NODE_ENV === "production") {
   const pool = new Pool({ connectionString: env.DATABASE_URL });
   const adapter = new PrismaNeon(pool);

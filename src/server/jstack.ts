@@ -1,12 +1,13 @@
 import { db } from "@/db";
 import type { Environment } from "@/env";
 import { currentUser } from "@clerk/nextjs/server";
+// import { getAuth } from "@hono/clerk-auth"; // needed for cloudflare deployement
 import { HTTPException } from "hono/http-exception";
 import { jstack } from "jstack";
 
 import { logger } from "@/lib/logger";
 
-interface Env {
+export interface Env {
   Bindings: Environment;
 }
 
@@ -20,12 +21,19 @@ export const j = jstack.init<Env>();
 
 const authMiddleware = j.middleware(async ({ c, next }) => {
   const auth = await currentUser();
+  //   const auth = getAuth(c); // needed for cloudflare deployement
+
+  // needed for cloudflare deployement
+  //   if (!auth || !auth.userId) {
+  //     throw new HTTPException(401, { message: "Unauthorized" });
+  //   }
 
   if (!auth) {
     throw new HTTPException(401, { message: "Unauthorized" });
   }
 
   const user = await db.user.findUnique({
+    // where: { externalId: auth.userId }, needed for cloudflare deployement
     where: { externalId: auth.id },
   });
 
