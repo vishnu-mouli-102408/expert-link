@@ -1,12 +1,18 @@
 import { db } from "@/db";
 import { z } from "zod";
 
-import { INTERNAL_SERVER_ERROR, NOT_FOUND, OK } from "@/lib/http-status-codes";
+import {
+  INTERNAL_SERVER_ERROR,
+  NOT_ACCEPTABLE,
+  NOT_FOUND,
+  OK,
+} from "@/lib/http-status-codes";
 import { logger } from "@/lib/logger";
 
 import { j, privateProcedure } from "../jstack";
 
 export const userRouter = j.router({
+  // Get user analytics
   getUserAnalytics: privateProcedure
     .input(
       z
@@ -383,6 +389,8 @@ export const userRouter = j.router({
         });
       }
     }),
+
+  // Get all experts
   getAllExperts: privateProcedure
     .input(
       z
@@ -420,15 +428,34 @@ export const userRouter = j.router({
             skip: offset,
             take: limit ?? 10,
             orderBy: { createdAt: "desc" },
+            include: {
+              reviewsReceived: true,
+            },
           }),
         ]);
+
+        const expertsWithAvgRating = experts.map((expert) => {
+          const totalRatings = expert.reviewsReceived.reduce(
+            (sum, review) => sum + review.rating,
+            0
+          );
+          const avgRating =
+            expert.reviewsReceived.length > 0
+              ? totalRatings / expert.reviewsReceived.length
+              : 0;
+          return {
+            ...expert,
+            avgRating,
+            totalReviews: expert.reviewsReceived.length,
+          };
+        });
 
         return c.json({
           message: "Experts fetched successfully",
           success: true,
           data: {
             totalExperts: total,
-            experts,
+            experts: expertsWithAvgRating,
             currentPage: page,
             totalPages: Math.ceil(total / (limit ?? 10)),
           },
@@ -444,6 +471,8 @@ export const userRouter = j.router({
         });
       }
     }),
+
+  // Get expert by ID
   getExpertById: privateProcedure
     .input(
       z.object({
@@ -453,6 +482,7 @@ export const userRouter = j.router({
     .query(async ({ c, ctx, input }) => {
       try {
         const { expertId } = input;
+        logger.info({ expertId }, "Expert ID");
         if (!expertId) {
           return c.json({
             message: "Expert ID is required",
@@ -461,11 +491,15 @@ export const userRouter = j.router({
             code: NOT_FOUND,
           });
         }
+        // Fetch expert by ID
         const expert = await db.user.findUnique({
           where: {
             id: expertId,
           },
         });
+
+        logger.info({ expert }, "Expert Data");
+
         if (!expert) {
           return c.json({
             message: "Expert not found",
@@ -474,10 +508,51 @@ export const userRouter = j.router({
             code: NOT_FOUND,
           });
         }
+
+        // Fetch expert reviews and average rating
+        const expertReviews =
+          (await db.review.findMany({
+            where: {
+              expertId: expertId,
+            },
+            select: {
+              comment: true,
+              createdAt: true,
+              expertId: true,
+              id: true,
+              rating: true,
+              userId: true,
+              user: {
+                select: {
+                  firstName: true,
+                  lastName: true,
+                  profilePic: true,
+                },
+              },
+            },
+          })) || [];
+
+        logger.info({ expertReviews }, "Expert Reviews");
+
+        // Only run aggregate query if there are reviews
+        let rating = 0;
+        if (expertReviews.length > 0) {
+          const averageRating = await db.review.aggregate({
+            where: { expertId: expertId },
+            _avg: { rating: true },
+          });
+          rating = averageRating?._avg?.rating ?? 0;
+          logger.info({ averageRating }, "Average");
+        }
+
         return c.json({
           message: "Expert fetched successfully",
           success: true,
-          data: expert,
+          data: {
+            expert,
+            averageRating: rating,
+            reviews: expertReviews,
+          },
           code: OK,
         });
       } catch (error) {
@@ -489,5 +564,95 @@ export const userRouter = j.router({
           code: INTERNAL_SERVER_ERROR,
         });
       }
+    }),
+
+  // Get expert reviews
+  getExpertReviews: privateProcedure
+    .input(
+      z.object({
+        expertId: z.string(),
+      })
+    )
+    .query(async ({ c, ctx, input }) => {
+      const { expertId } = input;
+      logger.info({ expertId }, "Expert ID");
+      if (!expertId) {
+        return c.json({
+          message: "Expert ID is required",
+          success: false,
+          data: null,
+          code: NOT_FOUND,
+        });
+      }
+
+      const expertReviews = await db.review.findMany({
+        where: {
+          expertId: expertId,
+        },
+      });
+
+      return c.json({
+        message: "Expert reviews fetched successfully",
+        success: true,
+        data: expertReviews,
+        code: OK,
+      });
+    }),
+
+  // Write a review for an expert
+  writeReviewForExpert: privateProcedure
+    .input(
+      z.object({
+        expertId: z.string(),
+        rating: z.number().int().min(1).max(5),
+        reviewText: z.string().max(500),
+      })
+    )
+    .mutation(async ({ c, ctx, input }) => {
+      const { expertId, rating, reviewText } = input;
+      const userId = ctx.user.id;
+      logger.info({ expertId, rating, reviewText }, "Review Data");
+      if (!expertId || !rating || !reviewText) {
+        return c.json({
+          message: "Expert ID, rating, and review text are required",
+          success: false,
+          data: null,
+          code: NOT_FOUND,
+        });
+      }
+
+      // Check if user has already reviewed the expert
+      const existingReview = await db?.review?.findFirst({
+        where: {
+          expertId,
+          userId,
+        },
+      });
+
+      if (existingReview) {
+        return c.json({
+          message: "You have already reviewed this expert",
+          success: false,
+          data: null,
+          code: NOT_ACCEPTABLE,
+        });
+      }
+
+      // Create a new review
+      const newReview = await db.review.create({
+        data: {
+          rating,
+          comment: reviewText,
+          expertId,
+          userId,
+        },
+      });
+
+      return c.json({
+        message: "Review submitted successfully",
+        success: true,
+        data: newReview,
+        code: OK,
+      });
     }),
 });

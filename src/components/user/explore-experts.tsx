@@ -123,9 +123,9 @@ const ExploreExperts = () => {
                     expert?.profilePic ||
                     "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2340&q=80",
                   name: `${expert?.firstName} ${expert?.lastName}` || "N/A",
-                  rating: 0,
+                  rating: expert?.avgRating || 0,
                   id: expert?.id || "N/A",
-                  reviews: 0,
+                  reviews: expert?.totalReviews || 0,
                   specialties: expert?.skills || [],
                   title: expert?.expertise || "N/A",
                 }}

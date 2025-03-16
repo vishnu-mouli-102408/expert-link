@@ -94,6 +94,9 @@ model User {
   sentMessages    Message[] @relation("SenderMessages")
   receivedMessages Message[] @relation("ReceiverMessages")
 
+  reviewsGiven Review[] @relation(name: "UserReviews")
+  reviewsReceived Review[] @relation(name: "ExpertReviews")
+
   @@index([email])
 }
 
@@ -154,4 +157,20 @@ model ScheduledCall {
 
   @@index([userId])
   @@index([expertId])
+}
+
+model Review {
+  id         String   @id @default(uuid())
+  
+  user       User     @relation(name: "UserReviews", fields: [userId], references: [id], onDelete: Cascade)
+  userId     String
+  
+  expert     User     @relation(name: "ExpertReviews", fields: [expertId], references: [id], onDelete: Cascade)
+  expertId   String
+
+  rating     Int   
+  comment    String?  // Optional comment
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, expertId]) // Ensures a user can review an expert only once
 }

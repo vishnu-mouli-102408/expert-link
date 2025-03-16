@@ -12,6 +12,7 @@ import {
   Headphones,
   MessageCircle,
   Phone,
+  SquarePen,
   Star,
   Video,
 } from "lucide-react";
@@ -29,6 +30,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "../ui/button";
 import { HoverButton } from "../ui/hover-button";
 import { LoadingSpinner } from "../ui/loading-spinner";
+import { Separator } from "../ui/separator";
+import AllReviewsModal from "./modals/read-reviews-modal";
+import ReviewModal from "./modals/review-modal";
 
 // import { Modal } from "../ui/modal";
 const Modal = dynamic(() => import("../ui/modal").then((mod) => mod.Modal), {
@@ -44,6 +48,9 @@ const ExpertProfile = () => {
   const { expertId } = useParams<{ expertId: string }>();
 
   const [isScheduleOpen, setIsScheduleOpen] = useState(false);
+  const [isWriteReviewOpen, setIsWriteReviewOpen] = useState(false);
+  const [isOpenReadReviewsModal, setIsOpenReadReviewsModal] = useState(false);
+
   const router = useRouter();
 
   const { data, isPending } = useQuery({
@@ -156,8 +163,11 @@ const ExpertProfile = () => {
                   </span>
                 </div>
                 <motion.img
-                  src={data?.data?.profilePic ?? ""}
-                  alt={data?.data?.firstName || ""}
+                  src={
+                    data?.data?.expert?.profilePic ??
+                    "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2340&q=80"
+                  }
+                  alt={data?.data?.expert?.firstName || "Expert Logo"}
                   className="w-full h-72 object-cover"
                   initial={{ scale: 1.1, opacity: 0.8 }}
                   animate={{ scale: 1, opacity: 1 }}
@@ -170,14 +180,18 @@ const ExpertProfile = () => {
                         <Star
                           key={i}
                           className={`w-4 h-4 ${
-                            i < Math.floor(expert?.rating ?? 0)
+                            i < Math.floor(data?.data?.averageRating ?? 0)
                               ? "fill-current"
                               : "opacity-30"
                           }`}
                         />
                       ))}
                     </div>
-                    <span className="text-sm text-gray-300">(0 reviews)</span>
+                    <span className="text-sm text-gray-300">
+                      ({data?.data?.reviews?.length || 0}{" "}
+                      {data?.data?.reviews?.length === 1 ? "review" : "reviews"}
+                      )
+                    </span>
                   </div>
                 </div>
               </motion.div>
@@ -241,7 +255,7 @@ const ExpertProfile = () => {
                 <p className="text-gray-400 text-sm mb-2">
                   Available:{" "}
                   <span className="text-white">
-                    {data?.data?.availability || "N/A"}
+                    {data?.data?.expert?.availability || "N/A"}
                   </span>
                 </p>
                 {/* <p className="text-gray-400 text-sm mb-3">
@@ -278,7 +292,9 @@ const ExpertProfile = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5 }}
                 >
-                  {`${data?.data?.firstName} ${data?.data?.lastName}` || "N/A"}
+                  {data?.data?.expert?.firstName && data?.data?.expert?.lastName
+                    ? `${data.data.expert.firstName} ${data.data.expert.lastName}`
+                    : "N/A"}
                 </motion.h1>
                 <motion.p
                   className="text-xl text-gray-400"
@@ -286,7 +302,7 @@ const ExpertProfile = () => {
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.2, duration: 0.5 }}
                 >
-                  {data?.data?.expertise || "N/A"}
+                  {data?.data?.expert?.expertise || "N/A"}
                 </motion.p>
               </div>
 
@@ -304,7 +320,7 @@ const ExpertProfile = () => {
                 >
                   <h3 className="text-sm text-gray-400 mb-1">Hourly Rate</h3>
                   <p className="text-2xl font-semibold text-white">
-                    ${data?.data?.hourlyRate || 0}
+                    ${data?.data?.expert?.hourlyRate || 0}
                   </p>
                   <p className="text-xs text-gray-500 mt-1">USD per hour</p>
                 </motion.div>
@@ -315,7 +331,7 @@ const ExpertProfile = () => {
                 >
                   <h3 className="text-sm text-gray-400 mb-1">Experience</h3>
                   <p className="text-2xl font-semibold text-white">
-                    {data?.data?.yearsOfExperience || 0} years
+                    {data?.data?.expert?.yearsOfExperience || 0} years
                   </p>
                   <p className="text-xs text-gray-500 mt-1">
                     Professional experience
@@ -328,17 +344,19 @@ const ExpertProfile = () => {
                 >
                   <h3 className="text-sm text-gray-400 mb-1">Expertise</h3>
                   <p className="text-lg font-semibold text-white">
-                    {data?.data?.expertise || "N/A"}
+                    {data?.data?.expert?.expertise || "N/A"}
                   </p>
                   <div className="mt-1 flex flex-wrap gap-1">
-                    {data?.data?.skills.slice(0, 2).map((specialty, i) => (
-                      <span
-                        key={i}
-                        className="text-xs px-2 py-0.5 bg-[#403E43]/40 rounded-full text-gray-300"
-                      >
-                        {specialty}
-                      </span>
-                    ))}
+                    {data?.data?.expert?.skills
+                      .slice(0, 2)
+                      .map((specialty, i) => (
+                        <span
+                          key={i}
+                          className="text-xs px-2 py-0.5 bg-[#403E43]/40 rounded-full text-gray-300"
+                        >
+                          {specialty}
+                        </span>
+                      ))}
                   </div>
                 </motion.div>
               </motion.div>
@@ -354,7 +372,7 @@ const ExpertProfile = () => {
                 </h2>
                 <div className="p-5 rounded-xl bg-gradient-to-br from-[#222222] to-[#1A1F2C] border border-white/5 shadow-lg">
                   <p className="text-gray-300 leading-relaxed">
-                    {data?.data?.bio || "No bio available."}
+                    {data?.data?.expert?.bio || "No bio available."}
                   </p>
                 </div>
               </motion.div>
@@ -369,7 +387,7 @@ const ExpertProfile = () => {
                   Specialties
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {data?.data?.skills.map((specialty, i) => (
+                  {data?.data?.expert?.skills.map((specialty, i) => (
                     <motion.div
                       key={i}
                       className="flex items-center transition-all duration-100 ease-in-out cursor-pointer p-3 rounded-lg bg-[#222222] border border-white/5"
@@ -389,14 +407,26 @@ const ExpertProfile = () => {
               </motion.div>
 
               {/* Reviews Section */}
-              {/* <motion.div
+              <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5, duration: 0.5 }}
               >
-                <h2 className="text-xl font-semibold text-white mb-3">
-                  Reviews
-                </h2>
+                <div className="flex justify-between items-center">
+                  <h2 className="text-xl font-semibold text-white mb-3">
+                    Reviews
+                  </h2>
+                  <Button
+                    onClick={() => setIsWriteReviewOpen(true)}
+                    variant={"secondary"}
+                    className="flex items-center mb-3 gap-2 justify-center cursor-pointer"
+                  >
+                    <SquarePen className="text-gray-200" />
+                    <h2 className="text-md font-medium text-white ">
+                      Write a Review
+                    </h2>
+                  </Button>
+                </div>
                 <div className="p-5 rounded-xl bg-gradient-to-br from-[#222222] to-[#1A1F2C] border border-white/5 shadow-lg">
                   <div className="flex items-start mb-5">
                     <div className="flex flex-col items-center mr-4">
@@ -408,7 +438,7 @@ const ExpertProfile = () => {
                           <Star
                             key={i}
                             className={`w-4 h-4 ${
-                              i < Math.floor(expert?.rating ?? 0)
+                              i < Math.floor(data?.data?.averageRating ?? 0)
                                 ? "fill-current"
                                 : "opacity-30"
                             }`}
@@ -420,49 +450,18 @@ const ExpertProfile = () => {
                       </span>
                     </div>
                     <Separator orientation="vertical" className="mx-4 h-20" />
-                    <div className="flex-1">
-                      {[5, 4, 3, 2, 1].map((rating) => {
-                        const percentage =
-                          rating === 5
-                            ? 65
-                            : rating === 4
-                              ? 25
-                              : rating === 3
-                                ? 7
-                                : rating === 2
-                                  ? 2
-                                  : 1;
-                        return (
-                          <div key={rating} className="flex items-center mb-1">
-                            <div className="w-10 flex justify-end">
-                              <span className="text-xs text-gray-400">
-                                {rating}
-                              </span>
-                            </div>
-                            <Star className="w-3 h-3 text-amber-400 mx-1 fill-current" />
-                            <div className="flex-1 h-2 bg-[#1A1F2C] rounded-full overflow-hidden">
-                              <div
-                                className="h-full bg-amber-400"
-                                style={{ width: `${percentage}%` }}
-                              />
-                            </div>
-                            <span className="text-xs text-gray-400 ml-2 w-8">
-                              {percentage}%
-                            </span>
-                          </div>
-                        );
-                      })}
-                    </div>
+                    <StarRatingDistribution reviews={data?.data?.reviews} />
                   </div>
 
                   <Button
+                    onClick={() => setIsOpenReadReviewsModal(true)}
                     variant="outline"
                     className="w-full bg-[#221F26] cursor-pointer transition-all duration-300 ease-in-out border-white/10 text-gray-300 hover:bg-[#403E43]/50 hover:text-white"
                   >
                     Read all reviews
                   </Button>
                 </div>
-              </motion.div> */}
+              </motion.div>
             </motion.div>
           </motion.div>
         </div>
@@ -485,11 +484,11 @@ const ExpertProfile = () => {
               <div>
                 <h1 className="text-lg">
                   Schedule a Call with{" "}
-                  {`${data?.data?.firstName} ${data?.data?.lastName}`}
+                  {`${data?.data?.expert?.firstName} ${data?.data?.expert?.lastName}`}
                 </h1>
                 <p className="text-gray-400 text-sm text-pretty">
                   Choose a date and time that works for you to connect with{" "}
-                  {data?.data?.firstName}.
+                  {data?.data?.expert?.firstName}.
                 </p>
               </div>
 
@@ -558,8 +557,8 @@ const ExpertProfile = () => {
                     <div className="text-right">
                       <p className="text-sm font-medium text-white">
                         $
-                        {data.data && data.data.hourlyRate
-                          ? Number(data.data.hourlyRate) / 2
+                        {data.data && data?.data?.expert?.hourlyRate
+                          ? Number(data?.data?.expert?.hourlyRate) / 2
                           : 0}
                       </p>
                       <p className="text-xs text-gray-500">USD total</p>
@@ -584,8 +583,108 @@ const ExpertProfile = () => {
           </Modal>
         )}
       </AnimatePresence>
+
+      {/* Write Review Dialog */}
+      <AnimatePresence>
+        {isWriteReviewOpen && (
+          <ReviewModal
+            isWriteReviewOpen={isWriteReviewOpen}
+            setIsWriteReviewOpen={setIsWriteReviewOpen}
+            expertId={data?.data?.expert?.id || ""}
+            expertName={`${data?.data?.expert?.firstName} ${data?.data?.expert?.lastName}`}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Read All Reviews Modal */}
+      <AnimatePresence>
+        {isOpenReadReviewsModal && (
+          <AllReviewsModal
+            isOpen={isOpenReadReviewsModal}
+            onClose={() => setIsOpenReadReviewsModal(false)}
+            reviews={data?.data?.reviews}
+            expert={data?.data?.expert}
+          />
+        )}
+      </AnimatePresence>
     </>
   );
 };
 
 export default ExpertProfile;
+
+const StarRatingDistribution = ({
+  reviews = [],
+}: {
+  reviews:
+    | {
+        user: {
+          firstName: string | null;
+          lastName: string | null;
+          profilePic: string | null;
+        };
+        id: string;
+        createdAt: string;
+        userId: string;
+        expertId: string;
+        rating: number;
+        comment: string | null;
+      }[]
+    | undefined;
+}) => {
+  // Calculate the count of each rating
+  const ratingCounts: { [key: number]: number } = {
+    1: 0,
+    2: 0,
+    3: 0,
+    4: 0,
+    5: 0,
+  };
+
+  // Count occurrences of each rating
+  if (reviews && Array.isArray(reviews)) {
+    reviews.forEach((review) => {
+      if (review.rating >= 1 && review.rating <= 5) {
+        const rating = review.rating;
+        if (rating !== undefined && rating >= 1 && rating <= 5) {
+          if (ratingCounts[rating] !== undefined) {
+            ratingCounts[rating]++;
+          }
+        }
+      }
+    });
+  }
+
+  // Calculate percentages
+  const totalReviews = reviews?.length || 0;
+  const percentages: { [key: number]: number } = {};
+
+  for (let rating = 1; rating <= 5; rating++) {
+    percentages[rating] =
+      totalReviews > 0
+        ? Math.round(((ratingCounts[rating] || 0) / totalReviews) * 100)
+        : 0;
+  }
+
+  return (
+    <div className="flex-1">
+      {[5, 4, 3, 2, 1].map((rating) => (
+        <div key={rating} className="flex items-center mb-1">
+          <div className="w-10 flex justify-end">
+            <span className="text-xs text-gray-400">{rating}</span>
+          </div>
+          <Star className="w-3 h-3 text-amber-400 mx-1 fill-current" />
+          <div className="flex-1 h-2 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-amber-400"
+              style={{ width: `${percentages[rating]}%` }}
+            />
+          </div>
+          <span className="text-xs text-gray-400 ml-2 w-8">
+            {percentages[rating]}%
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+};
