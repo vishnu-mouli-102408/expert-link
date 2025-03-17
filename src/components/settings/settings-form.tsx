@@ -215,8 +215,22 @@ const SettingsForm = () => {
       console.log("RESULT", result);
       return result;
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       if (data?.success) {
+        if (data?.data?.role === "EXPERT") {
+          const expertId = data?.data?.id;
+          try {
+            const cacheResponse =
+              await client.user.invalidateExpertSearchCache.$post({ expertId });
+            console.log(
+              "Cache invalidation response:",
+              await cacheResponse.json()
+            );
+          } catch (error) {
+            console.error("ERROR INVALIDATING EXPERT CACHE", error);
+            return;
+          }
+        }
         queryClient.invalidateQueries({ queryKey: ["user"] });
         toast.success("Settings Updated", {
           description: "Your Settings has been successfully updated.",
@@ -237,6 +251,7 @@ const SettingsForm = () => {
     onError: (error) => {
       toast.error("There was a problem.", {
         description:
+          error?.message ||
           "Seems like there was an issue on our end. Please try again later.",
         duration: 3000,
         position: "bottom-center",

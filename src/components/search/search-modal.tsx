@@ -201,7 +201,7 @@ const SearchModal = ({ onClose }: SearchModalProps) => {
                       setPriceRange([value[0], value[1]]);
                     }
                   }}
-                  className="mb-2 cursor-pointer"
+                  className="mb-2 cursor-pointer bg-gray-500 rounded-lg"
                 />
               </div>
             </motion.div>
@@ -218,7 +218,7 @@ const SearchModal = ({ onClose }: SearchModalProps) => {
             </div>
           ) : (
             <motion.div
-              className="p-2 grid grid-cols-1 md:grid-cols-2 gap-3"
+              className="p-2 py-3 grid grid-cols-1 md:grid-cols-2 gap-3"
               variants={staggerContainer}
               initial="initial"
               animate="animate"
@@ -228,7 +228,7 @@ const SearchModal = ({ onClose }: SearchModalProps) => {
                   key={expert.id}
                   className="bg-[#FFFFFF02] hover:shadow-[inset_0px_0px_20px_0px_#FFFFFF33] backdrop-blur-[34px] shadow-[inset_0px_0px_55.5px_0px_#C5B9F626] hover:bg-[#FFFFFF0D] rounded-lg p-3 border border-white/5 hover:border-[#FFFFFF26] flex items-center gap-3 cursor-pointer"
                   variants={fadeInUp}
-                  whileHover={{ y: -3, transition: { duration: 0.2 } }}
+                  whileHover={{ y: -1, transition: { duration: 0.2 } }}
                 >
                   <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
                     <Image

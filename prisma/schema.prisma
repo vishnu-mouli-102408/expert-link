@@ -98,6 +98,13 @@ model User {
   reviewsReceived Review[] @relation(name: "ExpertReviews")
 
   @@index([email])
+  @@index([role], name: "idx_user_role") // Index for filtering by role
+  @@index([expertise], name: "idx_user_expertise") // Index for filtering by expertise
+  @@index([hourlyRate], name: "idx_user_hourly_rate") // Index for filtering by hourly rate
+  @@index([skills], name: "idx_user_skills") // Index for searching within skills array
+  @@index([firstName], name: "idx_user_first_name") // For name searches
+  @@index([lastName], name: "idx_user_last_name") // For name searches
+  @@index([username], name: "idx_user_username") // For username searches
 }
 
 model Call {

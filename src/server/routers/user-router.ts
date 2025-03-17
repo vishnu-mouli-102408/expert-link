@@ -1,4 +1,5 @@
 import { db } from "@/db";
+import type { Prisma } from "@prisma/client";
 import { z } from "zod";
 
 import {
@@ -8,6 +9,7 @@ import {
   OK,
 } from "@/lib/http-status-codes";
 import { logger } from "@/lib/logger";
+import { redis } from "@/lib/redis";
 
 import { j, privateProcedure } from "../jstack";
 
@@ -654,5 +656,210 @@ export const userRouter = j.router({
         data: newReview,
         code: OK,
       });
+    }),
+
+  // Search Experts
+  searchExperts: privateProcedure
+    .input(
+      z.object({
+        query: z.string().optional(),
+        expertise: z.string().optional(),
+        skills: z.array(z.string()).optional(),
+        minRate: z.number().optional(),
+        maxRate: z.number().optional(),
+        page: z.number().default(1),
+        limit: z.number().default(10),
+      })
+    )
+    .query(async ({ c, ctx, input }) => {
+      try {
+        // Cache TTL in seconds
+        const CACHE_TTL = 60 * 15; // 15 minutes
+
+        const { limit, page, expertise, maxRate, minRate, query, skills } =
+          input;
+
+        logger.info({ input }, "Search Experts Input");
+
+        const cacheKey = `expert-search:${JSON.stringify(input)}`;
+        const cachedResults = await redis.get(cacheKey);
+        if (cachedResults) {
+          logger.info({ cachedResults }, "Cached Results Found");
+          return c.json({
+            message: "Experts fetched successfully",
+            success: true,
+            data: cachedResults,
+            code: OK,
+          });
+        }
+
+        const where: Prisma.UserWhereInput = {
+          role: "EXPERT",
+        };
+
+        if (query) {
+          where.OR = [
+            { firstName: { contains: query, mode: "insensitive" } },
+            { lastName: { contains: query, mode: "insensitive" } },
+            { expertise: { contains: query, mode: "insensitive" } },
+            { username: { contains: query, mode: "insensitive" } },
+            { email: { contains: query, mode: "insensitive" } },
+          ];
+        }
+
+        if (expertise) {
+          where.expertise = {
+            contains: expertise,
+            mode: "insensitive",
+          };
+        }
+
+        if (skills && skills.length > 0) {
+          where.skills = {
+            hasSome: skills,
+          };
+        }
+
+        if (minRate || maxRate) {
+          where.hourlyRate = {};
+
+          if (minRate) {
+            // Convert string hourlyRate to number for comparison
+            where.hourlyRate.gte = minRate.toString();
+          }
+
+          if (maxRate) {
+            where.hourlyRate.lte = maxRate.toString();
+          }
+        }
+
+        const offset = (page - 1) * limit;
+
+        const [experts, totalCount] = await Promise.all([
+          db.user
+            .findMany({
+              where,
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                expertise: true,
+                bio: true,
+                profilePic: true,
+                hourlyRate: true,
+                skills: true,
+                yearsOfExperience: true,
+                certifications: true,
+                availability: true,
+              },
+              skip: offset,
+              take: limit,
+              orderBy: {
+                updatedAt: "desc",
+              },
+            })
+            .then(async (users) => {
+              return Promise.all(
+                users.map(async (user) => {
+                  const avgRating = await db.review.aggregate({
+                    where: { userId: user.id },
+                    _avg: { rating: true },
+                  });
+
+                  return {
+                    ...user,
+                    averageRating: avgRating._avg.rating ?? 0, // Default 0 if no ratings
+                  };
+                })
+              );
+            }),
+          db.user.count({ where }),
+        ]);
+
+        const result = {
+          experts,
+          totalCount: totalCount,
+          currentPage: page,
+          totalPages: Math.ceil(totalCount / limit),
+          pageSize: limit,
+        };
+
+        logger.info({ totalCount }, "Search Experts Result Found");
+
+        // Cache the results with Upstash Redis
+        await redis.set(cacheKey, result, {
+          ex: CACHE_TTL,
+        });
+
+        return c.json({
+          success: true,
+          message: "Experts fetched successfully",
+          data: result,
+          code: OK,
+        });
+      } catch (error) {
+        logger.error({ error }, "Error fetching experts");
+        return c.json({
+          message: "Internal server error",
+          success: false,
+          data: null,
+          code: INTERNAL_SERVER_ERROR,
+        });
+      }
+    }),
+
+  // Invalidate expert search cache
+  invalidateExpertSearchCache: privateProcedure
+    .input(
+      z.object({
+        expertId: z.string(),
+      })
+    )
+    .mutation(async ({ c, input }) => {
+      try {
+        const { expertId } = input;
+        logger.info({ expertId }, "Expert ID");
+        if (!expertId) {
+          return c.json({
+            message: "Expert ID is required",
+            success: false,
+            data: null,
+            code: NOT_FOUND,
+          });
+        }
+
+        const cacheKey = "expert-search:*";
+        const keys = await redis.keys(cacheKey);
+
+        // Delete all found keys
+        if (keys.length > 0) {
+          logger.info(
+            { keyCount: keys.length },
+            "Found cached keys to invalidate"
+          );
+          const pipeline = redis.pipeline();
+          keys.forEach((key) => {
+            pipeline.del(key);
+          });
+          await pipeline.exec();
+        } else {
+          logger.info("No cached keys found to invalidate");
+        }
+
+        return c.json({
+          message: "Cache invalidated successfully",
+          success: true,
+          data: null,
+          code: OK,
+        });
+      } catch (error) {
+        logger.error({ error }, "Error invalidating expert search cache");
+        return c.json({
+          message: "Failed to invalidate cache",
+          success: false,
+          data: null,
+          code: INTERNAL_SERVER_ERROR,
+        });
+      }
     }),
 });
