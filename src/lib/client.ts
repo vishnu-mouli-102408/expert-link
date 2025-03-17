@@ -6,7 +6,7 @@ export const client = createClient<AppRouter>({
   baseUrl: `${getBaseUrl()}/api`,
 });
 
-console.log("BASE URL", getBaseUrl());
+// console.log("BASE URL", getBaseUrl());
 
 function getBaseUrl() {
   // 👇 Use browser URL if client-side
