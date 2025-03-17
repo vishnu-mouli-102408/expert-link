@@ -2,6 +2,7 @@ import { db } from "@/db";
 import type { Prisma } from "@prisma/client";
 import { z } from "zod";
 
+import type { ApiResponse, SearchExpertsResult } from "@/types/common";
 import {
   INTERNAL_SERVER_ERROR,
   NOT_ACCEPTABLE,
@@ -682,16 +683,23 @@ export const userRouter = j.router({
         logger.info({ input }, "Search Experts Input");
 
         const cacheKey = `expert-search:${JSON.stringify(input)}`;
-        const cachedResults = await redis.get(cacheKey);
+        logger.info({ cacheKey }, "Cache Key");
+
+        const cachedResults = (await redis.get(
+          cacheKey
+        )) as SearchExpertsResult | null;
+        logger.info({ cachedResults }, "Cached Results Found");
+
         if (cachedResults) {
-          logger.info({ cachedResults }, "Cached Results Found");
           return c.json({
             message: "Experts fetched successfully",
             success: true,
             data: cachedResults,
             code: OK,
-          });
+          } as ApiResponse<SearchExpertsResult>);
         }
+
+        console.log("Cached results not found, fetching from database");
 
         const where: Prisma.UserWhereInput = {
           role: "EXPERT",
@@ -708,10 +716,16 @@ export const userRouter = j.router({
         }
 
         if (expertise) {
-          where.expertise = {
-            contains: expertise,
-            mode: "insensitive",
-          };
+          if (expertise?.toLowerCase() === "all") {
+            where.expertise = {
+              not: null,
+            };
+          } else {
+            where.expertise = {
+              contains: expertise,
+              mode: "insensitive",
+            };
+          }
         }
 
         if (skills && skills.length > 0) {
@@ -761,14 +775,26 @@ export const userRouter = j.router({
             .then(async (users) => {
               return Promise.all(
                 users.map(async (user) => {
+                  //   logger.info({ user }, "USER");
+
                   const avgRating = await db.review.aggregate({
-                    where: { userId: user.id },
+                    where: { expertId: user.id },
                     _avg: { rating: true },
                   });
+
+                  //   logger.info({ avgRating }, "Average Rating");
+
+                  // Fetch count of reviews received
+                  const reviewCount = await db.review.count({
+                    where: { expertId: user.id },
+                  });
+
+                  //   logger.info({ reviewCount }, "Review Count");
 
                   return {
                     ...user,
                     averageRating: avgRating._avg.rating ?? 0, // Default 0 if no ratings
+                    reviewCount, // Total reviews received
                   };
                 })
               );
@@ -796,7 +822,7 @@ export const userRouter = j.router({
           message: "Experts fetched successfully",
           data: result,
           code: OK,
-        });
+        } as ApiResponse<SearchExpertsResult>);
       } catch (error) {
         logger.error({ error }, "Error fetching experts");
         return c.json({
@@ -804,7 +830,7 @@ export const userRouter = j.router({
           success: false,
           data: null,
           code: INTERNAL_SERVER_ERROR,
-        });
+        } as ApiResponse<null>);
       }
     }),
 
