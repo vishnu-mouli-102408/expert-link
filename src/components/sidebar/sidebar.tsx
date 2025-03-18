@@ -24,7 +24,7 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ className, navItems }) => {
   const { user } = useUser();
-  const { isOpen, toggleSidebar } = useSidebar();
+  const { isOpen, toggleSidebar, closeSidebar } = useSidebar();
   const isMobile = useIsMobile();
   const [activeItemIndex, setActiveItemIndex] = React.useState(
     `/${user?.publicMetadata?.role === "user" ? "user" : "expert"}`
@@ -130,7 +130,12 @@ const Sidebar: React.FC<SidebarProps> = ({ className, navItems }) => {
                       )}
                       whileHover={{ scale: isOpen ? 1.02 : 1.1 }}
                       whileTap={{ scale: 0.95 }}
-                      onClick={() => setActiveItemIndex(item.href)}
+                      onClick={() => {
+                        setActiveItemIndex(item.href);
+                        if (isMobile) {
+                          closeSidebar();
+                        }
+                      }}
                     >
                       <div
                         className={cn(
