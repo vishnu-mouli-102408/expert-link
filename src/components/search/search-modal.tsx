@@ -171,7 +171,6 @@ const SearchModal = ({ onClose }: SearchModalProps) => {
                       : "Search for experts by name, skill, or specialty..."
                   }
                   className="bg-transparent border-none text-white flex-grow outline-none placeholder:text-gray-400"
-                  autoFocus
                 />
               )}
             />
