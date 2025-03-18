@@ -3,6 +3,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useClickOutside } from "@/hooks";
 import { format } from "date-fns";
 import { ChevronLeft, ChevronRight, Quote, Star, X } from "lucide-react";
 import { motion } from "motion/react";
@@ -115,6 +116,12 @@ const AllReviewsModal = ({
     );
   };
 
+  const mobileMenuRef = useClickOutside(() => {
+    setTimeout(() => {
+      if (isOpen) onClose();
+    }, 0);
+  });
+
   if (!isOpen && !isVisible) return null;
 
   return (
@@ -126,6 +133,9 @@ const AllReviewsModal = ({
       exit="exit"
     >
       <motion.div
+        ref={(el) => {
+          if (el) mobileMenuRef.current = el;
+        }}
         className="max-w-2xl w-full rounded-xl bg-gradient-to-b from-[#1c1c24] to-[#12151c] shadow-xl border border-white/10 relative max-h-[90vh] flex flex-col"
         variants={modalVariants}
         initial="hidden"
