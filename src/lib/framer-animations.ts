@@ -48,16 +48,6 @@ export const fadeInScale: Variants = {
   },
 };
 
-// Staggered children animation
-// export const staggerContainer: Variants = {
-//   initial: {},
-//   animate: {
-//     transition: {
-//       staggerChildren: 0.1,
-//     },
-//   },
-// };
-
 export const staggerContainer: Variants = {
   initial: {
     opacity: 1, // ensure the container is visible
