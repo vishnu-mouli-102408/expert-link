@@ -8,6 +8,7 @@ import { NOT_FOUND_MESSAGE } from "@/lib/http-status-phrases";
 import { j } from "./jstack";
 import { accountRouter } from "./routers/account-router";
 import { authRouter } from "./routers/auth-router";
+import { cacheRouter } from "./routers/cache-router";
 import { healthCheckRouter } from "./routers/health-check-router";
 import { userRouter } from "./routers/user-router";
 
@@ -59,6 +60,7 @@ const appRouter = j.mergeRouters(api, {
   health: healthCheckRouter,
   account: accountRouter,
   user: userRouter,
+  cache: cacheRouter,
 });
 
 export type AppRouter = typeof appRouter;

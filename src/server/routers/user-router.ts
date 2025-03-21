@@ -10,6 +10,7 @@ import {
   OK,
 } from "@/lib/http-status-codes";
 import { logger } from "@/lib/logger";
+import { memoryCache } from "@/lib/memory-cache";
 import { redis } from "@/lib/redis";
 
 import { j, privateProcedure } from "../jstack";
@@ -676,6 +677,7 @@ export const userRouter = j.router({
       try {
         // Cache TTL in seconds
         const CACHE_TTL = 60 * 15; // 15 minutes
+        const MEMORY_CACHE_TTL = 60 * 5; // 5 minutes
 
         const { limit, page, expertise, maxRate, minRate, query, skills } =
           input;
@@ -685,10 +687,27 @@ export const userRouter = j.router({
         const cacheKey = `expert-search:${JSON.stringify(input)}`;
         logger.info({ cacheKey }, "Cache Key");
 
+        // Try to get from in-memory cache first (faster)
+        const memoryResults = memoryCache.get<SearchExpertsResult>(cacheKey);
+        logger.info({ memoryResults }, "Memory Results");
+        if (memoryResults) {
+          logger.info(
+            { source: "memory-cache" },
+            "Cache hit from in-memory cache"
+          );
+          return c.json({
+            message: "Experts fetched successfully (from memory cache)",
+            success: true,
+            data: memoryResults,
+            code: OK,
+          } as ApiResponse<SearchExpertsResult>);
+        }
+
+        // Try to get from Redis cache next
         const cachedResults = (await redis.get(
           cacheKey
         )) as SearchExpertsResult | null;
-        logger.info({ cachedResults }, "Cached Results Found");
+        logger.info({ cachedResults }, "Cached Results from Redis");
 
         if (cachedResults) {
           return c.json({
@@ -812,6 +831,9 @@ export const userRouter = j.router({
 
         logger.info({ totalCount }, "Search Experts Result Found");
 
+        // Store in memory cache
+        memoryCache.set(cacheKey, result, MEMORY_CACHE_TTL);
+
         // Cache the results with Upstash Redis
         await redis.set(cacheKey, result, {
           ex: CACHE_TTL,
@@ -855,6 +877,12 @@ export const userRouter = j.router({
         }
 
         const cacheKey = "expert-search:*";
+
+        // Clear in-memory cache first
+        memoryCache.clearPattern(cacheKey);
+        logger.info("In-memory cache cleared for expert searches");
+
+        // Clear Redis cache
         const keys = await redis.keys(cacheKey);
 
         // Delete all found keys
