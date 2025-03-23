@@ -2,6 +2,7 @@
 
 import { useCallback, useRef, useState } from "react";
 import Image from "next/image";
+import { useUser } from "@clerk/nextjs";
 import { useMutation } from "@tanstack/react-query";
 import type { UploadApiResponse } from "cloudinary";
 import { Camera, Check, X } from "lucide-react";
@@ -9,6 +10,7 @@ import { motion } from "motion/react";
 import Cropper, { type Area } from "react-easy-crop";
 import { toast } from "sonner";
 
+import { client } from "@/lib/client";
 import { Button } from "@/components/ui/button";
 
 interface ProfileImageUploadProps {
@@ -66,33 +68,6 @@ const getCroppedImg = async (
   });
 };
 
-// const uploadToCloudinary = async (file: Blob): Promise<string> => {
-//   const formData = new FormData();
-//   formData.append("file", file);
-//   formData.append("upload_preset", "profile_pictures"); // Use your Cloudinary upload preset
-
-//   try {
-//     // Using the Cloudinary upload API directly from the frontend
-//     const response = await fetch(
-//       "https://api.cloudinary.com/v1_1/your-cloud-name/image/upload",
-//       {
-//         method: "POST",
-//         body: formData,
-//       }
-//     );
-
-//     const data = await response.json();
-//     if (data.secure_url) {
-//       return data.secure_url;
-//     } else {
-//       throw new Error("Upload failed");
-//     }
-//   } catch (error) {
-//     console.error("Error uploading to Cloudinary:", error);
-//     throw error;
-//   }
-// };
-
 const ProfileImageUpload = ({ value, onChange }: ProfileImageUploadProps) => {
   const [image, setImage] = useState<string | null>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
@@ -101,6 +76,8 @@ const ProfileImageUpload = ({ value, onChange }: ProfileImageUploadProps) => {
   const [isUploading, setIsUploading] = useState(false);
   const [isCropping, setIsCropping] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const { user } = useUser();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -163,6 +140,13 @@ const ProfileImageUpload = ({ value, onChange }: ProfileImageUploadProps) => {
         success: boolean;
         data: UploadApiResponse;
       } = await response.json();
+
+      await client.auth.updateUserDetails.$post({
+        profilePic: uploadedUrl?.data?.secure_url,
+      });
+
+      await user?.setProfileImage({ file: file });
+
       return uploadedUrl;
     } catch (error) {
       console.error("Error processing image:", error);
@@ -201,8 +185,7 @@ const ProfileImageUpload = ({ value, onChange }: ProfileImageUploadProps) => {
         setIsCropping(false);
 
         toast.success("Profile picture updated", {
-          description:
-            "Your profile picture has been set. Please save your changes.",
+          description: "Your profile picture has been updated successfully.",
           duration: 3000,
           position: "bottom-center",
           closeButton: true,

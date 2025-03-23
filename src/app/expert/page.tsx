@@ -1,16 +1,21 @@
 import type { Metadata } from "next";
+import { ExpertOverview } from "@/components";
 
 export const metadata: Metadata = {
   title: {
-    default: "Expert",
+    default: "Expert Layout",
     template: "%s | Expert",
   },
-  description: "This is the layout for the expert pages.",
+  description: "Tjis is the layout for the Expert pages.",
   icons: [{ rel: "icon", url: "/favicon/favicon.ico" }],
 };
 
 function Page() {
-  return <div>Expert Page</div>;
+  return (
+    <div className="min-h-[calc(100vh-64px)] bg-black/50 mx-auto p-6">
+      <ExpertOverview />
+    </div>
+  );
 }
 
 export default Page;

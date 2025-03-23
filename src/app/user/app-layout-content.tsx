@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, type FC, type ReactNode } from "react";
 import { useDbUser, useIsMobile } from "@/hooks";
 import { UserButton } from "@clerk/nextjs";
 import {
@@ -22,11 +22,11 @@ import Sidebar from "@/components/sidebar/sidebar";
 import { useSidebar } from "@/components/sidebar/sidebar-context";
 
 export interface AppLayoutProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 // The main layout that includes the sidebar and content
-export const AppLayoutContent: React.FC<AppLayoutProps> = ({ children }) => {
+export const AppLayoutContent: FC<AppLayoutProps> = ({ children }) => {
   const { isOpen, toggleSidebar } = useSidebar();
   const isMobile = useIsMobile();
   const { data: userData, isPending } = useDbUser();
@@ -86,7 +86,7 @@ export const AppLayoutContent: React.FC<AppLayoutProps> = ({ children }) => {
   ];
 
   return (
-    <div className="flex min-h-screen  bg-background dark">
+    <div className="flex min-h-screen bg-background dark">
       <Sidebar navItems={navItems} />
 
       <motion.div

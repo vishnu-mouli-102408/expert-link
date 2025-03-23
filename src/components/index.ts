@@ -1,5 +1,6 @@
 import { AuroraHero } from "./aurora-hero";
 import CTA from "./cta";
+import ExpertOverview from "./expert/expert-overview";
 import FAQ from "./faqs/faq";
 import FeaturesSection from "./features";
 import Footer from "./footer";
@@ -24,6 +25,7 @@ export {
   AnimationContainer,
   AuroraHero,
   CTA,
+  ExpertOverview,
   ExpertProfile,
   ExploreExperts,
   FAQ,

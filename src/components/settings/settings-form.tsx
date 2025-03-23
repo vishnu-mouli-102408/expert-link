@@ -117,19 +117,19 @@ const SettingsForm = () => {
       email: userData?.data?.email || "",
       bio: userData?.data?.bio || "",
       //   expertise: user?.data?.expertise || "",
-      gender: userData?.data?.gender || "",
+      gender: userData?.data?.gender || undefined,
       ...(isExpert
         ? {
             skills: userData?.data?.skills || [],
             certifications: userData?.data?.certifications || "",
             yearsOfExperience: userData?.data?.yearsOfExperience || "",
-            availability: userData?.data?.availability || "",
+            availability: userData?.data?.availability || undefined,
             hourlyRate: userData?.data?.hourlyRate || "",
             expertise: userData?.data?.expertise || "",
           }
         : {
             interests: userData?.data?.interests || "",
-            preferences: userData?.data?.preferences || "",
+            preferences: userData?.data?.preferences || undefined,
           }),
     },
   });
@@ -473,14 +473,10 @@ const SettingsForm = () => {
                   <FormLabel className="text-sm font-medium text-zinc-200">
                     Gender
                   </FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    // defaultValue={field.value}
-                    value={field.value}
-                  >
+                  <Select onValueChange={field.onChange} {...field}>
                     <FormControl>
                       <SelectTrigger className="bg-white/5 cursor-pointer border-white/10 focus:border-white/20 transition-all duration-300">
-                        <SelectValue placeholder="Select gender" />
+                        <SelectValue placeholder={"Select Gender"} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent className="cursor-pointer bg-black">
