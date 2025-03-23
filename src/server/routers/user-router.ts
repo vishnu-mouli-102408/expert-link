@@ -231,11 +231,11 @@ export const userRouter = j.router({
           upcomingCalls.status === "fulfilled" ? upcomingCalls.value.length : 0;
         const avgCallDurationValue =
           avgCallDuration.status === "fulfilled"
-            ? avgCallDuration.value._avg.duration
+            ? (avgCallDuration.value._avg.duration ?? 0)
             : 0;
         const previousAvgCallDurationValue =
           previousAvgCallDuration.status === "fulfilled"
-            ? previousAvgCallDuration.value._avg.duration
+            ? (previousAvgCallDuration.value._avg.duration ?? 0)
             : 0;
 
         const callPercentageChange =

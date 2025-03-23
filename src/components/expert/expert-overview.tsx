@@ -3,7 +3,15 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { Calendar, Clock, Phone, TrendingUp, Users, Video } from "lucide-react";
+import {
+  Calendar,
+  Clock,
+  Phone,
+  Sparkles,
+  Star,
+  TrendingUp,
+  Video,
+} from "lucide-react";
 import { motion } from "motion/react";
 import {
   Area,
@@ -36,7 +44,7 @@ const ExpertOverview = () => {
   const { data, isPending } = useQuery({
     queryKey: ["userOverview", filter],
     queryFn: async () => {
-      const response = await client.user.getUserAnalytics.$get({
+      const response = await client.expert.getExpertAnalytics.$get({
         filter: { type: filter },
       });
       return await response.json();
@@ -45,7 +53,7 @@ const ExpertOverview = () => {
 
   const recentCalls = data?.data?.recentCalls?.map((item) => ({
     id: item?.id,
-    expert: `${item?.expert?.firstName} ${item?.expert?.lastName}`,
+    expert: `${item?.user?.firstName} ${item?.user?.lastName}`,
     type: item?.callType,
     date: format(item?.startedAt, "MMM dd, h:mm a"),
     duration: `${item?.duration} min`,
@@ -54,7 +62,7 @@ const ExpertOverview = () => {
 
   const upcomingCalls = data?.data?.upcomingCalls?.map((item) => ({
     id: item?.id,
-    expert: `${item?.expert?.firstName} ${item?.expert?.lastName}`,
+    expert: `${item?.user?.firstName} ${item?.user?.lastName}`,
     type: item?.callType,
     date: format(item?.scheduledAt, "MMM dd, h:mm a"),
     duration: `${item?.duration} min`,
@@ -76,10 +84,10 @@ const ExpertOverview = () => {
       color: "bg-[#6366f133]",
     },
     {
-      title: "Active Experts",
-      value: data?.data?.analytics?.activeExperts?.totalActiveExperts || "0",
-      icon: Users,
-      change: `${data?.data?.analytics?.activeExperts?.expertPercentageChange || 0 >= 0 ? "+" : ""}${data?.data?.analytics?.activeExperts?.expertPercentageChange ?? "N/A"}%`,
+      title: "Avg. Reviews",
+      value: data?.data?.analytics?.ratings?.avgRating || "0",
+      icon: Sparkles,
+      change: `${data?.data?.analytics?.ratings?.totalReviewsCount || 0 >= 0 ? "+" : ""}${data?.data?.analytics?.ratings?.totalReviewsCount ?? "N/A"}%`,
       color: "bg-[#10b98133]",
     },
     {
@@ -171,12 +179,28 @@ const ExpertOverview = () => {
                 <h3 className="text-2xl font-bold text-white mt-1">
                   {item.value}
                 </h3>
-                <div
-                  className={`flex items-center mt-2 ${item.change.startsWith("+") ? "text-green-400" : "text-red-400"}`}
-                >
-                  <TrendingUp className="h-3.5 w-3.5 mr-1" />
-                  <span className="text-xs">{item.change} from last week</span>
-                </div>
+                {item?.title === "Avg. Reviews" ? (
+                  <div
+                    className={`flex items-center mt-2 ${item.change.startsWith("+") ? "text-green-400" : "text-red-400"}`}
+                  >
+                    {Array.from({ length: 5 }).map((_, index) => (
+                      <Star
+                        className="size-4"
+                        fill={index < Number(item.value) ? "#10B981" : "#333"}
+                        key={`Reviews${index}`}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <div
+                    className={`flex items-center mt-2 ${item.change.startsWith("+") ? "text-green-400" : "text-red-400"}`}
+                  >
+                    <TrendingUp className="h-3.5 w-3.5 mr-1" />
+                    <span className="text-xs">
+                      {item.change} from last week
+                    </span>
+                  </div>
+                )}
               </div>
               <div className={`${item.color} p-2 rounded-lg bg-opacity-20`}>
                 <item.icon className="h-6 w-6 text-white" />

@@ -9,6 +9,7 @@ import { j } from "./jstack";
 import { accountRouter } from "./routers/account-router";
 import { authRouter } from "./routers/auth-router";
 import { cacheRouter } from "./routers/cache-router";
+import { expertRouter } from "./routers/expert-router";
 import { healthCheckRouter } from "./routers/health-check-router";
 import { userRouter } from "./routers/user-router";
 
@@ -61,6 +62,7 @@ const appRouter = j.mergeRouters(api, {
   account: accountRouter,
   user: userRouter,
   cache: cacheRouter,
+  expert: expertRouter,
 });
 
 export type AppRouter = typeof appRouter;
