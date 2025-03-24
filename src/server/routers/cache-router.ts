@@ -54,4 +54,26 @@ export const cacheRouter = j.router({
       });
     }
   }),
+
+  // Clear entire memory cache
+  clearMemoryCache: privateProcedure.mutation(async ({ c }) => {
+    try {
+      memoryCache.clear();
+
+      return c.json({
+        success: true,
+        message: "Memory cache cleared successfully",
+        data: null,
+        code: OK,
+      });
+    } catch (error) {
+      logger.error({ error }, "Error clearing memory cache");
+      return c.json({
+        message: "Failed to clear memory cache",
+        success: false,
+        data: null,
+        code: INTERNAL_SERVER_ERROR,
+      });
+    }
+  }),
 });

@@ -95,8 +95,22 @@ const ReviewModal = ({
       const result = await response.json();
       return result;
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       if (data?.success) {
+        const cacheResponse =
+          await client.user.invalidateExpertSearchCache.$post({ expertId });
+        console.log(
+          "Redis Cache invalidation response:",
+          await cacheResponse.json()
+        );
+
+        const inMemoryCacheResponse =
+          await client.cache.clearMemoryCache.$post();
+        console.log(
+          "In-memory cache cleared:",
+          await inMemoryCacheResponse.json()
+        );
+
         queryClient.invalidateQueries({ queryKey: ["expert", expertId] });
         setShowSuccessModal(true);
       } else {
