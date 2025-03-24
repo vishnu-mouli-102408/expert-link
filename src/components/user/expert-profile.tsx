@@ -12,6 +12,7 @@ import {
   Headphones,
   MessageCircle,
   Phone,
+  Share2,
   SquarePen,
   Star,
   Video,
@@ -33,6 +34,7 @@ import { LoadingSpinner } from "../ui/loading-spinner";
 import { Separator } from "../ui/separator";
 import AllReviewsModal from "./modals/read-reviews-modal";
 import ReviewModal from "./modals/review-modal";
+import ShareProfileModal from "./modals/share-profile-modal";
 
 // import { Modal } from "../ui/modal";
 const Modal = dynamic(() => import("../ui/modal").then((mod) => mod.Modal), {
@@ -50,6 +52,7 @@ const ExpertProfile = () => {
   const [isScheduleOpen, setIsScheduleOpen] = useState(false);
   const [isWriteReviewOpen, setIsWriteReviewOpen] = useState(false);
   const [isOpenReadReviewsModal, setIsOpenReadReviewsModal] = useState(false);
+  const [isOpenShareProfileModal, setIsOpenShareProfileModal] = useState(false);
 
   const router = useRouter();
 
@@ -285,25 +288,36 @@ const ExpertProfile = () => {
               variants={fadeInUp}
             >
               {/* Expert Header */}
-              <div>
-                <motion.h1
-                  className="text-3xl font-bold text-white mb-1"
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5 }}
+              <div className="flex justify-between items-center">
+                <div>
+                  <motion.h1
+                    className="text-3xl font-bold text-white mb-1"
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    {data?.data?.expert?.firstName &&
+                    data?.data?.expert?.lastName
+                      ? `${data.data.expert.firstName} ${data.data.expert.lastName}`
+                      : "N/A"}
+                  </motion.h1>
+                  <motion.p
+                    className="text-xl text-gray-400"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.2, duration: 0.5 }}
+                  >
+                    {data?.data?.expert?.expertise || "N/A"}
+                  </motion.p>
+                </div>
+                <Button
+                  onClick={() => setIsOpenShareProfileModal(true)}
+                  variant="outline"
+                  className="flex flex-row gap-2 py-2 h-auto cursor-pointer hover:scale-[1.005] transition-all duration-200 ease-in-out bg-[#221F26] shadow-[inset_0px_0px_20px_0px_#FFFFFF33] border-[#FFFFFF26] text-gray-300 hover:bg-[#403E43]/50 hover:text-white"
                 >
-                  {data?.data?.expert?.firstName && data?.data?.expert?.lastName
-                    ? `${data.data.expert.firstName} ${data.data.expert.lastName}`
-                    : "N/A"}
-                </motion.h1>
-                <motion.p
-                  className="text-xl text-gray-400"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.2, duration: 0.5 }}
-                >
-                  {data?.data?.expert?.expertise || "N/A"}
-                </motion.p>
+                  <Share2 className="h-5 w-5" />
+                  <span className="text-xs">Share</span>
+                </Button>
               </div>
 
               {/* Stats Cards */}
@@ -603,6 +617,18 @@ const ExpertProfile = () => {
             isOpen={isOpenReadReviewsModal}
             onClose={() => setIsOpenReadReviewsModal(false)}
             reviews={data?.data?.reviews}
+            expert={data?.data?.expert}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Share Profile Modal */}
+      <AnimatePresence>
+        {isOpenShareProfileModal && (
+          <ShareProfileModal
+            url={`${window.location.origin}/user/expert-profile/${data?.data?.expert?.id}`}
+            isOpen={isOpenShareProfileModal}
+            onClose={() => setIsOpenShareProfileModal(false)}
             expert={data?.data?.expert}
           />
         )}

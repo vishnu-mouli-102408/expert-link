@@ -1,10 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { mockExperts } from "@/constants/mock-data";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { motion } from "motion/react";
+import { Share2 } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 
 import { client } from "@/lib/client";
 import { fadeInUp, staggerContainer } from "@/lib/framer-animations";
@@ -13,10 +15,13 @@ import ExpertCard from "../cards/card";
 import ResultsNotFound from "../global/results-not-found";
 import { Button } from "../ui/button";
 import SkeletonExpertCard from "./expert-card-skeleton";
+import ShareProfileModal from "./modals/share-profile-modal";
 
 const ExploreExperts = () => {
   const router = useRouter();
   const bottomRef = useRef<HTMLDivElement | null>(null);
+  const [isOpenShareProfileModal, setIsOpenShareProfileModal] = useState(false);
+  const [selectedProfile, setSelectedProfile] = useState<any | null>(null);
 
   const { data, status, error, fetchNextPage, isFetchingNextPage } =
     useInfiniteQuery({
@@ -129,10 +134,34 @@ const ExploreExperts = () => {
                   specialties: expert?.skills || [],
                   title: expert?.expertise || "N/A",
                 }}
+                ShareButton={
+                  <Button
+                    onClick={() => {
+                      setSelectedProfile(expert);
+                      setIsOpenShareProfileModal(true);
+                    }}
+                    variant="outline"
+                    className="flex flex-row gap-2 py-2 h-auto cursor-pointer hover:scale-[1.005] transition-all duration-200 ease-in-out bg-[#221F26] shadow-[inset_0px_0px_20px_0px_#FFFFFF33] border-[#FFFFFF26] text-gray-300 hover:bg-[#403E43]/50 hover:text-white"
+                  >
+                    <Share2 className="h-5 w-5" />
+                    {/* <span className="text-xs">Share</span> */}
+                  </Button>
+                }
               />
             ))}
           </motion.div>
         ))}
+
+        <AnimatePresence>
+          {isOpenShareProfileModal && selectedProfile && (
+            <ShareProfileModal
+              url={`${window.location.origin}/user/expert-profile/${selectedProfile?.id}`}
+              isOpen={isOpenShareProfileModal}
+              onClose={() => setIsOpenShareProfileModal(false)}
+              expert={selectedProfile}
+            />
+          )}
+        </AnimatePresence>
 
         <div id="infinite-paginate" ref={bottomRef}>
           {isFetchingNextPage && (

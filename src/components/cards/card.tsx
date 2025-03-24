@@ -1,3 +1,4 @@
+import type { JSX } from "react";
 import Link from "next/link";
 import { MessageCircle, Phone, Star, Video } from "lucide-react";
 import * as motion from "motion/react-client";
@@ -19,7 +20,13 @@ export interface ExpertProps {
 
 // shadow-[0_1px_1px_rgba(0,0,0,0.05), 0_4px_6px_rgba(34,42,53,0.04),0_24px_68px_rgba(47,48,55,0.05),0_2px_3px_rgba(0,0,0,0.04)]
 
-const ExpertCard = ({ expert }: { expert: ExpertProps }) => {
+const ExpertCard = ({
+  expert,
+  ShareButton,
+}: {
+  expert: ExpertProps;
+  ShareButton: JSX.Element;
+}) => {
   return (
     <motion.div
       className="bg-gradient-to-br from-[#222222] cursor-pointer to-[#1A1F2C] backdrop-blur-[30px] shadow-[inset_0px_0px_20px_0px_#FFFFFF33] rounded-xl border border-[#FFFFFF26] overflow-hidden shadow-card"
@@ -44,18 +51,23 @@ const ExpertCard = ({ expert }: { expert: ExpertProps }) => {
         </div>
       </div>
       <div className="p-5">
-        <div className="flex items-center mb-1">
-          <div className="flex text-amber-400 mr-1">
-            {[...Array(5)].map((_, i) => (
-              <Star
-                key={i}
-                className={`w-4 h-4 ${
-                  i < Math.floor(expert.rating) ? "fill-current" : "opacity-30"
-                }`}
-              />
-            ))}
+        <div className="flex items-center justify-between mb-1">
+          <div className="flex items-center">
+            <div className="flex text-amber-400 mr-1">
+              {[...Array(5)].map((_, i) => (
+                <Star
+                  key={i}
+                  className={`w-4 h-4 ${
+                    i < Math.floor(expert.rating)
+                      ? "fill-current"
+                      : "opacity-30"
+                  }`}
+                />
+              ))}
+            </div>
+            <span className="text-sm text-gray-400">({expert.reviews})</span>
           </div>
-          <span className="text-sm text-gray-400">({expert.reviews})</span>
+          {ShareButton}
         </div>
         <h3 className="font-semibold text-lg text-white">{expert.name}</h3>
         <p className="text-gray-400 text-sm mb-3">{expert.title}</p>

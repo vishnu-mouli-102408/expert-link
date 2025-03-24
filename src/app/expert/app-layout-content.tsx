@@ -128,7 +128,7 @@ export const AppLayoutContent: FC<AppLayoutProps> = ({ children }) => {
                 {/* </div> */}
                 {isPending ? (
                   <span className="text-sm font-medium text-white hidden md:inline">
-                    <Spinner variant="pinwheel" />
+                    <Spinner variant="ring" />
                   </span>
                 ) : (
                   <span className="text-sm cursor-pointer font-medium text-white hidden md:inline">

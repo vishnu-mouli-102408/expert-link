@@ -108,6 +108,7 @@ const SettingsForm = () => {
   // Initialize the form with react-hook-form and zodResolver
   const form = useForm<FormValues>({
     resolver: zodResolver(isExpert ? expertSchemaObject : userSchemaObject),
+    mode: "onBlur",
     values: {
       profilePic: userData?.data?.profilePic || "",
       username: userData?.data?.username || "",
@@ -473,7 +474,7 @@ const SettingsForm = () => {
                   <FormLabel className="text-sm font-medium text-zinc-200">
                     Gender
                   </FormLabel>
-                  <Select onValueChange={field.onChange} {...field}>
+                  <Select {...field} onValueChange={field.onChange}>
                     <FormControl>
                       <SelectTrigger className="bg-white/5 cursor-pointer border-white/10 focus:border-white/20 transition-all duration-300">
                         <SelectValue placeholder={"Select Gender"} />
