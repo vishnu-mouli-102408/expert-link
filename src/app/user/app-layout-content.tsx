@@ -16,6 +16,7 @@ import {
 import { motion } from "motion/react";
 
 import { Button } from "@/components/ui/button";
+import { NotificationPopover } from "@/components/ui/notification-popover";
 import { Spinner } from "@/components/ui/spinner";
 import SearchModal from "@/components/search/search-modal";
 import Sidebar from "@/components/sidebar/sidebar";
@@ -164,14 +165,15 @@ export const AppLayoutContent: FC<AppLayoutProps> = ({ children }) => {
               </div>
             </div>
             <div className="flex items-center space-x-4">
-              <Button
+              {/* <Button
                 variant="ghost"
                 size="icon"
                 className="relative text-gray-400 cursor-pointer hover:scale-[1.05] transition-all duration-300 ease-in-out hover:text-white"
               >
                 <Bell className="h-5 w-5 " />
                 <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-              </Button>
+              </Button> */}
+              <NotificationPopover />
               <div className="flex items-center space-x-3">
                 {/* <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center overflow-hidden"> */}
                 <UserButton />

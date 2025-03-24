@@ -48,7 +48,7 @@
     "cloudinary": "^2.5.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
-    "framer-motion": "^12.4.7",
+    "framer-motion": "^12.5.0",
     "hono": "^4.7.4",
     "husky": "^9.1.7",
     "jstack": "^1.0.6",
