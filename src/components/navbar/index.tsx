@@ -95,9 +95,19 @@ const Navbar = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.2 }}
           >
-            <div className="border shadow-[0_3px_10px_rgb(0,0,0,0.2)] h-[50px] w-[50px] rounded-lg border-white/15 inline-flex items-center justify-center">
+            <div className=" h-[50px] gap-1 w-max rounded-lg flex items-center justify-center">
               <Link href="/">
                 <Icons.logo className="w-max h-8" />
+              </Link>
+              <Link href="/">
+                <motion.span
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  className="text-2xl ml-2 font-extrabold font-sans cursor-pointer hover:scale-[1.04] transitio duration-300 ease-in-out text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-red-500"
+                >
+                  Expert Link
+                </motion.span>
               </Link>
             </div>
           </motion.div>
