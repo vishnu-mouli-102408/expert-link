@@ -16,7 +16,7 @@ import {
 import { motion } from "motion/react";
 
 import { Button } from "@/components/ui/button";
-import Spinner from "@/components/ui/spinner";
+import { Spinner } from "@/components/ui/spinner";
 import SearchModal from "@/components/search/search-modal";
 import Sidebar from "@/components/sidebar/sidebar";
 import { useSidebar } from "@/components/sidebar/sidebar-context";
@@ -178,7 +178,7 @@ export const AppLayoutContent: FC<AppLayoutProps> = ({ children }) => {
                 {/* </div> */}
                 {isPending ? (
                   <span className="text-sm font-medium text-white hidden md:inline">
-                    <Spinner size={"small"} />
+                    <Spinner variant="pinwheel" />
                   </span>
                 ) : (
                   <span className="text-sm cursor-pointer font-medium text-white hidden md:inline">
