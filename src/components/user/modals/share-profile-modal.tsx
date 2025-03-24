@@ -95,7 +95,7 @@ const ShareProfileModal = ({
 
   return (
     <motion.div
-      className="fixed inset-0 flex items-center justify-center bg-black/70 z-[1000] p-4 backdrop-blur-sm overflow-hidden"
+      className="fixed inset-0 flex items-center justify-center mb-0 bg-black/70 z-[1000] p-4 backdrop-blur-sm overflow-hidden"
       variants={backdropVariants}
       initial="hidden"
       animate={isVisible ? "visible" : "exit"}
@@ -122,7 +122,7 @@ const ShareProfileModal = ({
           <X size={20} />
         </button>
 
-        <div className="flex flex-col p-8 overflow-hidden h-full">
+        <div className="flex flex-col p-6 md:p-8 overflow-hidden h-full">
           <div className="flex items-center space-x-4 mb-10 flex-shrink-0">
             <div className="flex-shrink-0">
               <Avatar className="h-14 w-14 border-2 border-white/10">
