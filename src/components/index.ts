@@ -1,4 +1,6 @@
 import { AuroraHero } from "./aurora-hero";
+import Billing from "./billing";
+import { CircleProgress } from "./circle-progress";
 import CTA from "./cta";
 import ExpertOverview from "./expert/expert-overview";
 import FAQ from "./faqs/faq";
@@ -24,6 +26,8 @@ import UserOverview from "./user/user-overview";
 export {
   AnimationContainer,
   AuroraHero,
+  Billing,
+  CircleProgress,
   CTA,
   ExpertOverview,
   ExpertProfile,

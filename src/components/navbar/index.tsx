@@ -96,9 +96,9 @@ const Navbar = () => {
             transition={{ duration: 0.2 }}
           >
             <div className=" h-[50px] gap-1 w-max rounded-lg flex items-center justify-center">
-              <Link href="/">
+              {/* <Link href="/">
                 <Icons.logo className="w-max h-8" />
-              </Link>
+              </Link> */}
               <Link href="/">
                 <motion.span
                   initial={{ opacity: 0, x: -20 }}

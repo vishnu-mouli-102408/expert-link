@@ -7,6 +7,7 @@ import {
   BarChart3,
   Bell,
   Command,
+  CreditCard,
   Mail,
   Menu,
   Search,
@@ -83,6 +84,11 @@ export const AppLayoutContent: FC<AppLayoutProps> = ({ children }) => {
       icon: <Settings size={18} />,
       label: "Settings",
       href: "/user/settings",
+    },
+    {
+      icon: <CreditCard size={18} />,
+      label: "Billing",
+      href: "/user/billing",
     },
   ];
 

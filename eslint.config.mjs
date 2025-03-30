@@ -21,13 +21,6 @@ const eslintConfig = [
       },
     },
     rules: {
-      //   "no-console": [
-      //     "error",
-      //     {
-      //       allow: ["info", "warn", "error"],
-      //     },
-      //   ],
-
       "no-unused-vars": "off",
       "@typescript-eslint/no-unsafe-function-type": "off",
 

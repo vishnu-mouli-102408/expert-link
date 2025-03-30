@@ -259,17 +259,6 @@ body {
 ::-webkit-scrollbar-track {
   background-color: var(--background);
 }
-/* .animate-gradient {
-  animation: gradient var(--animation-duration, 8s) linear infinite;
-}
-
-.animate-accordion-down {
-  animation: accordion-down 0.2s ease-out;
-}
-
-.animate-accordion-up {
-  animation: accordion-up 0.2s ease-out;
-} */
 
 @theme {
   --animate-accordion-down: accordion-down 0.2s ease-out;
